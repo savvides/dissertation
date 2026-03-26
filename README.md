@@ -86,6 +86,24 @@ The post-2018 literature broadly validates the study's findings while providing 
 
 The full addendum with all citations is in [`dissertation.md`](dissertation.md#updated-literature-review-2019-2026).
 
+## If I Was to Do This Again
+
+In 2026, I revisited this study with fresh eyes — red-teaming the methodology and reanalyzing the original data (`final_ps.sav`) using modern statistical tools. The core finding is rock-solid: interactive simulations produced massive learning gains over passive instruction (Cohen's d > 2.4, confirmed by both parametric and non-parametric methods). But the theoretical claims around *why* could be made much stronger. Here's what I'd change.
+
+**Isolate immersion from interactivity.** The low immersion group received fundamentally different content (a video and text) while the simulation groups received the same interactive Labster simulation on different displays. This confounds immersion level with interactivity. A stronger design would use three versions of the same simulation at different immersion levels, or add a non-interactive VR condition (such as 360-degree video) to tease apart what's really driving the learning difference.
+
+**Control time on task.** The high immersion group spent an average of 25.9 minutes while the low immersion group spent 16.2 minutes. That's nearly 10 extra minutes of learning time — enough to explain some of the difference on its own. Future studies should equalize exposure time across conditions.
+
+**Use a longer knowledge test.** The 10-item multiple-choice test created a ceiling effect. A reanalysis showed that 69% of the high immersion group and 58% of the medium immersion group scored 9 or 10 out of 10 at posttest. With scores compressed at the top, the test couldn't differentiate between "learned a lot" and "learned even more." A 20-25 item test with greater difficulty range would allow finer discrimination between the simulation conditions.
+
+**Rethink the presence claim.** This is the most significant finding from the reanalysis. The overall correlation between presence and learning gains was r = .506 (p < .001), as reported in the dissertation. But when I looked *within* each condition, the correlations disappeared entirely — High: r = .156 (p = .37), Medium: r = -.186 (p = .28), Low: r = .115 (p = .50). An ANCOVA confirmed that after controlling for condition, presence explained essentially zero additional variance (p = .756). The apparent presence-learning relationship was an ecological fallacy: condition assignment determined both presence scores and learning outcomes, creating a spurious overall correlation. Future studies should test mediation with within-condition analysis or structural equation modeling.
+
+**Validate presence measurement for all conditions.** The Witmer & Singer presence questionnaire asks about "manipulating objects in the virtual environment" and "moving around inside the virtual environment." These questions are meaningless for participants who watched a video. The reanalysis showed that 38% of the low immersion group scored exactly zero, while 16% scored in the same range as VR users — suggesting either miscomprehension or instrument invalidity for that condition.
+
+**Use the full NASA-TLX.** Only 2 of the 6 NASA-TLX subscales (mental demand and frustration) were used to measure cognitive load. The abbreviated measure may have lacked the sensitivity to detect real differences. The full instrument would provide better construct coverage.
+
+**Measure what you speculate about.** The discussion speculated that VR unfamiliarity drove higher cognitive load, and that motivation and engagement were important factors — but neither VR prior experience nor motivation/engagement were measured. If it's worth discussing, it's worth measuring.
+
 ## Repository Contents
 
 | File | Description |
