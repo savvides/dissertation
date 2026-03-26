@@ -56,13 +56,13 @@ Participants completed a pretest, the intervention, a posttest, presence and cog
 - **Cognitive Load**: No significant differences across conditions, F(2,104) = 2.28, p = .107, though the VR condition had the highest mean cognitive load (M = 2.85), possibly due to the novelty of the headset interface.
 - **Prediction**: Presence significantly improved the prediction of posttest knowledge scores (R2 change = .057, p < .001), supporting the role of presence as a mediator between immersion and learning.
 
-## Updated Literature Review (2019-2025)
+## Updated Literature Review (2019-2026)
 
 The original dissertation's literature review cited sources through 2018. In 2025, an updated literature review was conducted to situate the study's findings within the current state of knowledge, covering seven years of rapid growth in VR education research -- accelerated by the COVID-19 pandemic, advances in consumer VR hardware (Meta Quest, Apple Vision Pro), and a maturing theoretical understanding of immersive learning.
 
 ### Method
 
-An AI-powered academic literature search was conducted using [Consensus](https://consensus.app), yielding 219 unique peer-reviewed papers (2019-2025). Of these, 43 were selected for the addendum based on evidence quality and relevance:
+An AI-powered academic literature search was conducted using [Consensus](https://consensus.app), yielding 219 unique peer-reviewed papers (2019-2026). Of these, 43 were selected for the addendum based on evidence quality and relevance:
 
 - 22 meta-analyses and 57 systematic reviews in the search pool
 - 38 randomized controlled trials
@@ -84,7 +84,7 @@ The post-2018 literature broadly validates the study's findings while providing 
 
 **Interactive simulations consistently outperform passive instruction.** Across meta-analyses and systematic reviews (Pellas et al., 2021; Villena-Taranilla et al., 2022; Matovu et al., 2022), the evidence confirms that interactive VR simulations produce better learning outcomes than passive methods -- consistent with the study's central finding. However, the literature suggests that instructional design quality matters more than immersion level.
 
-The full addendum with all citations is in [`dissertation.md`](dissertation.md#updated-literature-review-2019-2025).
+The full addendum with all citations is in [`dissertation.md`](dissertation.md#updated-literature-review-2019-2026).
 
 ## Repository Contents
 
@@ -92,7 +92,7 @@ The full addendum with all citations is in [`dissertation.md`](dissertation.md#u
 |------|-------------|
 | `Savvides_asu_0010E_18427.pdf` | Original dissertation (PDF) |
 | `dissertation.md` | Full dissertation in markdown with updated literature review addendum |
-| `litreview.csv` | Consensus search results (219 unique papers, 2019-2025) |
+| `litreview.csv` | Consensus search results (219 unique papers, 2019-2026) |
 
 ## Citation
 

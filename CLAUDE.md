@@ -9,7 +9,7 @@ This repository contains Philippos Savvides's 2018 PhD dissertation from Arizona
 ## Repository Structure
 
 - `Savvides_asu_0010E_18427.pdf` — Original dissertation PDF (source of truth for figures and formatting)
-- `dissertation.md` — Full markdown conversion with an "Updated Literature Review (2019-2025)" addendum section
+- `dissertation.md` — Full markdown conversion with an "Updated Literature Review (2019-2026)" addendum section
 - `README.md` — Project overview and citation info
 
 ## Key Context
@@ -18,7 +18,7 @@ This repository contains Philippos Savvides's 2018 PhD dissertation from Arizona
 - The markdown version preserves the original text verbatim; new content goes only in the addendum section
 - Figures are referenced but not embedded — they live in the original PDF
 - Citation style is APA 6th edition throughout
-- The "Updated Literature Review (2019-2025)" addendum is organized to mirror the original literature review subsections: Simulations, Educational Virtual Environments, VR in Science Education, Immersion and Presence, Embodied Cognition, Constructivism, and Cognitive Load Theory
+- The "Updated Literature Review (2019-2026)" addendum is organized to mirror the original literature review subsections: Simulations, Educational Virtual Environments, VR in Science Education, Immersion and Presence, Embodied Cognition, Constructivism, and Cognitive Load Theory
 
 ## Working with the Addendum
 

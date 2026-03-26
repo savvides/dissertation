@@ -69,7 +69,7 @@ To our parents for their guidance, to our teachers for their inspiration, to our
 - [Chapter 4: Discussion](#chapter-4-discussion)
   - [Research Questions](#research-questions)
   - [Conclusions](#conclusions)
-- [Updated Literature Review (2019-2025)](#updated-literature-review-2019-2025)
+- [Updated Literature Review (2019-2026)](#updated-literature-review-2019-2026)
 - [References](#references)
 - [Appendices](#appendices)
 
@@ -501,9 +501,9 @@ Results also showed that participants who learned the subject in simulations rep
 
 ---
 
-## Updated Literature Review (2019-2025)
+## Updated Literature Review (2019-2026)
 
-The years following the completion of the present study (2019-2025) have witnessed a dramatic expansion of research on virtual reality in education. Driven in part by rapid improvements in consumer VR hardware, the widespread adoption of remote learning during the COVID-19 pandemic, and a maturing theoretical understanding of immersive learning, the evidence base has grown substantially. This addendum reviews the most significant developments in each of the domains covered by the original literature review, situating the findings of the present study within the current state of knowledge.
+The years following the completion of the present study (2019-2026) have witnessed a dramatic expansion of research on virtual reality in education. Driven in part by rapid improvements in consumer VR hardware, the widespread adoption of remote learning during the COVID-19 pandemic, and a maturing theoretical understanding of immersive learning, the evidence base has grown substantially. This addendum reviews the most significant developments in each of the domains covered by the original literature review, situating the findings of the present study within the current state of knowledge.
 
 ### Simulations and Educational Virtual Environments
 
