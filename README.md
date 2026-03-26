@@ -110,6 +110,7 @@ In 2026, I revisited this study with fresh eyes — red-teaming the methodology 
 |------|-------------|
 | `Savvides_asu_0010E_18427.pdf` | Original dissertation (PDF) |
 | `dissertation.md` | Full dissertation in markdown with updated literature review addendum |
+| `data.csv` | De-identified study data (n=108): learning gains, condition, presence, cognitive load |
 | `litreview.csv` | Consensus search results (219 unique papers, 2019-2026) |
 
 ## Citation
