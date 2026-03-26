@@ -54,11 +54,11 @@ Participants completed a pretest, the intervention, a posttest, presence and cog
 - **Knowledge**: High and medium immersion groups scored significantly higher at posttest (M = 9.03 and 9.34 vs. 6.13) and follow-up (M = 8.65 and 8.94 vs. 5.80) compared to low immersion. The interaction between immersion and time of test was significant, F(3.43, 154.14) = 42.77, p < .001, partial n2 = .488.
 - **Presence**: High and medium immersion groups reported significantly higher presence than low immersion (M = 46.26 and 46.22 vs. 11.24, p < .001). Notably, high and medium immersion presence scores were nearly identical -- a surprising finding.
 - **Cognitive Load**: No significant differences across conditions, F(2,104) = 2.28, p = .107, though the VR condition had the highest mean cognitive load (M = 2.85), possibly due to the novelty of the headset interface.
-- **Prediction**: Presence significantly improved the prediction of posttest knowledge scores (R2 change = .057, p < .001), supporting the role of presence as a mediator between immersion and learning.
+- **Prediction**: The original analysis found that presence significantly improved the prediction of posttest knowledge scores (R2 change = .057, p < .001). However, a 2026 reanalysis revealed this relationship is driven entirely by between-group differences — see [reanalysis caveats below](#2026-retrospective).
 
 ## Updated Literature Review (2019-2026)
 
-The original dissertation's literature review cited sources through 2018. In 2025, an updated literature review was conducted to situate the study's findings within the current state of knowledge, covering seven years of rapid growth in VR education research -- accelerated by the COVID-19 pandemic, advances in consumer VR hardware (Meta Quest, Apple Vision Pro), and a maturing theoretical understanding of immersive learning.
+The original dissertation's literature review cited sources through 2018. In 2026, an updated literature review was conducted to situate the study's findings within the current state of knowledge, covering seven years of rapid growth in VR education research -- accelerated by the COVID-19 pandemic, advances in consumer VR hardware (Meta Quest, Apple Vision Pro), and a maturing theoretical understanding of immersive learning.
 
 ### Method
 
@@ -74,7 +74,7 @@ The addendum is organized into six subsections mirroring the original literature
 
 The post-2018 literature broadly validates the study's findings while providing new theoretical frameworks for interpreting them:
 
-**The CAMIL Model validates presence as a key mediator.** Makransky and Petersen (2021, 723 citations) proposed the Cognitive Affective Model of Immersive Learning, which identifies presence and agency as the primary psychological affordances of VR learning. The model's prediction that presence mediates between immersion and learning outcomes is consistent with the study's finding that presence significantly improved prediction of posttest knowledge scores.
+**The CAMIL Model offers a theoretical framework for immersive learning.** Makransky and Petersen (2021, 723 citations) proposed the Cognitive Affective Model of Immersive Learning, which identifies presence and agency as the primary psychological affordances of VR learning. The model's prediction that presence mediates between immersion and learning outcomes is consistent with the original analysis. However, a 2026 reanalysis of the study data found that the presence-learning correlation disappears within conditions (see [retrospective below](#2026-retrospective)), suggesting the relationship may be an artifact of condition assignment rather than a genuine mediating mechanism.
 
 **"Platform is not destiny" explains the VR-desktop equivalence.** Johnson-Glenberg, Bartolomea, and Kalina (2021) demonstrated that the degree of embodied and agentic interaction matters more than the display technology. This directly explains the study's most surprising finding -- that VR headset and desktop simulation produced nearly identical presence scores and knowledge outcomes -- since both conditions used the same interactive Labster simulation.
 
@@ -86,9 +86,9 @@ The post-2018 literature broadly validates the study's findings while providing 
 
 The full addendum with all citations is in [`dissertation.md`](dissertation.md#updated-literature-review-2019-2026).
 
-## If I Was to Do This Again
+## 2026 Retrospective
 
-In 2026, I revisited this study with fresh eyes — red-teaming the methodology and reanalyzing the original data (`final_ps.sav`) using modern statistical tools. The core finding is rock-solid: interactive simulations produced massive learning gains over passive instruction (Cohen's d > 2.4, confirmed by both parametric and non-parametric methods). But the theoretical claims around *why* could be made much stronger. Here's what I'd change.
+In 2026, I revisited this study with fresh eyes — red-teaming the methodology and reanalyzing the original data ([`data.csv`](data.csv)) using modern statistical tools. The core finding is rock-solid: interactive simulations produced massive learning gains over passive instruction (Cohen's d > 2.4, confirmed by both parametric and non-parametric methods). But the theoretical claims around *why* could be made much stronger. Here's what I'd change.
 
 **Isolate immersion from interactivity.** The low immersion group received fundamentally different content (a video and text) while the simulation groups received the same interactive Labster simulation on different displays. This confounds immersion level with interactivity. A stronger design would use three versions of the same simulation at different immersion levels, or add a non-interactive VR condition (such as 360-degree video) to tease apart what's really driving the learning difference.
 
@@ -128,4 +128,4 @@ Savvides, P. (2018). Teaching Science Lab Safety: Are Virtual Simulations Effect
 
 ## License
 
-This work is the intellectual property of Philippos Savvides. All rights reserved.
+This work is licensed under [CC BY 4.0](https://creativecommons.org/licenses/by/4.0/). You are free to share and adapt this material with appropriate attribution.

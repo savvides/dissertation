@@ -10,12 +10,15 @@ This repository contains Philippos Savvides's 2018 PhD dissertation from Arizona
 
 - `Savvides_asu_0010E_18427.pdf` — Original dissertation PDF (source of truth for figures and formatting)
 - `dissertation.md` — Full markdown conversion with an "Updated Literature Review (2019-2026)" addendum section
-- `README.md` — Project overview and citation info
+- `data.csv` — De-identified study data (n=108): learning gains, condition, presence, cognitive load
+- `litreview.csv` — Consensus search results (219 unique papers, 2019-2026)
+- `README.md` — Project overview, study summary, literature review addendum summary, and methodological retrospective
 
 ## Key Context
 
 - The original dissertation was published December 2018; all original citations are pre-2019
 - The markdown version preserves the original text verbatim; new content goes only in the addendum section
+- A 2026 reanalysis found the presence-learning correlation is an ecological fallacy (significant overall, non-significant within conditions) — the README retrospective documents this
 - Figures are referenced but not embedded — they live in the original PDF
 - Citation style is APA 6th edition throughout
 - The "Updated Literature Review (2019-2026)" addendum is organized to mirror the original literature review subsections: Simulations, Educational Virtual Environments, VR in Science Education, Immersion and Presence, Embodied Cognition, Constructivism, and Cognitive Load Theory
