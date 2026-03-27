@@ -2,7 +2,7 @@
 
 **Philippos Savvides** | Arizona State University | December 2018
 
-PhD Dissertation investigating the impact of immersion on knowledge, cognitive load, and presence in virtual simulations for science lab safety training.
+This study set out to show that VR headsets improve learning through immersion. It found something more useful: the simulation is what matters, not the headset. VR and desktop produced identical learning outcomes (Cohen's d = 0.23) while both massively outperformed passive instruction (d > 2.4). A 2026 reanalysis confirmed that presence — the theoretical mechanism supposed to explain why VR works — explains nothing beyond condition assignment. The implication: the bottleneck to better science education isn't hardware. It's instructional design.
 
 ## Abstract
 
