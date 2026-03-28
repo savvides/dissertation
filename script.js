@@ -52,12 +52,18 @@ function updateChart(stepIndex) {
         drawBarChart('count', 'Participants per Condition');
     } else if (stepIndex === 1) {
         drawBarChart('learning_gains', 'Average Learning Gains');
+    } else if (stepIndex === 2) {
+        drawScatterPlot(false);
+    } else if (stepIndex === 3) {
+        drawScatterPlot(true);
     } else if (stepIndex === 4) {
         drawBarChart('cognitive_load', 'Average Cognitive Load');
     } else {
-        // Clear elements when transitioning away from bar charts
+        // Clear elements when transitioning away from charts
         chartArea.selectAll('.bar').transition().duration(500).attr('y', height).attr('height', 0).remove();
         chartArea.selectAll('.bar-label').transition().duration(500).attr('y', height).remove();
+        chartArea.selectAll('.dot').transition().duration(500).attr('opacity', 0).remove();
+        chartArea.selectAll('.trendline').transition().duration(500).style('opacity', 0).remove();
         
         // Remove axes safely but leave groups for later charts
         xAxisGroup.transition().duration(500).style('opacity', 0);
@@ -66,7 +72,160 @@ function updateChart(stepIndex) {
     }
 }
 
+function calculateRegression(data, xProp, yProp) {
+    const n = data.length;
+    if (n < 2) return null;
+
+    let sumX = 0, sumY = 0, sumXY = 0, sumX2 = 0;
+    data.forEach(d => {
+        sumX += d[xProp];
+        sumY += d[yProp];
+        sumXY += d[xProp] * d[yProp];
+        sumX2 += d[xProp] * d[xProp];
+    });
+
+    const slope = (n * sumXY - sumX * sumY) / (n * sumX2 - sumX * sumX);
+    const intercept = (sumY - slope * sumX) / n;
+
+    const xMin = d3.min(data, d => d[xProp]);
+    const xMax = d3.max(data, d => d[xProp]);
+
+    return [
+        { x: xMin, y: slope * xMin + intercept },
+        { x: xMax, y: slope * xMax + intercept }
+    ];
+}
+
+function drawScatterPlot(isFaceted) {
+    // 1. Prepare Scales
+    const x = d3.scaleLinear()
+        .domain([0, d3.max(globalData, d => d.presence) + 5])
+        .nice()
+        .range([0, width]);
+
+    const y = d3.scaleLinear()
+        .domain([d3.min(globalData, d => d.learning_gains) - 1, d3.max(globalData, d => d.learning_gains) + 1])
+        .nice()
+        .range([height, 0]);
+
+    // 2. Clear Bar Chart Elements
+    chartArea.selectAll('.bar').transition().duration(500).attr('y', height).attr('height', 0).remove();
+    chartArea.selectAll('.bar-label').transition().duration(500).attr('y', height).remove();
+
+    // 3. Update Title & Axes
+    svg.select('.chart-title')
+        .text(isFaceted ? 'Presence vs. Learning Gains by Condition' : 'Overall Presence vs. Learning Gains')
+        .transition().duration(500)
+        .style('opacity', 1);
+
+    const xAxis = d3.axisBottom(x);
+    xAxisGroup.style('opacity', 1).transition().duration(500).call(xAxis);
+    xAxisGroup.selectAll("text").style("font-size", "14px");
+
+    // Add X-axis label if it doesn't exist
+    if (chartArea.select('.x-label').empty()) {
+        chartArea.append('text')
+            .attr('class', 'axis-label x-label')
+            .attr('x', width / 2)
+            .attr('y', height + 35)
+            .attr('text-anchor', 'middle')
+            .style('font-size', '14px')
+            .text('Reported Presence Score');
+    } else {
+        chartArea.select('.x-label').transition().duration(500).style('opacity', 1).text('Reported Presence Score');
+    }
+
+    const yAxis = d3.axisLeft(y);
+    yAxisGroup.style('opacity', 1).transition().duration(500).call(yAxis);
+    yAxisGroup.selectAll("text").style("font-size", "14px");
+
+    // Add Y-axis label if it doesn't exist
+    if (chartArea.select('.y-label').empty()) {
+        chartArea.append('text')
+            .attr('class', 'axis-label y-label')
+            .attr('transform', 'rotate(-90)')
+            .attr('x', -height / 2)
+            .attr('y', -35)
+            .attr('text-anchor', 'middle')
+            .style('font-size', '14px')
+            .text('Learning Gains');
+    } else {
+        chartArea.select('.y-label').transition().duration(500).style('opacity', 1).text('Learning Gains');
+    }
+
+    // 4. Draw Dots
+    const dots = chartArea.selectAll('.dot')
+        .data(globalData);
+
+    dots.enter()
+        .append('circle')
+        .attr('class', 'dot')
+        .attr('r', 5)
+        .attr('cx', d => x(d.presence))
+        .attr('cy', height)
+        .attr('opacity', 0)
+        .attr('fill', '#999')
+        .merge(dots)
+        .transition()
+        .duration(750)
+        .attr('cx', d => x(d.presence))
+        .attr('cy', d => y(d.learning_gains))
+        .attr('opacity', 0.7)
+        .attr('fill', d => isFaceted ? conditionMapping[d.condition].color : '#999');
+
+    dots.exit().transition().duration(500).attr('opacity', 0).remove();
+
+    // 5. Draw Trendlines
+    let trendlineData = [];
+    if (!isFaceted) {
+        const regressionPoints = calculateRegression(globalData, 'presence', 'learning_gains');
+        if (regressionPoints) {
+            trendlineData.push({ id: 'overall', points: regressionPoints, color: '#333' });
+        }
+    } else {
+        ['High', 'Medium', 'Low'].forEach(cond => {
+            const conditionData = globalData.filter(d => d.condition === cond);
+            const regressionPoints = calculateRegression(conditionData, 'presence', 'learning_gains');
+            if (regressionPoints) {
+                trendlineData.push({ id: cond, points: regressionPoints, color: conditionMapping[cond].color });
+            }
+        });
+    }
+
+    const lines = chartArea.selectAll('.trendline')
+        .data(trendlineData, d => d.id);
+
+    const lineGenerator = d3.line()
+        .x(d => x(d.x))
+        .y(d => y(d.y));
+
+    lines.enter()
+        .append('path')
+        .attr('class', 'trendline')
+        .attr('d', d => lineGenerator(d.points))
+        .attr('stroke', d => d.color)
+        .attr('stroke-width', 3)
+        .attr('fill', 'none')
+        .attr('stroke-dasharray', function() { return this.getTotalLength(); })
+        .attr('stroke-dashoffset', function() { return this.getTotalLength(); })
+        .style('opacity', 0)
+        .merge(lines)
+        .transition()
+        .duration(1000)
+        .style('opacity', 1)
+        .attr('d', d => lineGenerator(d.points))
+        .attr('stroke', d => d.color)
+        .attr('stroke-dashoffset', 0);
+
+    lines.exit().transition().duration(500).style('opacity', 0).remove();
+}
+
 function drawBarChart(metric, title, yMax) {
+    // Hide scatter plot elements
+    chartArea.selectAll('.dot').transition().duration(500).attr('opacity', 0).remove();
+    chartArea.selectAll('.trendline').transition().duration(500).style('opacity', 0).remove();
+    chartArea.selectAll('.axis-label').transition().duration(500).style('opacity', 0);
+
     // 1. Prepare data
     const chartData = ['High', 'Medium', 'Low'].map(cond => {
         const conditionData = globalData.filter(d => d.condition === cond);
