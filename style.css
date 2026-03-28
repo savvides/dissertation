@@ -7,7 +7,7 @@
     /* 3 Conditions colors */
     --vr-color: #8b0000; /* Dark Red for High Immersion */
     --desktop-color: #4a4a4a; /* Grey for Low Immersion */
-    --control-color: #000000; /* Black for Control */
+    --control-color: #00008b; /* Dark Blue for Control */
 }
 
 body, html {
