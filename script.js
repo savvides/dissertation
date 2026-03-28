@@ -10,6 +10,53 @@ const conditionMapping = {
     'Low': { label: 'Control (Low)', color: 'var(--control-color)' }
 };
 
+// Refactor Constants
+const DURATION = 500;
+const DURATION_LONG = 750;
+const DURATION_SLOW = 1000;
+const conditions = Object.keys(conditionMapping);
+
+/**
+ * Centralized cleanup for chart transitions
+ * Clears elements of a specific type or all if no type is provided
+ */
+function clearChart(exceptType = null) {
+    // If we're switching types entirely (e.g., bar to scatter), 
+    // we might want to clear more aggressively.
+    
+    if (exceptType !== 'bar') {
+        chartArea.selectAll('.bar')
+            .transition().duration(DURATION)
+            .attr('y', height)
+            .attr('height', 0)
+            .remove();
+        chartArea.selectAll('.bar-label')
+            .transition().duration(DURATION)
+            .attr('y', height)
+            .remove();
+    }
+    
+    if (exceptType !== 'scatter') {
+        chartArea.selectAll('.dot')
+            .transition().duration(DURATION)
+            .attr('opacity', 0)
+            .remove();
+        chartArea.selectAll('.trendline')
+            .transition().duration(DURATION)
+            .style('opacity', 0)
+            .remove();
+        chartArea.selectAll('.axis-label')
+            .transition().duration(DURATION)
+            .style('opacity', 0);
+    }
+
+    if (!exceptType) {
+        xAxisGroup.transition().duration(DURATION).style('opacity', 0);
+        yAxisGroup.transition().duration(DURATION).style('opacity', 0);
+        svg.select('.chart-title').text('');
+    }
+}
+
 function initChart() {
     const container = document.getElementById('chart-container');
     const containerRect = container.getBoundingClientRect();
@@ -59,16 +106,7 @@ function updateChart(stepIndex) {
     } else if (stepIndex === 4) {
         drawBarChart('cognitive_load', 'Average Cognitive Load');
     } else {
-        // Clear elements when transitioning away from charts
-        chartArea.selectAll('.bar').transition().duration(500).attr('y', height).attr('height', 0).remove();
-        chartArea.selectAll('.bar-label').transition().duration(500).attr('y', height).remove();
-        chartArea.selectAll('.dot').transition().duration(500).attr('opacity', 0).remove();
-        chartArea.selectAll('.trendline').transition().duration(500).style('opacity', 0).remove();
-        
-        // Remove axes safely but leave groups for later charts
-        xAxisGroup.transition().duration(500).style('opacity', 0);
-        yAxisGroup.transition().duration(500).style('opacity', 0);
-        svg.select('.chart-title').text('');
+        clearChart();
     }
 }
 
@@ -109,17 +147,16 @@ function drawScatterPlot(isFaceted) {
         .range([height, 0]);
 
     // 2. Clear Bar Chart Elements
-    chartArea.selectAll('.bar').transition().duration(500).attr('y', height).attr('height', 0).remove();
-    chartArea.selectAll('.bar-label').transition().duration(500).attr('y', height).remove();
+    clearChart('scatter');
 
     // 3. Update Title & Axes
     svg.select('.chart-title')
         .text(isFaceted ? 'Presence vs. Learning Gains by Condition' : 'Overall Presence vs. Learning Gains')
-        .transition().duration(500)
+        .transition().duration(DURATION)
         .style('opacity', 1);
 
     const xAxis = d3.axisBottom(x);
-    xAxisGroup.style('opacity', 1).transition().duration(500).call(xAxis);
+    xAxisGroup.style('opacity', 1).transition().duration(DURATION).call(xAxis);
     xAxisGroup.selectAll("text").style("font-size", "14px");
 
     // Add X-axis label if it doesn't exist
@@ -132,11 +169,11 @@ function drawScatterPlot(isFaceted) {
             .style('font-size', '14px')
             .text('Reported Presence Score');
     } else {
-        chartArea.select('.x-label').transition().duration(500).style('opacity', 1).text('Reported Presence Score');
+        chartArea.select('.x-label').transition().duration(DURATION).style('opacity', 1).text('Reported Presence Score');
     }
 
     const yAxis = d3.axisLeft(y);
-    yAxisGroup.style('opacity', 1).transition().duration(500).call(yAxis);
+    yAxisGroup.style('opacity', 1).transition().duration(DURATION).call(yAxis);
     yAxisGroup.selectAll("text").style("font-size", "14px");
 
     // Add Y-axis label if it doesn't exist
@@ -150,7 +187,7 @@ function drawScatterPlot(isFaceted) {
             .style('font-size', '14px')
             .text('Learning Gains');
     } else {
-        chartArea.select('.y-label').transition().duration(500).style('opacity', 1).text('Learning Gains');
+        chartArea.select('.y-label').transition().duration(DURATION).style('opacity', 1).text('Learning Gains');
     }
 
     // 4. Draw Dots
@@ -167,13 +204,13 @@ function drawScatterPlot(isFaceted) {
         .attr('fill', '#999')
         .merge(dots)
         .transition()
-        .duration(750)
+        .duration(DURATION_LONG)
         .attr('cx', d => x(d.presence))
         .attr('cy', d => y(d.learning_gains))
         .attr('opacity', 0.7)
         .attr('fill', d => isFaceted ? conditionMapping[d.condition].color : '#999');
 
-    dots.exit().transition().duration(500).attr('opacity', 0).remove();
+    dots.exit().transition().duration(DURATION).attr('opacity', 0).remove();
 
     // 5. Draw Trendlines
     let trendlineData = [];
@@ -183,7 +220,7 @@ function drawScatterPlot(isFaceted) {
             trendlineData.push({ id: 'overall', points: regressionPoints, color: '#333' });
         }
     } else {
-        ['High', 'Medium', 'Low'].forEach(cond => {
+        conditions.forEach(cond => {
             const conditionData = globalData.filter(d => d.condition === cond);
             const regressionPoints = calculateRegression(conditionData, 'presence', 'learning_gains');
             if (regressionPoints) {
@@ -211,23 +248,21 @@ function drawScatterPlot(isFaceted) {
         .style('opacity', 0)
         .merge(lines)
         .transition()
-        .duration(1000)
+        .duration(DURATION_SLOW)
         .style('opacity', 1)
         .attr('d', d => lineGenerator(d.points))
         .attr('stroke', d => d.color)
         .attr('stroke-dashoffset', 0);
 
-    lines.exit().transition().duration(500).style('opacity', 0).remove();
+    lines.exit().transition().duration(DURATION).style('opacity', 0).remove();
 }
 
 function drawBarChart(metric, title, yMax) {
     // Hide scatter plot elements
-    chartArea.selectAll('.dot').transition().duration(500).attr('opacity', 0).remove();
-    chartArea.selectAll('.trendline').transition().duration(500).style('opacity', 0).remove();
-    chartArea.selectAll('.axis-label').transition().duration(500).style('opacity', 0);
+    clearChart('bar');
 
     // 1. Prepare data
-    const chartData = ['High', 'Medium', 'Low'].map(cond => {
+    const chartData = conditions.map(cond => {
         const conditionData = globalData.filter(d => d.condition === cond);
         let value = 0;
         if (metric === 'count') {
@@ -258,17 +293,17 @@ function drawBarChart(metric, title, yMax) {
     // Update title
     svg.select('.chart-title')
         .text(title)
-        .transition().duration(500)
+        .transition().duration(DURATION)
         .style('opacity', 1);
 
     // 3. Update axes
     const xAxis = d3.axisBottom(x);
-    xAxisGroup.style('opacity', 1).transition().duration(500).call(xAxis)
+    xAxisGroup.style('opacity', 1).transition().duration(DURATION).call(xAxis)
         .selectAll("text")
         .style("font-size", "14px");
 
     const yAxis = d3.axisLeft(y).ticks(5);
-    yAxisGroup.style('opacity', 1).transition().duration(500).call(yAxis)
+    yAxisGroup.style('opacity', 1).transition().duration(DURATION).call(yAxis)
         .selectAll("text")
         .style("font-size", "14px");
 
@@ -286,7 +321,7 @@ function drawBarChart(metric, title, yMax) {
         .attr('fill', d => d.color)
         .merge(bars)
         .transition()
-        .duration(750)
+        .duration(DURATION_LONG)
         .attr('x', d => x(d.label))
         .attr('y', d => y(d.value))
         .attr('width', x.bandwidth())
@@ -295,7 +330,7 @@ function drawBarChart(metric, title, yMax) {
 
     bars.exit()
         .transition()
-        .duration(500)
+        .duration(DURATION)
         .attr('y', height)
         .attr('height', 0)
         .remove();
@@ -316,14 +351,14 @@ function drawBarChart(metric, title, yMax) {
         .text(d => metric === 'count' ? d.value : d.value.toFixed(1))
         .merge(labels)
         .transition()
-        .duration(750)
+        .duration(DURATION_LONG)
         .attr('x', d => x(d.label) + x.bandwidth() / 2)
         .attr('y', d => y(d.value) - 5)
         .text(d => metric === 'count' ? d.value : d.value.toFixed(1));
         
     labels.exit()
         .transition()
-        .duration(500)
+        .duration(DURATION)
         .attr('y', height)
         .remove();
 }
