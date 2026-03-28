@@ -1,0 +1,54 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title>Dissertation Results - VR Learning</title>
+    <link rel="stylesheet" href="style.css">
+    <script src="https://d3js.org/d3.v7.min.js"></script>
+</head>
+<body>
+    <header>
+        <h1>Virtual Reality and Learning: A Retrospective</h1>
+        <p>Exploring the findings of a 2018 dissertation on VR learning outcomes.</p>
+    </header>
+
+    <main id="scroll-container">
+        <div id="text-column">
+            <div class="step" data-step="0">
+                <h2>Introduction & Setup</h2>
+                <p>This study investigated the impact of immersive Virtual Reality on learning outcomes. It involved 108 participants randomly assigned to three conditions: High Immersion (VR), Low Immersion (Desktop), and a Control condition (Video/Text). The goal was to understand if deeper immersion translates to better educational results.</p>
+            </div>
+            
+            <div class="step" data-step="1">
+                <h2>Key Results: Learning Gains</h2>
+                <p>Did VR actually improve learning? The initial results showed that participants in both the High Immersion (VR) and Low Immersion (Desktop) groups outperformed the control group in procedural knowledge and knowledge transfer. However, there was no significant difference in learning gains directly between the VR and Desktop groups.</p>
+            </div>
+            
+            <div class="step" data-step="2">
+                <h2>The Presence Hypothesis</h2>
+                <p>The core hypothesis relied on "Presence"—the psychological sense of "being there." It was theorized that higher presence (induced by VR) would lead to higher learning. While VR did induce significantly higher spatial presence than the desktop condition, this feeling did not directly mediate or cause superior learning outcomes.</p>
+            </div>
+            
+            <div class="step" data-step="3">
+                <h2>The 2026 Retrospective: The Ecological Fallacy</h2>
+                <p>Looking back, a critical issue emerges: The Ecological Fallacy. While aggregated group data showed no significant learning difference between VR and Desktop, individual-level variations tell a different story. For certain learners, the high-immersion VR environment may have been highly beneficial, while for others, it was overwhelming.</p>
+            </div>
+            
+            <div class="step" data-step="4">
+                <h2>Cognitive Load & Novelty Effects</h2>
+                <p>One primary suspect for the lack of VR superiority is Cognitive Load. The VR environment presented a highly novel and complex interface. The cognitive effort required to navigate the novel environment may have offset the benefits of immersion, suggesting that "more immersive" isn't always "better for learning" unless the novelty effect is mitigated.</p>
+            </div>
+        </div>
+
+        <div id="chart-container">
+            <!-- D3 Visualizations will be rendered here -->
+            <div id="chart-placeholder">
+                <p>Chart Area</p>
+            </div>
+        </div>
+    </main>
+
+    <script src="script.js"></script>
+</body>
+</html>
