@@ -1,4 +1,653 @@
-let globalData = [];
+const globalData = [
+  {
+    "learning_gains": 3,
+    "condition": "High",
+    "presence": 46,
+    "cognitive_load": 9
+  },
+  {
+    "learning_gains": 4,
+    "condition": "High",
+    "presence": 51,
+    "cognitive_load": 1
+  },
+  {
+    "learning_gains": 3,
+    "condition": "High",
+    "presence": 49,
+    "cognitive_load": 2
+  },
+  {
+    "learning_gains": 6,
+    "condition": "High",
+    "presence": 52,
+    "cognitive_load": 3
+  },
+  {
+    "learning_gains": 6,
+    "condition": "High",
+    "presence": 48,
+    "cognitive_load": 5
+  },
+  {
+    "learning_gains": 6,
+    "condition": "High",
+    "presence": 41,
+    "cognitive_load": 5
+  },
+  {
+    "learning_gains": 7,
+    "condition": "High",
+    "presence": 46,
+    "cognitive_load": 5
+  },
+  {
+    "learning_gains": 6,
+    "condition": "Medium",
+    "presence": 56,
+    "cognitive_load": 4
+  },
+  {
+    "learning_gains": 5,
+    "condition": "High",
+    "presence": 44,
+    "cognitive_load": 2
+  },
+  {
+    "learning_gains": 5,
+    "condition": "Medium",
+    "presence": 56,
+    "cognitive_load": 4
+  },
+  {
+    "learning_gains": 1,
+    "condition": "Low",
+    "presence": 32,
+    "cognitive_load": 2
+  },
+  {
+    "learning_gains": 1,
+    "condition": "Low",
+    "presence": 3,
+    "cognitive_load": 4
+  },
+  {
+    "learning_gains": 1,
+    "condition": "Low",
+    "presence": 6,
+    "cognitive_load": 2
+  },
+  {
+    "learning_gains": 3,
+    "condition": "Medium",
+    "presence": 38,
+    "cognitive_load": 4
+  },
+  {
+    "learning_gains": 6,
+    "condition": "Medium",
+    "presence": 53,
+    "cognitive_load": 0
+  },
+  {
+    "learning_gains": -1,
+    "condition": "Low",
+    "presence": 40,
+    "cognitive_load": 3
+  },
+  {
+    "learning_gains": 1,
+    "condition": "Low",
+    "presence": 38,
+    "cognitive_load": 6
+  },
+  {
+    "learning_gains": 1,
+    "condition": "Low",
+    "presence": 0,
+    "cognitive_load": 3
+  },
+  {
+    "learning_gains": 0,
+    "condition": "Low",
+    "presence": 3,
+    "cognitive_load": 1
+  },
+  {
+    "learning_gains": 1,
+    "condition": "Low",
+    "presence": 7,
+    "cognitive_load": 3
+  },
+  {
+    "learning_gains": 0,
+    "condition": "Low",
+    "presence": 6,
+    "cognitive_load": 0
+  },
+  {
+    "learning_gains": 5,
+    "condition": "Medium",
+    "presence": 60,
+    "cognitive_load": 0
+  },
+  {
+    "learning_gains": 0,
+    "condition": "Low",
+    "presence": 0,
+    "cognitive_load": 2
+  },
+  {
+    "learning_gains": 4,
+    "condition": "Medium",
+    "presence": 12,
+    "cognitive_load": 1
+  },
+  {
+    "learning_gains": 3,
+    "condition": "Medium",
+    "presence": 40,
+    "cognitive_load": 2
+  },
+  {
+    "learning_gains": 1,
+    "condition": "Low",
+    "presence": 47,
+    "cognitive_load": 3
+  },
+  {
+    "learning_gains": 3,
+    "condition": "Medium",
+    "presence": 27,
+    "cognitive_load": 4
+  },
+  {
+    "learning_gains": 5,
+    "condition": "Low",
+    "presence": 46,
+    "cognitive_load": 1
+  },
+  {
+    "learning_gains": 4,
+    "condition": "Medium",
+    "presence": 54,
+    "cognitive_load": 0
+  },
+  {
+    "learning_gains": 0,
+    "condition": "Medium",
+    "presence": 37,
+    "cognitive_load": 5
+  },
+  {
+    "learning_gains": 4,
+    "condition": "Medium",
+    "presence": 47,
+    "cognitive_load": 1
+  },
+  {
+    "learning_gains": 3,
+    "condition": "Medium",
+    "presence": 26,
+    "cognitive_load": 2
+  },
+  {
+    "learning_gains": 4,
+    "condition": "High",
+    "presence": 50,
+    "cognitive_load": 4
+  },
+  {
+    "learning_gains": 4,
+    "condition": "High",
+    "presence": 57,
+    "cognitive_load": 0
+  },
+  {
+    "learning_gains": 3,
+    "condition": "High",
+    "presence": 46,
+    "cognitive_load": 2
+  },
+  {
+    "learning_gains": 5,
+    "condition": "High",
+    "presence": 47,
+    "cognitive_load": 0
+  },
+  {
+    "learning_gains": 6,
+    "condition": "High",
+    "presence": 44,
+    "cognitive_load": 0
+  },
+  {
+    "learning_gains": 5,
+    "condition": "High",
+    "presence": 47,
+    "cognitive_load": 9
+  },
+  {
+    "learning_gains": 4,
+    "condition": "Medium",
+    "presence": 41,
+    "cognitive_load": 2
+  },
+  {
+    "learning_gains": 3,
+    "condition": "Medium",
+    "presence": 52,
+    "cognitive_load": 2
+  },
+  {
+    "learning_gains": 5,
+    "condition": "High",
+    "presence": 45,
+    "cognitive_load": 2
+  },
+  {
+    "learning_gains": 3,
+    "condition": "Medium",
+    "presence": 41,
+    "cognitive_load": 1
+  },
+  {
+    "learning_gains": 0,
+    "condition": "Low",
+    "presence": 0,
+    "cognitive_load": 0
+  },
+  {
+    "learning_gains": 4,
+    "condition": "High",
+    "presence": 52,
+    "cognitive_load": 5
+  },
+  {
+    "learning_gains": 3,
+    "condition": "High",
+    "presence": 50,
+    "cognitive_load": 0
+  },
+  {
+    "learning_gains": 4,
+    "condition": "Medium",
+    "presence": 44,
+    "cognitive_load": 1
+  },
+  {
+    "learning_gains": 4,
+    "condition": "High",
+    "presence": 47,
+    "cognitive_load": 0
+  },
+  {
+    "learning_gains": 3,
+    "condition": "High",
+    "presence": 48,
+    "cognitive_load": 1
+  },
+  {
+    "learning_gains": -1,
+    "condition": "Low",
+    "presence": 0,
+    "cognitive_load": 0
+  },
+  {
+    "learning_gains": -1,
+    "condition": "Low",
+    "presence": 29,
+    "cognitive_load": 3
+  },
+  {
+    "learning_gains": 4,
+    "condition": "High",
+    "presence": 20,
+    "cognitive_load": 12
+  },
+  {
+    "learning_gains": 1,
+    "condition": "Medium",
+    "presence": 54,
+    "cognitive_load": 3
+  },
+  {
+    "learning_gains": 0,
+    "condition": "Low",
+    "presence": 0,
+    "cognitive_load": 0
+  },
+  {
+    "learning_gains": 4,
+    "condition": "High",
+    "presence": 53,
+    "cognitive_load": 2
+  },
+  {
+    "learning_gains": 0,
+    "condition": "Low",
+    "presence": 8,
+    "cognitive_load": 0
+  },
+  {
+    "learning_gains": 4,
+    "condition": "Medium",
+    "presence": 45,
+    "cognitive_load": 3
+  },
+  {
+    "learning_gains": 1,
+    "condition": "High",
+    "presence": 52,
+    "cognitive_load": 2
+  },
+  {
+    "learning_gains": -1,
+    "condition": "Low",
+    "presence": 6,
+    "cognitive_load": 2
+  },
+  {
+    "learning_gains": 3,
+    "condition": "Medium",
+    "presence": 45,
+    "cognitive_load": 5
+  },
+  {
+    "learning_gains": 4,
+    "condition": "High",
+    "presence": 54,
+    "cognitive_load": 1
+  },
+  {
+    "learning_gains": 5,
+    "condition": "High",
+    "presence": 41,
+    "cognitive_load": 1
+  },
+  {
+    "learning_gains": 1,
+    "condition": "Low",
+    "presence": 27,
+    "cognitive_load": 4
+  },
+  {
+    "learning_gains": -1,
+    "condition": "Low",
+    "presence": 12,
+    "cognitive_load": 0
+  },
+  {
+    "learning_gains": 0,
+    "condition": "Low",
+    "presence": 52,
+    "cognitive_load": 2
+  },
+  {
+    "learning_gains": 0,
+    "condition": "Low",
+    "presence": 0,
+    "cognitive_load": 0
+  },
+  {
+    "learning_gains": 0,
+    "condition": "Low",
+    "presence": 0,
+    "cognitive_load": 0
+  },
+  {
+    "learning_gains": 6,
+    "condition": "Medium",
+    "presence": 30,
+    "cognitive_load": 1
+  },
+  {
+    "learning_gains": 3,
+    "condition": "High",
+    "presence": 51,
+    "cognitive_load": 3
+  },
+  {
+    "learning_gains": 5,
+    "condition": "High",
+    "presence": 41,
+    "cognitive_load": 3
+  },
+  {
+    "learning_gains": 4,
+    "condition": "High",
+    "presence": 45,
+    "cognitive_load": 3
+  },
+  {
+    "learning_gains": 6,
+    "condition": "High",
+    "presence": 47,
+    "cognitive_load": 1
+  },
+  {
+    "learning_gains": 3,
+    "condition": "High",
+    "presence": 0,
+    "cognitive_load": 0
+  },
+  {
+    "learning_gains": 2,
+    "condition": "Low",
+    "presence": 40,
+    "cognitive_load": 5
+  },
+  {
+    "learning_gains": 2,
+    "condition": "Low",
+    "presence": 7,
+    "cognitive_load": 2
+  },
+  {
+    "learning_gains": 1,
+    "condition": "Low",
+    "presence": 0,
+    "cognitive_load": 4
+  },
+  {
+    "learning_gains": 4,
+    "condition": "Medium",
+    "presence": 30,
+    "cognitive_load": 2
+  },
+  {
+    "learning_gains": 1,
+    "condition": "Medium",
+    "presence": 54,
+    "cognitive_load": 1
+  },
+  {
+    "learning_gains": -1,
+    "condition": "Low",
+    "presence": 50,
+    "cognitive_load": 2
+  },
+  {
+    "learning_gains": 5,
+    "condition": "Medium",
+    "presence": 42,
+    "cognitive_load": 2
+  },
+  {
+    "learning_gains": 5,
+    "condition": "Medium",
+    "presence": 43,
+    "cognitive_load": 0
+  },
+  {
+    "learning_gains": 5,
+    "condition": "Medium",
+    "presence": 0,
+    "cognitive_load": 0
+  },
+  {
+    "learning_gains": 0,
+    "condition": "Low",
+    "presence": 47,
+    "cognitive_load": 1
+  },
+  {
+    "learning_gains": 3,
+    "condition": "High",
+    "presence": 44,
+    "cognitive_load": 2
+  },
+  {
+    "learning_gains": 5,
+    "condition": "Medium",
+    "presence": 41,
+    "cognitive_load": 6
+  },
+  {
+    "learning_gains": 3,
+    "condition": "Low",
+    "presence": 7,
+    "cognitive_load": 1
+  },
+  {
+    "learning_gains": 0,
+    "condition": "Low",
+    "presence": 0,
+    "cognitive_load": 5
+  },
+  {
+    "learning_gains": 3,
+    "condition": "Medium",
+    "presence": 50,
+    "cognitive_load": 2
+  },
+  {
+    "learning_gains": 4,
+    "condition": "Medium",
+    "presence": 49,
+    "cognitive_load": 3
+  },
+  {
+    "learning_gains": -1,
+    "condition": "Low",
+    "presence": 60,
+    "cognitive_load": 5
+  },
+  {
+    "learning_gains": 6,
+    "condition": "Medium",
+    "presence": 11,
+    "cognitive_load": 4
+  },
+  {
+    "learning_gains": -2,
+    "condition": "Low",
+    "presence": 0,
+    "cognitive_load": 0
+  },
+  {
+    "learning_gains": 4,
+    "condition": "Medium",
+    "presence": 40,
+    "cognitive_load": 2
+  },
+  {
+    "learning_gains": 1,
+    "condition": "Low",
+    "presence": 0,
+    "cognitive_load": 0
+  },
+  {
+    "learning_gains": 5,
+    "condition": "High",
+    "presence": 42,
+    "cognitive_load": 7
+  },
+  {
+    "learning_gains": 4,
+    "condition": "Medium",
+    "presence": 43,
+    "cognitive_load": 5
+  },
+  {
+    "learning_gains": 0,
+    "condition": "Low",
+    "presence": 0,
+    "cognitive_load": 2
+  },
+  {
+    "learning_gains": 4,
+    "condition": "High",
+    "presence": 43,
+    "cognitive_load": 2
+  },
+  {
+    "learning_gains": 3,
+    "condition": "Medium",
+    "presence": 45,
+    "cognitive_load": 3
+  },
+  {
+    "learning_gains": 2,
+    "condition": "Low",
+    "presence": 43,
+    "cognitive_load": 0
+  },
+  {
+    "learning_gains": 0,
+    "condition": "Low",
+    "presence": 0,
+    "cognitive_load": 5
+  },
+  {
+    "learning_gains": 2,
+    "condition": "Medium",
+    "presence": 55,
+    "cognitive_load": 0
+  },
+  {
+    "learning_gains": 2,
+    "condition": "Low",
+    "presence": 0,
+    "cognitive_load": 2
+  },
+  {
+    "learning_gains": 4,
+    "condition": "Medium",
+    "presence": 50,
+    "cognitive_load": 0
+  },
+  {
+    "learning_gains": 4,
+    "condition": "High",
+    "presence": 42,
+    "cognitive_load": 4
+  },
+  {
+    "learning_gains": 3,
+    "condition": "Medium",
+    "presence": 52,
+    "cognitive_load": 3
+  },
+  {
+    "learning_gains": 3,
+    "condition": "Medium",
+    "presence": 43,
+    "cognitive_load": 0
+  },
+  {
+    "learning_gains": 0,
+    "condition": "High",
+    "presence": 37,
+    "cognitive_load": 2
+  },
+  {
+    "learning_gains": 2,
+    "condition": "High",
+    "presence": 29,
+    "cognitive_load": 3
+  }
+];
 let svg, chartArea, xAxisGroup, yAxisGroup;
 let width, height;
 const margin = { top: 60, right: 20, bottom: 40, left: 50 };
@@ -396,24 +1045,11 @@ function initObserver() {
 }
 
 function init() {
-    // Load data
-    d3.csv('data.csv', d => {
-        return {
-            ...d,
-            learning_gains: +d.learning_gains,
-            presence: +d.presence,
-            cognitive_load: +d.cognitive_load
-        };
-    }).then(data => {
-        console.log('Data loaded successfully');
-        globalData = data;
-        
-        // Initialize Chart container
-        initChart();
-        
-        // Initialize the intersection observer
-        initObserver();
-    });
+    console.log('Data loaded from inline source');
+    // Initialize Chart container
+    initChart();
+    // Initialize the intersection observer
+    initObserver();
 }
 
 document.addEventListener("DOMContentLoaded", init);
