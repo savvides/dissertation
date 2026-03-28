@@ -25,24 +25,6 @@ h1, h2, h3, h4, h5, h6 {
     margin-top: 0;
 }
 
-header {
-    padding: 4rem 2rem;
-    max-width: 800px;
-    margin: 0 auto;
-    text-align: center;
-    border-bottom: 1px solid #eaeaea;
-}
-
-header h1 {
-    font-size: 2.5rem;
-    margin-bottom: 1rem;
-}
-
-header p {
-    font-size: 1.2rem;
-    color: #555;
-}
-
 #scroll-container {
     display: flex;
     flex-direction: column-reverse;
@@ -51,25 +33,18 @@ header p {
 
 #text-column {
     padding: 0 1rem;
-    z-index: 10;
+    z-index: 5;
 }
 
 .step {
     padding: 3rem 1rem;
     margin-bottom: 60vh;
-    opacity: 0.3;
-    transition: opacity 0.3s ease-out;
     background: rgba(255, 255, 255, 0.9);
     border-left: 4px solid #eaeaea;
 }
 
 .step:last-child {
     margin-bottom: 20vh;
-}
-
-.step.is-active, .step:hover {
-    opacity: 1;
-    border-left-color: var(--text-color);
 }
 
 .step h2 {
@@ -91,13 +66,7 @@ header p {
     align-items: center;
     justify-content: center;
     border-bottom: 1px solid #eaeaea;
-    z-index: 5;
-}
-
-#chart-placeholder {
-    font-family: var(--header-font);
-    font-style: italic;
-    color: #888;
+    z-index: 10;
 }
 
 /* Desktop Layout */
@@ -120,10 +89,6 @@ header p {
         border-right: 4px solid #eaeaea;
         padding-right: 2rem;
         background: transparent;
-    }
-
-    .step.is-active, .step:hover {
-        border-right-color: var(--text-color);
     }
     
     #chart-container {
