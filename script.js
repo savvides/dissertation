@@ -39,29 +39,20 @@ function initObserver() {
 
 function init() {
     // Load data
-    if (typeof d3 !== 'undefined') {
-        d3.csv('data.csv', d => {
-            return {
-                ...d,
-                learning_gains: +d.learning_gains,
-                presence: +d.presence,
-                cognitive_load: +d.cognitive_load
-            };
-        }).then(data => {
-            console.log('Data loaded successfully');
-            globalData = data;
-            
-            // Initialize the intersection observer
-            initObserver();
-        }).catch(error => {
-            console.error('Error loading data:', error);
-            // Fallback: initialize observer even if data fails to load for layout testing
-            initObserver();
-        });
-    } else {
-        console.warn('D3 is not loaded. Initializing observer without data.');
+    d3.csv('data.csv', d => {
+        return {
+            ...d,
+            learning_gains: +d.learning_gains,
+            presence: +d.presence,
+            cognitive_load: +d.cognitive_load
+        };
+    }).then(data => {
+        console.log('Data loaded successfully');
+        globalData = data;
+        
+        // Initialize the intersection observer
         initObserver();
-    }
+    });
 }
 
 document.addEventListener("DOMContentLoaded", init);
