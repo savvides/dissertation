@@ -49,9 +49,13 @@ function updateChart(stepIndex) {
     console.log(`Active step: ${stepIndex}`);
     
     if (stepIndex === 0) {
-        drawParticipantChart();
+        drawBarChart('count', 'Participants per Condition');
+    } else if (stepIndex === 1) {
+        drawBarChart('learning_gains', 'Average Learning Gains');
+    } else if (stepIndex === 4) {
+        drawBarChart('cognitive_load', 'Average Cognitive Load');
     } else {
-        // Clear elements when transitioning away from step 0
+        // Clear elements when transitioning away from bar charts
         chartArea.selectAll('.bar').transition().duration(500).attr('y', height).attr('height', 0).remove();
         chartArea.selectAll('.bar-label').transition().duration(500).attr('y', height).remove();
         
@@ -62,15 +66,23 @@ function updateChart(stepIndex) {
     }
 }
 
-function drawParticipantChart() {
+function drawBarChart(metric, title, yMax) {
     // 1. Prepare data
-    const counts = d3.rollup(globalData, v => v.length, d => d.condition);
-    const chartData = ['High', 'Medium', 'Low'].map(cond => ({
-        condition: cond,
-        label: conditionMapping[cond].label,
-        color: conditionMapping[cond].color,
-        count: counts.get(cond) || 0
-    }));
+    const chartData = ['High', 'Medium', 'Low'].map(cond => {
+        const conditionData = globalData.filter(d => d.condition === cond);
+        let value = 0;
+        if (metric === 'count') {
+            value = conditionData.length;
+        } else {
+            value = d3.mean(conditionData, d => d[metric]) || 0;
+        }
+        return {
+            condition: cond,
+            label: conditionMapping[cond].label,
+            color: conditionMapping[cond].color,
+            value: value
+        };
+    });
 
     // 2. Set up scales
     const x = d3.scaleBand()
@@ -78,14 +90,15 @@ function drawParticipantChart() {
         .range([0, width])
         .padding(0.2);
 
+    const maxY = yMax || d3.max(chartData, d => d.value);
     const y = d3.scaleLinear()
-        .domain([0, d3.max(chartData, d => d.count)])
+        .domain([0, maxY])
         .nice()
         .range([height, 0]);
 
     // Update title
     svg.select('.chart-title')
-        .text('Participants per Condition')
+        .text(title)
         .transition().duration(500)
         .style('opacity', 1);
 
@@ -116,9 +129,9 @@ function drawParticipantChart() {
         .transition()
         .duration(750)
         .attr('x', d => x(d.label))
-        .attr('y', d => y(d.count))
+        .attr('y', d => y(d.value))
         .attr('width', x.bandwidth())
-        .attr('height', d => height - y(d.count))
+        .attr('height', d => height - y(d.value))
         .attr('fill', d => d.color);
 
     bars.exit()
@@ -141,13 +154,13 @@ function drawParticipantChart() {
         .attr('fill', '#333')
         .attr('font-size', '16px')
         .attr('font-weight', 'bold')
-        .text(d => d.count)
+        .text(d => metric === 'count' ? d.value : d.value.toFixed(1))
         .merge(labels)
         .transition()
         .duration(750)
         .attr('x', d => x(d.label) + x.bandwidth() / 2)
-        .attr('y', d => y(d.count) - 5)
-        .text(d => d.count);
+        .attr('y', d => y(d.value) - 5)
+        .text(d => metric === 'count' ? d.value : d.value.toFixed(1));
         
     labels.exit()
         .transition()
