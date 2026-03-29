@@ -4,43 +4,81 @@
     <meta charset="UTF-8">
     <meta name="viewport" content="width=device-width, initial-scale=1.0">
     <meta name="description" content="An interactive scrolltelling presentation of the 2018 VR Learning Dissertation results and 2026 retrospective on presence and cognitive load.">
-    <title>Dissertation Results - VR Learning</title>
+    <title>Are Virtual Simulations Effective? — Dissertation Results</title>
+    <link rel="preconnect" href="https://fonts.googleapis.com">
+    <link rel="preconnect" href="https://fonts.gstatic.com" crossorigin>
+    <link href="https://fonts.googleapis.com/css2?family=Inter:wght@400;500&family=Libre+Baskerville:ital,wght@0,400;1,400&family=Playfair+Display:wght@400;700&display=swap" rel="stylesheet">
     <link rel="stylesheet" href="style.css">
     <script src="https://d3js.org/d3.v7.min.js" defer></script>
 </head>
 <body>
+    <div id="progress-bar"></div>
+
+    <header id="hero">
+        <h1>Teaching Science Lab Safety:<br>Are Virtual Simulations Effective?</h1>
+        <p class="hook">108 participants. Three conditions. One surprising fallacy.</p>
+        <p class="author">Philippos Savvides &middot; Arizona State University &middot; 2018</p>
+        <div class="scroll-indicator" aria-hidden="true">
+            <span>Scroll</span>
+            <svg width="24" height="24" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2">
+                <path d="M7 13l5 5 5-5M7 7l5 5 5-5"/>
+            </svg>
+        </div>
+    </header>
+
     <main id="scroll-container">
         <div id="text-column">
-            <div class="step" data-step="0">
-                <h2>Introduction & Setup</h2>
-                <p>This study investigated the impact of immersive Virtual Reality on learning outcomes. It involved 108 participants randomly assigned to three conditions: High Immersion (VR), Low Immersion (Desktop), and a Control condition (Video/Text). The goal was to understand if deeper immersion translates to better educational results.</p>
-            </div>
-            
             <div class="step" data-step="1">
-                <h2>Key Results: Learning Gains</h2>
-                <p>Did VR actually improve learning? The initial results showed that participants in both the High Immersion (VR) and Low Immersion (Desktop) groups outperformed the control group in procedural knowledge and knowledge transfer. However, there was no significant difference in learning gains directly between the VR and Desktop groups.</p>
+                <span class="step-label">01 — The Experiment</span>
+                <h2>108 Participants, Three Worlds</h2>
+                <p>What happens when you teach lab safety inside a virtual world instead of a classroom? To find out, 108 university students were randomly assigned to one of three conditions: a fully immersive VR headset, a desktop-based 3D simulation, or a traditional video-and-text control group. Each participant completed the same lab safety curriculum — only the level of immersion changed.</p>
+                <p>Would more immersion mean more learning?</p>
             </div>
-            
+
             <div class="step" data-step="2">
-                <h2>The Presence Hypothesis</h2>
-                <p>The core hypothesis relied on "Presence"—the psychological sense of "being there." It was theorized that higher presence (induced by VR) would lead to higher learning. While VR did induce significantly higher spatial presence than the desktop condition, this feeling did not directly mediate or cause superior learning outcomes.</p>
+                <span class="step-label">02 — The Promise</span>
+                <h2>Simulations Work</h2>
+                <p>The initial results were encouraging. Both the VR and Desktop groups significantly outperformed the control group in procedural knowledge and knowledge transfer. Simulations — regardless of immersion level — proved to be an effective teaching tool for lab safety.</p>
+                <p>But here's the catch: the VR group did not significantly outperform the Desktop group. Higher immersion didn't translate to higher learning gains. Why not?</p>
             </div>
-            
+
             <div class="step" data-step="3">
-                <h2>The 2026 Retrospective: The Ecological Fallacy</h2>
-                <p>Looking back, a critical issue emerges: The Ecological Fallacy. While aggregated group data showed no significant learning difference between VR and Desktop, individual-level variations tell a different story. For certain learners, the high-immersion VR environment may have been highly beneficial, while for others, it was overwhelming.</p>
+                <span class="step-label">03 — The Deeper Question</span>
+                <h2>But Why?</h2>
+                <p>The original hypothesis centered on <em>presence</em> — the psychological sense of "being there" inside a virtual environment. The theory was elegant: higher immersion induces stronger presence, and stronger presence drives deeper learning.</p>
+                <p>When we plot every participant's presence score against their learning gains, the data seems to support this. A clear positive trend emerges across all 108 participants. Case closed?</p>
             </div>
-            
+
             <div class="step" data-step="4">
-                <h2>Cognitive Load & Novelty Effects</h2>
-                <p>One primary suspect for the lack of VR superiority is Cognitive Load. The VR environment presented a highly novel and complex interface. The cognitive effort required to navigate the novel environment may have offset the benefits of immersion, suggesting that "more immersive" isn't always "better for learning" unless the novelty effect is mitigated.</p>
+                <span class="step-label">04 — The Twist</span>
+                <h2>Look Closer</h2>
+                <p>Not quite. A 2026 reanalysis revealed something the original study missed: an <em>ecological fallacy</em>. The overall correlation between presence and learning was real — but it was an artifact of the groups, not the individuals.</p>
+                <p>When we color each dot by its experimental condition, the picture changes dramatically. Within each group, the relationship between presence and learning virtually disappears. The "trend" was created by the fact that VR participants had both higher presence <em>and</em> higher learning — but one wasn't causing the other.</p>
+            </div>
+
+            <div class="step" data-step="5">
+                <span class="step-label">05 — The Hidden Cost</span>
+                <h2>The Price of Novelty</h2>
+                <p>If presence wasn't the mechanism, what was holding VR back from outperforming desktop? The likely culprit: <em>cognitive load</em>. The VR environment was novel and complex. Participants spent mental energy simply navigating the unfamiliar interface — energy that could have been directed toward learning.</p>
+                <p>"More immersive" isn't automatically "better for learning" — not until the novelty cost is accounted for.</p>
             </div>
         </div>
 
         <div id="chart-container">
-            <!-- D3 Visualizations will be rendered here -->
+            <!-- D3 visualizations rendered here -->
         </div>
     </main>
+
+    <footer id="coda">
+        <h2>What This Means</h2>
+        <p>Eight years after the original study, the ecological fallacy finding reframes what we thought we knew about VR and learning. Presence remains a compelling psychological phenomenon, but its role as a learning mechanism is far more nuanced than early theories suggested. The field has since moved toward understanding <em>when</em> and <em>for whom</em> immersion helps — not just <em>whether</em> it does.</p>
+        <p>For designers of educational VR, the lesson is practical: reduce novelty-induced cognitive load before expecting immersion to pay off. Familiarity precedes flow.</p>
+        <p class="coda-attribution">
+            <strong>Philippos Savvides</strong><br>
+            Arizona State University, 2018<br>
+            <a href="Savvides_asu_0010E_18427.pdf">Read the full dissertation (PDF)</a>
+        </p>
+    </footer>
 
     <script src="script.js"></script>
 </body>
