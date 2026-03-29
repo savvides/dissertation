@@ -720,6 +720,18 @@ function initChart() {
         .attr('viewBox', `0 0 ${containerRect.width} ${containerRect.height}`)
         .attr('preserveAspectRatio', 'xMidYMid meet');
 
+    // Drop shadow filter for scatter dots
+    const defs = svg.append('defs');
+    const filter = defs.append('filter')
+        .attr('id', 'dot-shadow')
+        .attr('x', '-50%').attr('y', '-50%')
+        .attr('width', '200%').attr('height', '200%');
+    filter.append('feDropShadow')
+        .attr('dx', 0).attr('dy', 1)
+        .attr('stdDeviation', 1.5)
+        .attr('flood-color', '#2D2A26')
+        .attr('flood-opacity', 0.15);
+
     chartArea = svg.append('g')
         .attr('transform', `translate(${margin.left},${margin.top})`);
 
@@ -876,18 +888,36 @@ function drawScatterPlot(isFaceted) {
     dots.enter()
         .append('circle')
         .attr('class', 'dot')
-        .attr('r', 5)
+        .attr('r', 6)
         .attr('cx', d => x(d.presence))
         .attr('cy', height)
         .attr('opacity', 0)
-        .attr('fill', '#999')
+        .attr('fill', '#A39E96')
+        .style('filter', 'url(#dot-shadow)')
+        .on('mouseover', function(event, d) {
+            d3.select(this).transition().duration(150).attr('r', 9);
+            const tooltip = d3.select('#tooltip');
+            const condLabel = conditionMapping[d.condition].label;
+            tooltip.style('opacity', 1)
+                .html(`<strong>${condLabel}</strong><br>Presence: ${d.presence}<br>Learning: ${d.learning_gains}`);
+        })
+        .on('mousemove', function(event) {
+            const tooltip = d3.select('#tooltip');
+            const container = document.getElementById('chart-container').getBoundingClientRect();
+            tooltip.style('left', (event.clientX - container.left + 12) + 'px')
+                .style('top', (event.clientY - container.top - 28) + 'px');
+        })
+        .on('mouseout', function() {
+            d3.select(this).transition().duration(150).attr('r', 6);
+            d3.select('#tooltip').style('opacity', 0);
+        })
         .merge(dots)
         .transition()
-        .duration(DURATION_LONG)
+        .duration(isFaceted ? 800 : DURATION_LONG)
         .attr('cx', d => x(d.presence))
         .attr('cy', d => y(d.learning_gains))
-        .attr('opacity', 0.7)
-        .attr('fill', d => isFaceted ? conditionMapping[d.condition].color : '#999');
+        .attr('opacity', 0.75)
+        .attr('fill', d => isFaceted ? conditionMapping[d.condition].color : '#A39E96');
 
     dots.exit().transition().duration(DURATION).attr('opacity', 0).remove();
 
