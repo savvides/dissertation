@@ -1131,12 +1131,39 @@ function initObserver() {
     steps.forEach(step => observer.observe(step));
 }
 
+function initProgressBar() {
+    const progressBar = document.getElementById('progress-bar');
+    window.addEventListener('scroll', function() {
+        const scrollTop = window.scrollY;
+        const docHeight = document.documentElement.scrollHeight - window.innerHeight;
+        const scrollPercent = docHeight > 0 ? (scrollTop / docHeight) * 100 : 0;
+        progressBar.style.width = scrollPercent + '%';
+    });
+}
+
+function initHeroFade() {
+    const indicator = document.querySelector('.scroll-indicator');
+    if (!indicator) return;
+
+    const hero = document.getElementById('hero');
+    const observer = new IntersectionObserver((entries) => {
+        entries.forEach(entry => {
+            if (!entry.isIntersecting) {
+                indicator.classList.add('hidden');
+            } else {
+                indicator.classList.remove('hidden');
+            }
+        });
+    }, { threshold: 0.3 });
+
+    observer.observe(hero);
+}
+
 function init() {
-    console.log('Data loaded from inline source');
-    // Initialize Chart container
     initChart();
-    // Initialize the intersection observer
     initObserver();
+    initProgressBar();
+    initHeroFade();
 }
 
 document.addEventListener("DOMContentLoaded", init);
