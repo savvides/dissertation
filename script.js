@@ -739,6 +739,11 @@ function initChart() {
 
     yAxisGroup = chartArea.append('g')
         .attr('class', 'y-axis');
+
+    // Tooltip
+    d3.select('#chart-container').append('div')
+        .attr('class', 'chart-tooltip')
+        .attr('id', 'tooltip');
 }
 
 function drawGridLines(yScale) {
@@ -996,14 +1001,33 @@ function drawBarChart(metric, title, yMax) {
         .attr('y', height)
         .attr('width', x.bandwidth())
         .attr('height', 0)
+        .attr('rx', 3)
         .attr('fill', d => d.color)
+        .on('mouseover', function(event, d) {
+            d3.select(this).attr('opacity', 0.8);
+            const tooltip = d3.select('#tooltip');
+            tooltip.style('opacity', 1)
+                .html(`<strong>${d.label}</strong><br>${metric === 'count' ? d.value + ' participants' : d.value.toFixed(2)}`);
+        })
+        .on('mousemove', function(event) {
+            const tooltip = d3.select('#tooltip');
+            const container = document.getElementById('chart-container').getBoundingClientRect();
+            tooltip.style('left', (event.clientX - container.left + 12) + 'px')
+                .style('top', (event.clientY - container.top - 28) + 'px');
+        })
+        .on('mouseout', function() {
+            d3.select(this).attr('opacity', 1);
+            d3.select('#tooltip').style('opacity', 0);
+        })
         .merge(bars)
         .transition()
         .duration(DURATION_LONG)
+        .delay((d, i) => i * 100)
         .attr('x', d => x(d.label))
         .attr('y', d => y(d.value))
         .attr('width', x.bandwidth())
         .attr('height', d => height - y(d.value))
+        .attr('rx', 3)
         .attr('fill', d => d.color);
 
     bars.exit()
@@ -1023,17 +1047,21 @@ function drawBarChart(metric, title, yMax) {
         .attr('x', d => x(d.label) + x.bandwidth() / 2)
         .attr('y', height)
         .attr('text-anchor', 'middle')
-        .attr('fill', '#333')
-        .attr('font-size', '16px')
-        .attr('font-weight', 'bold')
+        .attr('fill', '#2D2A26')
+        .attr('font-size', '14px')
+        .attr('font-family', "'Inter', sans-serif")
+        .attr('font-weight', '500')
+        .attr('opacity', 0)
         .text(d => metric === 'count' ? d.value : d.value.toFixed(1))
         .merge(labels)
         .transition()
         .duration(DURATION_LONG)
+        .delay((d, i) => i * 100 + 300)
         .attr('x', d => x(d.label) + x.bandwidth() / 2)
-        .attr('y', d => y(d.value) - 5)
+        .attr('y', d => y(d.value) - 8)
+        .attr('opacity', 1)
         .text(d => metric === 'count' ? d.value : d.value.toFixed(1));
-        
+
     labels.exit()
         .transition()
         .duration(DURATION)
