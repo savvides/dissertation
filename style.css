@@ -1,29 +1,134 @@
+/* ========================================
+   Editorial Redesign — Warm Academic Style
+   ======================================== */
+
 :root {
-    --bg-color: #ffffff;
-    --text-color: #1a1a1a;
-    --header-font: 'Georgia', 'Times New Roman', serif;
-    --body-font: 'Helvetica Neue', Helvetica, Arial, sans-serif;
-    
-    /* 3 Conditions colors */
-    --vr-color: #8b0000; /* Dark Red for High Immersion */
-    --desktop-color: #4a4a4a; /* Grey for Low Immersion */
-    --control-color: #00008b; /* Dark Blue for Control */
+    --bg-color: #FAF8F5;
+    --text-color: #2D2A26;
+    --vr-color: #8B3A3A;
+    --desktop-color: #5C6B73;
+    --control-color: #3A5A8B;
+    --accent-color: #C4A35A;
+    --axis-color: #D4CFC8;
+    --dot-neutral: #A39E96;
+
+    --font-display: 'Playfair Display', Georgia, 'Times New Roman', serif;
+    --font-body: 'Libre Baskerville', Georgia, serif;
+    --font-ui: 'Inter', 'Helvetica Neue', Helvetica, Arial, sans-serif;
+}
+
+/* ---- Reset & Base ---- */
+
+*, *::before, *::after {
+    box-sizing: border-box;
 }
 
 body, html {
     margin: 0;
     padding: 0;
-    font-family: var(--body-font);
+    font-family: var(--font-body);
     background-color: var(--bg-color);
     color: var(--text-color);
-    line-height: 1.6;
+    line-height: 1.75;
+    -webkit-font-smoothing: antialiased;
 }
 
 h1, h2, h3, h4, h5, h6 {
-    font-family: var(--header-font);
-    font-weight: normal;
+    font-family: var(--font-display);
+    font-weight: 400;
     margin-top: 0;
+    line-height: 1.3;
 }
+
+a {
+    color: var(--vr-color);
+    text-decoration: underline;
+    text-decoration-thickness: 1px;
+    text-underline-offset: 2px;
+}
+
+a:hover {
+    color: var(--accent-color);
+}
+
+/* ---- Progress Bar ---- */
+
+#progress-bar {
+    position: fixed;
+    top: 0;
+    left: 0;
+    height: 3px;
+    width: 0%;
+    background-color: var(--accent-color);
+    z-index: 1000;
+    transition: width 50ms linear;
+}
+
+/* ---- Hero Section ---- */
+
+#hero {
+    min-height: 100vh;
+    display: flex;
+    flex-direction: column;
+    align-items: center;
+    justify-content: center;
+    text-align: center;
+    padding: 2rem;
+}
+
+#hero h1 {
+    font-family: var(--font-display);
+    font-weight: 700;
+    font-size: 2rem;
+    max-width: 700px;
+    margin-bottom: 1.5rem;
+    line-height: 1.25;
+}
+
+#hero .hook {
+    font-family: var(--font-body);
+    font-style: italic;
+    font-size: 1.15rem;
+    margin-bottom: 1rem;
+    opacity: 0.85;
+}
+
+#hero .author {
+    font-family: var(--font-ui);
+    font-size: 0.85rem;
+    letter-spacing: 0.03em;
+    opacity: 0.6;
+    margin-bottom: 3rem;
+}
+
+.scroll-indicator {
+    display: flex;
+    flex-direction: column;
+    align-items: center;
+    gap: 0.25rem;
+    opacity: 0.5;
+    animation: pulse 2.5s ease-in-out infinite;
+    transition: opacity 0.6s ease;
+}
+
+.scroll-indicator span {
+    font-family: var(--font-ui);
+    font-size: 0.75rem;
+    letter-spacing: 0.15em;
+    text-transform: uppercase;
+}
+
+.scroll-indicator.hidden {
+    opacity: 0;
+    pointer-events: none;
+}
+
+@keyframes pulse {
+    0%, 100% { transform: translateY(0); }
+    50% { transform: translateY(6px); }
+}
+
+/* ---- Scrolltelling Layout ---- */
 
 #scroll-container {
     display: flex;
@@ -32,70 +137,148 @@ h1, h2, h3, h4, h5, h6 {
 }
 
 #text-column {
-    padding: 0 1rem;
+    padding: 0 1.5rem;
     z-index: 5;
 }
 
+/* ---- Steps ---- */
+
 .step {
-    padding: 3rem 1rem;
+    padding: 3rem 1.5rem;
     margin-bottom: 60vh;
-    background: rgba(255, 255, 255, 0.9);
-    border-left: 4px solid #eaeaea;
+    border-left: 4px solid transparent;
+    opacity: 0.4;
+    transition: opacity 0.4s ease, border-color 0.4s ease;
 }
 
 .step:last-child {
     margin-bottom: 20vh;
 }
 
+.step.active {
+    opacity: 1;
+    border-left-color: var(--accent-color);
+}
+
+.step-label {
+    display: block;
+    font-family: var(--font-ui);
+    font-weight: 500;
+    font-size: 0.8rem;
+    letter-spacing: 0.12em;
+    text-transform: uppercase;
+    color: var(--accent-color);
+    margin-bottom: 0.75rem;
+}
+
 .step h2 {
+    font-family: var(--font-display);
     font-size: 1.8rem;
     margin-bottom: 1rem;
 }
 
 .step p {
-    font-size: 1.1rem;
+    font-size: 1.05rem;
+    margin-bottom: 1rem;
 }
+
+.step p:last-child {
+    margin-bottom: 0;
+}
+
+/* ---- Chart Container ---- */
 
 #chart-container {
     position: sticky;
     top: 0;
     height: 50vh;
     width: 100%;
-    background-color: #fafafa;
     display: flex;
     align-items: center;
     justify-content: center;
-    border-bottom: 1px solid #eaeaea;
     z-index: 10;
+    padding: 1rem;
 }
 
-/* Desktop Layout */
+/* ---- Coda / Footer ---- */
+
+#coda {
+    max-width: 640px;
+    margin: 0 auto;
+    padding: 6rem 2rem 4rem;
+    text-align: center;
+}
+
+#coda h2 {
+    font-size: 1.8rem;
+    margin-bottom: 1.5rem;
+}
+
+#coda p {
+    font-size: 1.05rem;
+    margin-bottom: 1.25rem;
+    text-align: left;
+}
+
+.coda-attribution {
+    margin-top: 3rem;
+    padding-top: 2rem;
+    border-top: 1px solid var(--axis-color);
+    font-family: var(--font-ui);
+    font-size: 0.9rem;
+    text-align: center !important;
+    line-height: 1.8;
+}
+
+/* ---- Chart Tooltip ---- */
+
+.chart-tooltip {
+    position: absolute;
+    background: var(--text-color);
+    color: var(--bg-color);
+    font-family: var(--font-ui);
+    font-size: 0.75rem;
+    padding: 0.4rem 0.6rem;
+    border-radius: 4px;
+    pointer-events: none;
+    opacity: 0;
+    transition: opacity 0.15s ease;
+    z-index: 100;
+    white-space: nowrap;
+}
+
+/* ---- Desktop Layout ---- */
+
 @media (min-width: 768px) {
+    #hero h1 {
+        font-size: 3rem;
+    }
+
     #scroll-container {
         flex-direction: row;
         max-width: 1200px;
         margin: 0 auto;
     }
-    
+
     #text-column {
         width: 50%;
-        padding: 0 2rem 0 0;
+        padding: 0 3rem 0 2rem;
     }
-    
+
     .step {
         padding: 50vh 0;
         margin-bottom: 0;
-        border-left: none;
-        border-right: 4px solid #eaeaea;
         padding-right: 2rem;
-        background: transparent;
+        border-left: 4px solid transparent;
     }
-    
+
+    .step.active {
+        border-left-color: var(--accent-color);
+    }
+
     #chart-container {
         width: 50%;
         height: 100vh;
-        border-bottom: none;
-        border-left: 1px solid #eaeaea;
-        background-color: transparent;
+        padding: 2rem;
     }
 }
