@@ -654,9 +654,9 @@ const margin = { top: 60, right: 20, bottom: 40, left: 50 };
 
 // Map conditions to labels and colors
 const conditionMapping = {
-    'High': { label: 'VR (High)', color: 'var(--vr-color)' },
-    'Medium': { label: 'Desktop (Medium)', color: 'var(--desktop-color)' },
-    'Low': { label: 'Control (Low)', color: 'var(--control-color)' }
+    'High': { label: 'VR (High)', color: '#8B3A3A' },
+    'Medium': { label: 'Desktop (Medium)', color: '#5C6B73' },
+    'Low': { label: 'Control (Low)', color: '#3A5A8B' }
 };
 
 // Refactor Constants
@@ -726,12 +726,12 @@ function initChart() {
     // Title placeholder for the chart
     svg.append('text')
         .attr('class', 'chart-title')
-        .attr('x', width / 2 + margin.left)
-        .attr('y', margin.top / 2)
-        .attr('text-anchor', 'middle')
-        .attr('font-size', '18px')
-        .attr('font-family', 'var(--header-font)')
-        .attr('font-weight', 'bold');
+        .attr('x', margin.left)
+        .attr('y', margin.top / 2 + 4)
+        .attr('text-anchor', 'start')
+        .attr('font-size', '16px')
+        .attr('font-family', "'Libre Baskerville', Georgia, serif")
+        .attr('fill', '#2D2A26');
 
     xAxisGroup = chartArea.append('g')
         .attr('class', 'x-axis')
@@ -741,18 +741,35 @@ function initChart() {
         .attr('class', 'y-axis');
 }
 
+function drawGridLines(yScale) {
+    chartArea.selectAll('.grid-line').remove();
+    const ticks = yScale.ticks(5);
+    chartArea.selectAll('.grid-line')
+        .data(ticks)
+        .enter()
+        .append('line')
+        .attr('class', 'grid-line')
+        .attr('x1', 0)
+        .attr('x2', width)
+        .attr('y1', d => yScale(d))
+        .attr('y2', d => yScale(d))
+        .attr('stroke', '#D4CFC8')
+        .attr('stroke-width', 0.5)
+        .attr('opacity', 0.5);
+}
+
 function updateChart(stepIndex) {
     console.log(`Active step: ${stepIndex}`);
-    
-    if (stepIndex === 0) {
+
+    if (stepIndex === 1) {
         drawBarChart('count', 'Participants per Condition');
-    } else if (stepIndex === 1) {
-        drawBarChart('learning_gains', 'Average Learning Gains');
     } else if (stepIndex === 2) {
-        drawScatterPlot(false);
+        drawBarChart('learning_gains', 'Average Learning Gains');
     } else if (stepIndex === 3) {
-        drawScatterPlot(true);
+        drawScatterPlot(false);
     } else if (stepIndex === 4) {
+        drawScatterPlot(true);
+    } else if (stepIndex === 5) {
         drawBarChart('cognitive_load', 'Average Cognitive Load');
     } else {
         clearChart();
@@ -806,7 +823,6 @@ function drawScatterPlot(isFaceted) {
 
     const xAxis = d3.axisBottom(x);
     xAxisGroup.style('opacity', 1).transition().duration(DURATION).call(xAxis);
-    xAxisGroup.selectAll("text").style("font-size", "14px");
 
     // Add X-axis label if it doesn't exist
     if (chartArea.select('.x-label').empty()) {
@@ -815,15 +831,15 @@ function drawScatterPlot(isFaceted) {
             .attr('x', width / 2)
             .attr('y', height + 35)
             .attr('text-anchor', 'middle')
-            .style('font-size', '14px')
+            .style('font-size', '12px')
+            .style('font-family', "'Inter', sans-serif")
             .text('Reported Presence Score');
     } else {
-        chartArea.select('.x-label').transition().duration(DURATION).style('opacity', 1).text('Reported Presence Score');
+        chartArea.select('.x-label').transition().duration(DURATION).style('opacity', 1).style('font-size', '12px').style('font-family', "'Inter', sans-serif").text('Reported Presence Score');
     }
 
     const yAxis = d3.axisLeft(y);
     yAxisGroup.style('opacity', 1).transition().duration(DURATION).call(yAxis);
-    yAxisGroup.selectAll("text").style("font-size", "14px");
 
     // Add Y-axis label if it doesn't exist
     if (chartArea.select('.y-label').empty()) {
@@ -833,11 +849,20 @@ function drawScatterPlot(isFaceted) {
             .attr('x', -height / 2)
             .attr('y', -35)
             .attr('text-anchor', 'middle')
-            .style('font-size', '14px')
+            .style('font-size', '12px')
+            .style('font-family', "'Inter', sans-serif")
             .text('Learning Gains');
     } else {
-        chartArea.select('.y-label').transition().duration(DURATION).style('opacity', 1).text('Learning Gains');
+        chartArea.select('.y-label').transition().duration(DURATION).style('opacity', 1).style('font-size', '12px').style('font-family', "'Inter', sans-serif").text('Learning Gains');
     }
+
+    // Style axes
+    xAxisGroup.selectAll('path, line').attr('stroke', '#D4CFC8');
+    xAxisGroup.selectAll('text').style('font-size', '12px').style('font-family', "'Inter', sans-serif").attr('fill', '#2D2A26');
+    yAxisGroup.selectAll('path, line').attr('stroke', '#D4CFC8');
+    yAxisGroup.selectAll('text').style('font-size', '12px').style('font-family', "'Inter', sans-serif").attr('fill', '#2D2A26');
+
+    drawGridLines(y);
 
     // 4. Draw Dots
     const dots = chartArea.selectAll('.dot')
@@ -947,14 +972,18 @@ function drawBarChart(metric, title, yMax) {
 
     // 3. Update axes
     const xAxis = d3.axisBottom(x);
-    xAxisGroup.style('opacity', 1).transition().duration(DURATION).call(xAxis)
-        .selectAll("text")
-        .style("font-size", "14px");
+    xAxisGroup.style('opacity', 1).transition().duration(DURATION).call(xAxis);
 
     const yAxis = d3.axisLeft(y).ticks(5);
-    yAxisGroup.style('opacity', 1).transition().duration(DURATION).call(yAxis)
-        .selectAll("text")
-        .style("font-size", "14px");
+    yAxisGroup.style('opacity', 1).transition().duration(DURATION).call(yAxis);
+
+    // Style axes
+    xAxisGroup.selectAll('path, line').attr('stroke', '#D4CFC8');
+    xAxisGroup.selectAll('text').style('font-size', '12px').style('font-family', "'Inter', sans-serif").attr('fill', '#2D2A26');
+    yAxisGroup.selectAll('path, line').attr('stroke', '#D4CFC8');
+    yAxisGroup.selectAll('text').style('font-size', '12px').style('font-family', "'Inter', sans-serif").attr('fill', '#2D2A26');
+
+    drawGridLines(y);
 
     // 4. Update bars with D3 join
     const bars = chartArea.selectAll('.bar')
