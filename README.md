@@ -27,6 +27,10 @@ The study data is included for reproducibility:
 - [`data.csv`](data.csv) — De-identified data for all 108 participants: learning gains, condition, presence scores, cognitive load
 - [`litreview.csv`](litreview.csv) — 219 unique peer-reviewed papers (2019–2026) from an updated literature search
 
+## How It Was Made
+
+This entire site was built through conversation with [Claude Code](https://claude.ai/code). Read the full story: **[How It Was Made](HOW-IT-WAS-MADE.md)**
+
 ## Built With
 
 - [D3.js](https://d3js.org/) v7 for data visualization

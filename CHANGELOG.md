@@ -12,7 +12,6 @@ and this project adheres to [Semantic Versioning](https://semver.org/spec/v2.0.0
 - **2026 Statistical Reanalysis**: Visualizations demonstrating the "Ecological Fallacy" in the original presence-learning correlation.
 - **Serverless Execution**: Inlined `globalData` into `script.js` to allow `index.html` to run without a local web server (no CORS issues).
 - **Data Conversion Utility**: `scripts/csv_to_js.js` Node.js script to reproduce the inlined data array from `data.csv`.
-- **Implementation Plans & Specs**: Formal documentation of the 2026 update process in `docs/superpowers/`.
 
 ### Changed
 - **Visual Aesthetic**: Implemented "Academic Minimalist" design (serif headers, clean whitespace) for the interactive presentation.
