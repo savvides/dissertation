@@ -74,15 +74,71 @@
         </div>
     </main>
 
-    <footer id="coda">
-        <h2>What This Means</h2>
-        <p>Eight years after the original study, the ecological fallacy finding reframes what we thought we knew about VR and learning. Presence remains a compelling psychological phenomenon, but its role as a learning mechanism is far more nuanced than early theories suggested. The field has since moved toward understanding <em>when</em> and <em>for whom</em> immersion helps — not just <em>whether</em> it does.</p>
-        <p>For designers of educational VR, the lesson is practical: reduce novelty-induced cognitive load before expecting immersion to pay off. Familiarity precedes flow.</p>
-        <p class="coda-attribution">
-            <strong>Philippos Savvides</strong><br>
-            Arizona State University, 2018<br>
-            <a href="Savvides_asu_0010E_18427.pdf">Read the full dissertation (PDF)</a>
-        </p>
+    <section id="coda">
+        <h2>What I Found</h2>
+        <p>Eight years later, I found a fallacy hiding in my own data. The original 2018 analysis showed that presence correlates with learning gains. The 2026 reanalysis showed the correlation was an artifact of how the groups were sliced — within each condition, it vanishes. The dataset hadn't changed. My eyes had.</p>
+        <p>If you're designing learning technology, the takeaway is narrower than the theoretical implication. A strong group-level pattern can be seductive and false. Ask whether you're measuring the thing or the bucket. Ask whether the relationship survives at the individual level. It usually doesn't.</p>
+        <p>If you're specifically building VR for learning, the practical move is to reduce novelty cost before measuring effectiveness — train people on the interface before measuring what they learned with it. The cognitive load of "where do I look, how do I move" steals bandwidth that should be going to the content. Familiarity precedes flow.</p>
+    </section>
+
+    <section id="evidence-lab" aria-labelledby="lab-heading">
+        <div class="lab-header">
+            <h2 id="lab-heading">Explore the Evidence</h2>
+            <p class="lab-intro">Same data, your hands on the controls. Toggle the view between overall and by-condition, switch the y-axis, show or hide the trendlines. The fallacy from step 4 is the easiest to spot — flip from <strong>Overall</strong> to <strong>By Condition</strong> and watch the slope flatten.</p>
+        </div>
+
+        <div class="lab-controls">
+            <div class="control-group" role="group" aria-label="View mode">
+                <span class="control-label">View</span>
+                <div class="control-buttons">
+                    <button type="button" class="lab-toggle active" data-view="overall" aria-pressed="true">Overall</button>
+                    <button type="button" class="lab-toggle" data-view="condition" aria-pressed="false">By Condition</button>
+                </div>
+            </div>
+
+            <div class="control-group" role="group" aria-label="Trendline visibility">
+                <span class="control-label">Trendlines</span>
+                <div class="control-buttons">
+                    <button type="button" class="lab-toggle active" data-regression="on" aria-pressed="true">Show</button>
+                    <button type="button" class="lab-toggle" data-regression="off" aria-pressed="false">Hide</button>
+                </div>
+            </div>
+
+            <div class="control-group" role="group" aria-label="Y-axis metric">
+                <span class="control-label">Y-Axis</span>
+                <div class="control-buttons">
+                    <button type="button" class="lab-toggle active" data-axis="learning" aria-pressed="true">Learning Gains</button>
+                    <button type="button" class="lab-toggle" data-axis="cognitive" aria-pressed="false">Cognitive Load</button>
+                </div>
+            </div>
+        </div>
+
+        <div id="lab-chart-container" role="img" aria-label="Interactive scatter plot of presence versus learning gains">
+            <noscript>
+                <p class="lab-fallback">The Evidence Lab needs JavaScript. The narrative above conveys the same finding without it.</p>
+            </noscript>
+        </div>
+    </section>
+
+    <footer id="about">
+        <div class="about-column">
+            <h3>How This Was Made</h3>
+            <p>This site was built entirely through conversation with Claude Code. The full process — from PDF to interactive scrollytelling — is documented in the write-up.</p>
+            <a href="https://github.com/savvides/dissertation/blob/main/HOW-IT-WAS-MADE.md">Read the write-up &rarr;</a>
+        </div>
+
+        <div class="about-column">
+            <h3>About Philippos</h3>
+            <p>Philippos Savvides is an educational researcher with a PhD in Educational Technology from Arizona State University. His work focuses on how learners interact with simulations, virtual environments, and emerging interfaces.</p>
+            <a href="https://www.linkedin.com/in/savvides/">LinkedIn &rarr;</a>
+        </div>
+
+        <div class="about-column">
+            <h3>The Data</h3>
+            <p>The full dataset and original dissertation are open. License: CC BY 4.0 — reuse with attribution.</p>
+            <a href="data.csv">Download data.csv &rarr;</a><br>
+            <a href="Savvides_asu_0010E_18427.pdf">Dissertation (PDF) &rarr;</a>
+        </div>
     </footer>
 
     <script src="script.js"></script>

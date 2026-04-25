@@ -1159,11 +1159,253 @@ function initHeroFade() {
     observer.observe(hero);
 }
 
+// ============================================================
+// Evidence Lab — interactive scatter plot driven by user controls
+// ============================================================
+
+const axisMapping = {
+    learning: { col: 'learning_gains', label: 'Learning Gains' },
+    cognitive: { col: 'cognitive_load', label: 'Cognitive Load' }
+};
+
+const labState = {
+    faceted: false,
+    showRegression: true,
+    yAxis: 'learning'
+};
+
+let labSvg, labChartArea, labXAxisGroup, labYAxisGroup;
+let labWidth, labHeight;
+const labMargin = { top: 30, right: 20, bottom: 50, left: 50 };
+let labTransitioning = false;
+
+function initEvidenceLab() {
+    const container = document.getElementById('lab-chart-container');
+    if (!container) return;
+
+    const rect = container.getBoundingClientRect();
+    labWidth = rect.width - labMargin.left - labMargin.right;
+    labHeight = rect.height - labMargin.top - labMargin.bottom;
+
+    labSvg = d3.select('#lab-chart-container').append('svg')
+        .attr('width', '100%')
+        .attr('height', '100%')
+        .attr('viewBox', `0 0 ${rect.width} ${rect.height}`)
+        .attr('preserveAspectRatio', 'xMidYMid meet');
+
+    // Own defs/filter — Lab SVG is independent of the narrative SVG
+    const defs = labSvg.append('defs');
+    const filter = defs.append('filter')
+        .attr('id', 'lab-dot-shadow')
+        .attr('x', '-50%').attr('y', '-50%')
+        .attr('width', '200%').attr('height', '200%');
+    filter.append('feDropShadow')
+        .attr('dx', 0).attr('dy', 1)
+        .attr('stdDeviation', 1.5)
+        .attr('flood-color', '#2D2A26')
+        .attr('flood-opacity', 0.15);
+
+    labChartArea = labSvg.append('g')
+        .attr('transform', `translate(${labMargin.left},${labMargin.top})`);
+
+    labXAxisGroup = labChartArea.append('g')
+        .attr('class', 'x-axis')
+        .attr('transform', `translate(0,${labHeight})`);
+
+    labYAxisGroup = labChartArea.append('g')
+        .attr('class', 'y-axis');
+
+    labChartArea.append('text')
+        .attr('class', 'lab-axis-label lab-x-label')
+        .attr('x', labWidth / 2)
+        .attr('y', labHeight + 38)
+        .attr('text-anchor', 'middle')
+        .style('font-size', '12px')
+        .style('font-family', "'Inter', sans-serif")
+        .attr('fill', '#2D2A26')
+        .text('Reported Presence Score');
+
+    labChartArea.append('text')
+        .attr('class', 'lab-axis-label lab-y-label')
+        .attr('transform', 'rotate(-90)')
+        .attr('x', -labHeight / 2)
+        .attr('y', -38)
+        .attr('text-anchor', 'middle')
+        .style('font-size', '12px')
+        .style('font-family', "'Inter', sans-serif")
+        .attr('fill', '#2D2A26')
+        .text('Learning Gains');
+
+    d3.select('#lab-chart-container').append('div')
+        .attr('class', 'chart-tooltip')
+        .attr('id', 'lab-tooltip');
+
+    document.querySelectorAll('#evidence-lab .lab-toggle').forEach(btn => {
+        btn.addEventListener('click', handleLabControlClick);
+    });
+
+    updateLabAriaLabel();
+    updateEvidenceLab();
+}
+
+function handleLabControlClick(event) {
+    if (labTransitioning) return;
+
+    const btn = event.currentTarget;
+    const group = btn.closest('.control-group');
+    if (!group) return;
+
+    group.querySelectorAll('.lab-toggle').forEach(sibling => {
+        const isClicked = sibling === btn;
+        sibling.classList.toggle('active', isClicked);
+        sibling.setAttribute('aria-pressed', isClicked ? 'true' : 'false');
+    });
+
+    if (btn.hasAttribute('data-view')) {
+        labState.faceted = btn.getAttribute('data-view') === 'condition';
+    } else if (btn.hasAttribute('data-regression')) {
+        labState.showRegression = btn.getAttribute('data-regression') === 'on';
+    } else if (btn.hasAttribute('data-axis')) {
+        labState.yAxis = btn.getAttribute('data-axis');
+    }
+
+    updateLabAriaLabel();
+
+    labTransitioning = true;
+    setTimeout(() => { labTransitioning = false; }, DURATION);
+
+    updateEvidenceLab();
+}
+
+function updateLabAriaLabel() {
+    if (!labSvg) return;
+    const axis = axisMapping[labState.yAxis];
+    const view = labState.faceted ? 'colored by experimental condition' : 'overall';
+    const trend = labState.showRegression ? 'with trendlines' : 'no trendlines';
+    labSvg.attr('aria-label', `Scatter plot of reported presence versus ${axis.label}, ${view}, ${trend}.`);
+}
+
+function updateEvidenceLab() {
+    // Mirrors drawScatterPlot() rendering — kept separate to isolate Lab changes
+    // from the scroll-driven narrative. Keep both in sync if the visual treatment
+    // of dots/trendlines (color, radius, animation timing) changes.
+
+    const yCol = axisMapping[labState.yAxis].col;
+    const yLabel = axisMapping[labState.yAxis].label;
+
+    const x = d3.scaleLinear()
+        .domain([0, d3.max(globalData, d => d.presence) + 5])
+        .nice()
+        .range([0, labWidth]);
+
+    const yMin = Math.min(0, d3.min(globalData, d => d[yCol]) - 1);
+    const yMax = d3.max(globalData, d => d[yCol]) + 1;
+    const y = d3.scaleLinear()
+        .domain([yMin, yMax])
+        .nice()
+        .range([labHeight, 0]);
+
+    labXAxisGroup.transition().duration(DURATION).call(d3.axisBottom(x));
+    labYAxisGroup.transition().duration(DURATION).call(d3.axisLeft(y));
+
+    labXAxisGroup.selectAll('path, line').attr('stroke', '#D4CFC8');
+    labXAxisGroup.selectAll('text').style('font-size', '12px').style('font-family', "'Inter', sans-serif").attr('fill', '#2D2A26');
+    labYAxisGroup.selectAll('path, line').attr('stroke', '#D4CFC8');
+    labYAxisGroup.selectAll('text').style('font-size', '12px').style('font-family', "'Inter', sans-serif").attr('fill', '#2D2A26');
+
+    labChartArea.select('.lab-y-label').text(yLabel);
+
+    labChartArea.selectAll('.lab-grid-line').remove();
+    labChartArea.selectAll('.lab-grid-line')
+        .data(y.ticks(5))
+        .enter()
+        .append('line')
+        .attr('class', 'lab-grid-line')
+        .attr('x1', 0).attr('x2', labWidth)
+        .attr('y1', d => y(d)).attr('y2', d => y(d))
+        .attr('stroke', '#D4CFC8').attr('stroke-width', 0.5).attr('opacity', 0.5);
+
+    const dots = labChartArea.selectAll('.lab-dot').data(globalData);
+
+    dots.enter()
+        .append('circle')
+        .attr('class', 'lab-dot')
+        .attr('r', 6)
+        .attr('cx', d => x(d.presence))
+        .attr('cy', d => y(d[yCol]))
+        .attr('opacity', 0)
+        .attr('fill', '#A39E96')
+        .style('filter', 'url(#lab-dot-shadow)')
+        .on('mouseover', function(event, d) {
+            d3.select(this).transition().duration(150).attr('r', 9);
+            const tip = d3.select('#lab-tooltip');
+            const condLabel = conditionMapping[d.condition].label;
+            const currentYLabel = axisMapping[labState.yAxis].label;
+            const currentYCol = axisMapping[labState.yAxis].col;
+            tip.style('opacity', 1)
+                .html(`<strong>${condLabel}</strong><br>Presence: ${d.presence}<br>${currentYLabel}: ${d[currentYCol]}`);
+        })
+        .on('mousemove', function(event) {
+            const tip = d3.select('#lab-tooltip');
+            const containerRect = document.getElementById('lab-chart-container').getBoundingClientRect();
+            tip.style('left', (event.clientX - containerRect.left + 12) + 'px')
+                .style('top', (event.clientY - containerRect.top - 28) + 'px');
+        })
+        .on('mouseout', function() {
+            d3.select(this).transition().duration(150).attr('r', 6);
+            d3.select('#lab-tooltip').style('opacity', 0);
+        })
+        .merge(dots)
+        .transition()
+        .duration(DURATION_LONG)
+        .attr('cx', d => x(d.presence))
+        .attr('cy', d => y(d[yCol]))
+        .attr('opacity', 0.78)
+        .attr('fill', d => labState.faceted ? conditionMapping[d.condition].color : '#A39E96');
+
+    dots.exit().transition().duration(DURATION).attr('opacity', 0).remove();
+
+    let trendlineData = [];
+    if (labState.showRegression) {
+        if (!labState.faceted) {
+            const reg = calculateRegression(globalData, 'presence', yCol);
+            if (reg) trendlineData.push({ id: 'overall', points: reg, color: '#333' });
+        } else {
+            conditions.forEach(cond => {
+                const data = globalData.filter(d => d.condition === cond);
+                const reg = calculateRegression(data, 'presence', yCol);
+                if (reg) trendlineData.push({ id: cond, points: reg, color: conditionMapping[cond].color });
+            });
+        }
+    }
+
+    const lines = labChartArea.selectAll('.lab-trendline').data(trendlineData, d => d.id);
+    const lineGen = d3.line().x(d => x(d.x)).y(d => y(d.y));
+
+    lines.enter()
+        .append('path')
+        .attr('class', 'lab-trendline')
+        .attr('d', d => lineGen(d.points))
+        .attr('stroke', d => d.color)
+        .attr('stroke-width', 3)
+        .attr('fill', 'none')
+        .style('opacity', 0)
+        .merge(lines)
+        .transition()
+        .duration(DURATION_LONG)
+        .style('opacity', 1)
+        .attr('d', d => lineGen(d.points))
+        .attr('stroke', d => d.color);
+
+    lines.exit().transition().duration(DURATION).style('opacity', 0).remove();
+}
+
 function init() {
     initChart();
     initObserver();
     initProgressBar();
     initHeroFade();
+    initEvidenceLab();
 }
 
 document.addEventListener("DOMContentLoaded", init);
