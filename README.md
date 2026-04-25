@@ -1,6 +1,6 @@
 ![Deploy](https://github.com/savvides/dissertation/actions/workflows/deploy.yml/badge.svg)
 ![License: CC BY 4.0](https://img.shields.io/badge/License-CC_BY_4.0-lightgrey.svg)
-![Version](https://img.shields.io/badge/version-2.0.0-blue.svg)
+![Version](https://img.shields.io/badge/version-2.1.0-blue.svg)
 
 # Teaching Science Lab Safety: Are Virtual Simulations Effective?
 
@@ -19,6 +19,7 @@ An interactive data story built from a 2018 PhD study (n=108) that tested whethe
 3. **The Deeper Question** — Presence as the theorized mechanism, with a convincing overall correlation
 4. **The Twist** — The ecological fallacy reveal: color the dots by condition and the correlation disappears
 5. **The Hidden Cost** — Cognitive load and the price of novelty
+6. **The Evidence Lab** — An interactive scatter plot you can drive yourself: toggle overall vs. by-condition views, swap the y-axis between learning gains and cognitive load, and show or hide the regression lines to replay the fallacy on demand
 
 ## The Data
 

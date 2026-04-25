@@ -30,7 +30,11 @@ The whole site was built through iterative conversation with Claude Code. No han
 
 5. **Visual design.** An editorial design system with warm tones, serif typography, and generous whitespace. The goal was to feel like a magazine feature, not a dashboard.
 
-6. **Iteration.** Many rounds of conversation, refining the narrative, polishing the charts, adjusting the pacing. The AI handled the code. I handled the taste.
+6. **The Evidence Lab.** After the scrollytelling narrative, an interactive playground lets readers drive the same chart themselves — toggle overall vs. by-condition, swap the y-axis between learning gains and cognitive load, show or hide regression lines. The fallacy stops being a thing they watched and becomes a thing they can reproduce.
+
+7. **A personal coda and footer.** A first-person reflection closes the narrative ("Eight years later, I found a fallacy hiding in my own data."), and a three-column footer points to this write-up, my LinkedIn, and the open dataset.
+
+8. **Iteration.** Many rounds of conversation, refining the narrative, polishing the charts, adjusting the pacing. The AI handled the code. I handled the taste.
 
 The entire thing is static HTML. No build tools, no server, no database. It runs from a single file and deploys on GitHub Pages for free.
 

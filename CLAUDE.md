@@ -14,6 +14,8 @@ This repository contains Philippos Savvides's 2018 PhD dissertation from Arizona
 - `litreview.csv` — Consensus search results (219 unique papers, 2019-2026)
 - `README.md` — Project overview, study summary, literature review addendum summary, and methodological retrospective
 - `HOW-IT-WAS-MADE.md` — Process write-up explaining how the interactive site was built with Claude Code
+- `CHANGELOG.md` — Versioned release notes for the interactive site (Keep a Changelog format, SemVer)
+- `index.html` / `style.css` / `script.js` — Single-page interactive scrollytelling site (D3.js v7, vanilla CSS, no build tools). Sections: scroll-driven narrative (`#chart-container`), personal coda (`#coda`), interactive Evidence Lab (`#evidence-lab`), and portfolio footer (`#about`).
 
 ## Key Context
 
