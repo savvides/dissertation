@@ -1177,7 +1177,6 @@ const labState = {
 let labSvg, labChartArea, labXAxisGroup, labYAxisGroup;
 let labWidth, labHeight;
 const labMargin = { top: 30, right: 20, bottom: 50, left: 50 };
-let labTransitioning = false;
 
 function initEvidenceLab() {
     const container = document.getElementById('lab-chart-container');
@@ -1249,8 +1248,6 @@ function initEvidenceLab() {
 }
 
 function handleLabControlClick(event) {
-    if (labTransitioning) return;
-
     const btn = event.currentTarget;
     const group = btn.closest('.control-group');
     if (!group) return;
@@ -1270,10 +1267,6 @@ function handleLabControlClick(event) {
     }
 
     updateLabAriaLabel();
-
-    labTransitioning = true;
-    setTimeout(() => { labTransitioning = false; }, DURATION);
-
     updateEvidenceLab();
 }
 
