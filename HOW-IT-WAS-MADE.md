@@ -10,7 +10,7 @@ That's the fate of most dissertations. Years of work, compressed into a PDF, fil
 
 ## The Realization
 
-In early 2026, I went back to the data with newer statistical tools. I found something the original analysis missed: an ecological fallacy hiding in the results. A correlation that looked real at the group level vanished within each condition. That was a genuine discovery, buried in an eight-year-old dataset.
+In early 2026, I went back to the data with newer statistical tools. The original analysis had missed an ecological fallacy in the results. A correlation that looked real across the whole sample vanished within each condition. A real finding, eight years late.
 
 I wanted to share it in a way that did the finding justice. Not as another paper. Not as a slide deck. As something people could experience.
 
