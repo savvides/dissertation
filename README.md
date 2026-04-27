@@ -8,7 +8,7 @@ An interactive data story exploring VR, learning, and a surprising statistical f
 
 ![The ecological fallacy reveal — dots colorized by condition show the overall correlation disappears within each group](docs/screenshot.png)
 
-An interactive data story built from a 2018 PhD study (n=108) that tested whether VR headsets improve learning. The answer was surprising: the simulation matters, not the headset — VR and desktop produced identical outcomes (Cohen's d = 0.23) while both massively outperformed passive instruction (d > 2.4). A 2026 reanalysis uncovered an ecological fallacy hiding in the original results: a correlation that looked real at the group level vanished within each condition.
+The 2018 PhD study (n=108) asked whether VR headsets improve learning. The answer was surprising: the simulation matters, not the headset. VR and desktop produced identical outcomes (Cohen's d = 0.23) while both massively outperformed passive instruction (d > 2.4). A 2026 reanalysis uncovered an ecological fallacy hiding in the original results — a correlation that looked real at the group level vanished within each condition.
 
 [**View the Interactive Story**](https://savvides.github.io/dissertation/)
 
@@ -118,7 +118,7 @@ The full addendum with all citations is in [`dissertation.md`](dissertation.md#u
 
 ## 2026 Retrospective
 
-In 2026, I revisited this study with fresh eyes — red-teaming the methodology and reanalyzing the original data ([`data.csv`](data.csv)) using modern statistical tools. The core finding is rock-solid: interactive simulations produced massive learning gains over passive instruction (Cohen's d > 2.4). But the theoretical claims around *why* could be made much stronger. Key issues:
+In 2026, I went back to the original data ([`data.csv`](data.csv)) and red-teamed the methodology with modern statistical tools. The core finding is rock-solid: interactive simulations produced massive learning gains over passive instruction (Cohen's d > 2.4). But the theoretical claims around *why* the result occurred could be made much stronger. Key issues:
 
 - **Confounded conditions** — The low immersion group received fundamentally different content (video/text vs. interactive simulation), confounding immersion with interactivity
 - **Uncontrolled time on task** — VR group spent ~10 more minutes than control (25.9 vs. 16.2 min)

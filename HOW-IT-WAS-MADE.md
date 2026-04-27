@@ -10,11 +10,11 @@ That's the fate of most dissertations. Years of work, compressed into a PDF, fil
 
 ## The Realization
 
-In early 2026, I revisited my data with fresh eyes and modern tools. I found something the original analysis missed: an ecological fallacy hiding in the results. A correlation that looked real at the group level vanished within each condition. That was a genuine discovery, buried in an eight-year-old dataset.
+In early 2026, I went back to the data with newer statistical tools. I found something the original analysis missed: an ecological fallacy hiding in the results. A correlation that looked real at the group level vanished within each condition. That was a genuine discovery, buried in an eight-year-old dataset.
 
 I wanted to share it in a way that did the finding justice. Not as another paper. Not as a slide deck. As something people could experience.
 
-Around the same time, I started using [Claude Code](https://claude.ai/code), Anthropic's AI coding tool. What I realized was that I didn't need to know how to build a website from scratch. I could describe what I wanted, and build it through conversation.
+Around the same time, I started using [Claude Code](https://claude.ai/code), Anthropic's AI coding tool. I didn't need to know how to build a website from scratch. I could describe what I wanted and build it through conversation.
 
 ## The Process
 
