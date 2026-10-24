@@ -141,7 +141,7 @@
       svg.attr('width', opts.width).attr('height', opts.height).attr('viewBox', '0 0 ' + opts.width + ' ' + opts.height);
       svg.selectAll('*').interrupt('step');
       svg.selectAll('.exiting').remove(); // anything mid-exit is finished off now, never rebound
-      svg.selectAll('.emph-ring').interrupt('emph').remove();
+      svg.selectAll('g.emph').interrupt('emph').remove();
       exitFade(svg.selectAll('g.frame').filter(function () {
         return this.getAttribute('data-frame') !== type;
       }), m);
@@ -685,13 +685,14 @@
     }
 
     /**
-     * Hover/focus emphasis: an ink ring around one dot (or none). Uses the 'emph' transition on its
-     * own element, so it can never interrupt or be interrupted by a 'step' transition.
+     * Hover/focus emphasis: an ink ring over a white offset ring around one dot (or none), so it
+     * reads over dark marks and lines too (spec §4.5 focus ring). Uses the 'emph' transition on its
+     * own elements, so it can never interrupt or be interrupted by a 'step' transition.
      */
     function emphasize(svg, point, opts) {
       var frame = svg.select('g.frame[data-frame="scatter"]:not(.exiting)');
       var on = !opts.reducedMotion;
-      var rings = frame.select('g.layer-emph').selectAll('circle.emph-ring').data(point ? [point] : [], function (p) {
+      var rings = frame.select('g.layer-emph').selectAll('g.emph').data(point ? [point] : [], function (p) {
         return p.i;
       });
       rings.exit().interrupt('emph').each(function () {
@@ -701,9 +702,12 @@
       });
       if (!point || frame.empty()) return;
       var sc = frame.property('__scales');
-      var ring = rings.enter().append('circle').attr('class', 'emph-ring').attr('opacity', on ? 0 : 1)
-        .attr('cx', sc.x(point.presence + point.jx)).attr('cy', sc.y(point[sc.yVar] + point.jy)).attr('r', sc.r * 2.1);
-      if (on) ring.transition('emph').duration(EMPH_MS).attr('opacity', 1);
+      var g = rings.enter().append('g').attr('class', 'emph').attr('opacity', on ? 0 : 1);
+      ['emph-halo', 'emph-ring'].forEach(function (cls) {
+        g.append('circle').attr('class', cls).attr('cx', sc.x(point.presence + point.jx))
+          .attr('cy', sc.y(point[sc.yVar] + point.jy)).attr('r', sc.r * 2.1);
+      });
+      if (on) g.transition('emph').duration(EMPH_MS).attr('opacity', 1);
     }
 
     var lg = Store.stats.groups;

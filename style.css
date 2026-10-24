@@ -291,6 +291,7 @@ figure.chart figcaption { flex: none; margin: 0 0 6px; }
 .chart-svg .trend-halo { fill: none; stroke-linecap: round; }
 .chart-svg .leader { stroke-width: 1; }
 .chart-svg .emph-ring { fill: none; stroke: var(--ink); stroke-width: 2; pointer-events: none; }
+.chart-svg .emph-halo { fill: none; stroke: var(--bg); stroke-width: 6; pointer-events: none; }
 
 .steps {
     padding: 0 0 calc((100svh - var(--band-h)) * 0.6);
@@ -677,3 +678,4 @@ html.js:not(.has-d3) .lab-summary { display: none; }
 .lab-svg .dot:focus-visible { outline: none; box-shadow: none; }
 
 .lab-svg .emph-ring { stroke-width: 3; }
+.lab-svg .emph-halo { stroke-width: 7; } /* 2px white each side of the 3px ink ring */

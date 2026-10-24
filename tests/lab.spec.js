@@ -241,7 +241,29 @@ test.describe('Evidence Lab', () => {
 
   test('4. keyboard: Tab reaches the chart, arrows walk dots by x, the readout is true, Escape clears', async ({ page }) => {
     const order = await byX(page);
-    await page.locator('#lab .seg[data-control="lines"] [aria-checked="true"]').focus();
+    // Tab walks the three controls (one stop each, on the checked option), then the chart.
+    const focusedRadio = () =>
+      page.evaluate(() => {
+        const el = document.activeElement;
+        if (!el || !el.matches('#lab .seg [role="radio"]')) return null;
+        const cs = getComputedStyle(el);
+        return {
+          control: el.parentElement.dataset.control,
+          checked: el.getAttribute('aria-checked'),
+          outline: { style: cs.outlineStyle, width: parseFloat(cs.outlineWidth), color: cs.outlineColor },
+        };
+      });
+    await page.locator('#lab .seg[data-control="view"] [aria-checked="true"]').focus();
+    for (const control of ['y', 'lines']) {
+      await page.keyboard.press('Tab');
+      const r = await focusedRadio();
+      expect(r && r.control).toBe(control);
+      expect(r.checked).toBe('true');
+      // The focus ring is visible: a solid outline ≥ 3px at ≥ 3:1 against white (spec §4.5).
+      expect(r.outline.style).toBe('solid');
+      expect(r.outline.width).toBeGreaterThanOrEqual(3);
+      expect(contrastOnWhite(r.outline.color)).toBeGreaterThanOrEqual(3);
+    }
     await page.keyboard.press('Tab');
     expect(await focusedDot(page), 'Tab lands on the first dot by x').toBe(order[0]);
     await expect(page.locator(`${LAB_SVG} .dot[tabindex="0"]`)).toHaveCount(1);
@@ -261,12 +283,23 @@ test.describe('Evidence Lab', () => {
         const rings = [...document.querySelectorAll(`${sel} circle.emph-ring`)];
         if (rings.length !== 1) return { count: rings.length };
         const cs = getComputedStyle(rings[0]);
-        return { count: 1, i: rings[0].__data__.i, width: parseFloat(cs.strokeWidth), stroke: cs.stroke };
+        const halo = getComputedStyle(rings[0].parentElement.querySelector('circle.emph-halo'));
+        return {
+          count: 1,
+          i: rings[0].__data__.i,
+          width: parseFloat(cs.strokeWidth),
+          stroke: cs.stroke,
+          haloWidth: parseFloat(halo.strokeWidth),
+          haloStroke: halo.stroke,
+        };
       }, LAB_SVG);
     await expect.poll(ringInfo).toMatchObject({ count: 1, i: order[1] });
     const ring = await ringInfo();
     expect(ring.width).toBeGreaterThanOrEqual(2);
     expect(contrastOnWhite(ring.stroke)).toBeGreaterThanOrEqual(3);
+    // A white offset under the ring keeps it visible over dark marks and lines (2px each side).
+    expect(ring.haloStroke).toBe('rgb(255, 255, 255)');
+    expect(ring.haloWidth).toBeGreaterThanOrEqual(ring.width + 4);
     expect((await labInspect(page)).problems).toEqual([]);
 
     await page.keyboard.press('ArrowLeft');
