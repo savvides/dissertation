@@ -125,3 +125,36 @@ test.describe('narrative', () => {
     expect(new Set(descs).size).toBe(5);
   });
 });
+
+test.describe('narrative with motion', () => {
+  test.use({ reducedMotion: 'no-preference' });
+
+  test('8. mid-transition, a new frame and new whiskers are already in place; only opacity animates', async ({ page }) => {
+    await openPage(page);
+    for (const [from, to] of [[4, 5], [2, 3], [1, 2]]) {
+      await goToStep(page, from);
+      const mid = await page.evaluate(async (to) => {
+        window.__probe.centerStep(to);
+        await new Promise((r) => setTimeout(r, 300));
+        return window.__probe.geometry();
+      }, to);
+      // The sample really is mid-transition.
+      expect(mid.state, `${from}→${to} still animating at 300ms`).toBeNull();
+      if (from === 1) expect(mid.cis.length, '1→2 whiskers exist mid-transition').toBe(3);
+      else expect(mid.opacity, `${from}→${to} new frame still fading in`).toBeLessThan(1);
+      for (const c of mid.cis) {
+        expect(Math.abs(c.y1 - c.barMid), `${from}→${to} CI ${c.group} y1 ${c.y1} vs bar middle ${c.barMid}`).toBeLessThanOrEqual(1);
+        expect(Math.abs(c.y2 - c.barMid), `${from}→${to} CI ${c.group} y2`).toBeLessThanOrEqual(1);
+      }
+      await goToStep(page, to);
+      const end = await page.evaluate(() => window.__probe.geometry());
+      // A new frame (4→5, 2→3) must not slide in at all. Within the bars frame (1→2) the axis may
+      // legitimately move: on phones step 2's longer dek shrinks the chart box.
+      for (const k of from === 1 ? ['plot'] : ['plot', 'axisX']) {
+        for (const d of [0, 1]) {
+          expect(Math.abs(mid[k][d] - end[k][d]), `${from}→${to} ${k} ${mid[k]} vs settled ${end[k]}`).toBeLessThanOrEqual(0.5);
+        }
+      }
+    }
+  });
+});

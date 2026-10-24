@@ -238,7 +238,9 @@
         return enter.append('text').attr('class', 't-axis').attr('data-role', role).attr('x', x).attr('y', y);
       });
       t.attr('text-anchor', anchor);
-      var spans = t.selectAll('tspan').data(lines).join('tspan').text(String).attr('dy', function (_, i) {
+      var spans = t.selectAll('tspan').data(lines).join(function (enter) {
+        return enter.append('tspan').attr('x', x);
+      }).text(String).attr('dy', function (_, i) {
         return i ? '1.25em' : 0;
       });
       m.t(t).attr('x', x).attr('y', y);
@@ -254,6 +256,7 @@
     function barsFrame(svg, opts, cfg) {
       var m = motion(opts);
       var f = useFrame(svg, opts, 'bars', m);
+      if (f.entering) m = motion({ animate: false }); // a new frame fades in whole, its contents already in place
       var W = opts.width;
       var H = opts.height;
       var catW = measure(svg, 't-cat', Store.groups.map(function (g) { return Store.labels[g]; }));
@@ -295,6 +298,11 @@
       var m = B.m;
       var x = B.x;
       var G = Store.groups;
+      // Each bar's middle as drawn now, before it moves: new whiskers start there and move with it.
+      var midNow = {};
+      f.layer('marks').selectAll('rect.bar').each(function (g) {
+        midNow[g] = Number(this.getAttribute('y')) + Number(this.getAttribute('height')) / 2;
+      });
 
       var rects = f.layer('marks').selectAll('rect.bar').data(G, String).join(function (enter) {
         return enter.append('rect').attr('class', 'bar').attr('x', x(0)).attr('width', 0).attr('y', function (g) {
@@ -317,10 +325,24 @@
       var capH = function (g) {
         return Math.min(10, B.band[g].h * 0.4);
       };
+      var mid = function (g) {
+        return B.band[g].mid;
+      };
+      var startMid = function (g) {
+        return g in midNow ? midNow[g] : mid(g);
+      };
+      // New whiskers and caps start at their final x on their bar's current middle and fade in.
+      var placeCi = function (sel, y) {
+        return sel.attr('x1', function (g) {
+          return x(cfg.ci(g)[0]);
+        }).attr('x2', function (g) {
+          return x(cfg.ci(g)[1]);
+        }).attr('y1', y).attr('y2', y);
+      };
       [['ci-halo', 'line'], ['ci', 'line']].forEach(function (spec) {
         var lines = f.layer('lines').selectAll('line.' + spec[0]).data(ciData, String).join(
           function (enter) {
-            var l = enter.append('line').attr('class', spec[0]);
+            var l = placeCi(enter.append('line').attr('class', spec[0]), startMid);
             if (m.on) l.attr('opacity', 0);
             return l;
           },
@@ -330,23 +352,26 @@
           }
         );
         lines.attr('data-group', String);
-        m.t(lines).attr('opacity', 1).attr('x1', function (g) {
-          return x(cfg.ci(g)[0]);
-        }).attr('x2', function (g) {
-          return x(cfg.ci(g)[1]);
-        }).attr('y1', function (g) {
-          return B.band[g].mid;
-        }).attr('y2', function (g) {
-          return B.band[g].mid;
-        });
+        placeCi(m.t(lines).attr('opacity', 1), mid);
       });
+      var placeCap = function (sel, y) {
+        return sel.attr('x1', function (d) {
+          return x(cfg.ci(d[0])[d[1]]);
+        }).attr('x2', function (d) {
+          return x(cfg.ci(d[0])[d[1]]);
+        }).attr('y1', function (d) {
+          return y(d[0]) - capH(d[0]) / 2;
+        }).attr('y2', function (d) {
+          return y(d[0]) + capH(d[0]) / 2;
+        });
+      };
       var caps = f.layer('lines').selectAll('line.ci-cap').data(cfg.ci ? G.flatMap(function (g) {
         return [[g, 0], [g, 1]];
       }) : [], function (d) {
         return d.join();
       }).join(
         function (enter) {
-          var l = enter.append('line').attr('class', 'ci-cap');
+          var l = placeCap(enter.append('line').attr('class', 'ci-cap'), startMid);
           if (m.on) l.attr('opacity', 0);
           return l;
         },
@@ -355,15 +380,7 @@
           exitFade(exit, m);
         }
       );
-      m.t(caps).attr('opacity', 1).attr('x1', function (d) {
-        return x(cfg.ci(d[0])[d[1]]);
-      }).attr('x2', function (d) {
-        return x(cfg.ci(d[0])[d[1]]);
-      }).attr('y1', function (d) {
-        return B.band[d[0]].mid - capH(d[0]) / 2;
-      }).attr('y2', function (d) {
-        return B.band[d[0]].mid + capH(d[0]) / 2;
-      });
+      placeCap(m.t(caps).attr('opacity', 1), mid);
 
       // Category labels: left of the bars, or above them in the compact variant.
       var cats = f.layer('labels').selectAll('text.t-cat').data(G, String).join(function (enter) {
@@ -436,6 +453,7 @@
     function scatterFrame(svg, opts, cfg) {
       var m = motion(opts);
       var f = useFrame(svg, opts, 'scatter', m);
+      if (f.entering) m = motion({ animate: false }); // a new frame fades in whole, its contents already in place
       var Y = Y_VARS[cfg.yVar];
       var W = opts.width;
       var H = opts.height;
@@ -635,12 +653,23 @@
       var name = function (k) {
         return k === 'all' ? 'Overall' : Store.labels[k];
       };
+      var color = function (k) {
+        return k === 'all' ? (cfg.byCondition ? C.ghost : C.ink) : C[k];
+      };
+      var keyMid = -5; // vertical middle of the name's x-height
+      var placeLeader = function (sel) {
+        return sel.attr('stroke', color).attr('x1', function (k) {
+          return at[k].ex + 4 - lx;
+        }).attr('y1', function (k) {
+          return at[k].ey - at[k].ly;
+        }).attr('x2', -2).attr('y2', keyMid);
+      };
       var labels = f.layer('labels').selectAll('g.dlabel').data(keys, String).join(
         function (enter) {
           var g = enter.append('g').attr('class', 'dlabel').attr('transform', function (k) {
             return 'translate(' + lx + ',' + at[k].ly + ')';
           });
-          g.append('line').attr('class', 'leader');
+          placeLeader(g.append('line').attr('class', 'leader'));
           g.append('path').attr('class', 'key');
           g.append('text').attr('class', 't-name');
           g.append('text').attr('class', 't-r').attr('y', 16);
@@ -656,16 +685,8 @@
       m.t(labels).attr('opacity', 1).attr('transform', function (k) {
         return 'translate(' + lx + ',' + at[k].ly + ')';
       });
-      var color = function (k) {
-        return k === 'all' ? (cfg.byCondition ? C.ghost : C.ink) : C[k];
-      };
-      var keyMid = -5; // vertical middle of the name's x-height
       labels.select('line.leader').attr('display', cfg.lines ? null : 'none');
-      m.t(labels.select('line.leader')).attr('stroke', color).attr('x1', function (k) {
-        return at[k].ex + 4 - lx;
-      }).attr('y1', function (k) {
-        return at[k].ey - at[k].ly;
-      }).attr('x2', -2).attr('y2', keyMid);
+      placeLeader(m.t(labels.select('line.leader')));
       // Key: the group's own marker, or a short solid/dashed stroke for the pooled line.
       labels.select('path.key').each(function (k) {
         var el = d3.select(this);

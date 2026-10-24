@@ -172,7 +172,31 @@ function probe() {
     return { state, active, expected, hed, problems };
   }
 
-  window.__probe = { midline, centerStep, activeStep, inspect, scaleFrom, translate, svg };
+  /**
+   * Geometry of the live narrative frame right now (mid-transition or settled): the frame's
+   * opacity, data-state, the plot and x-axis translates, and each CI whisker's y against the
+   * current middle of its bar.
+   */
+  function geometry() {
+    const fig = document.getElementById('story-figure');
+    const frame = svg().querySelector('g.frame:not(.exiting)');
+    const bar = (g) => frame.querySelector(`rect.bar[data-group="${g}"]`);
+    return {
+      state: fig.getAttribute('data-state'),
+      frame: frame.dataset.frame,
+      opacity: Number(getComputedStyle(frame).opacity),
+      plot: translate(frame.querySelector('g.plot')),
+      axisX: translate(frame.querySelector('.axis-x')),
+      cis: [...frame.querySelectorAll('line.ci')].map((l) => ({
+        group: l.dataset.group,
+        y1: Number(l.getAttribute('y1')),
+        y2: Number(l.getAttribute('y2')),
+        barMid: Number(bar(l.dataset.group).getAttribute('y')) + Number(bar(l.dataset.group).getAttribute('height')) / 2,
+      })),
+    };
+  }
+
+  window.__probe = { midline, centerStep, activeStep, inspect, scaleFrom, translate, svg, geometry };
 }
 
 const pageErrors = new WeakMap();
