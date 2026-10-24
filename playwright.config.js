@@ -45,7 +45,8 @@ module.exports = defineConfig({
   testDir: './tests',
   fullyParallel: true,
   retries: 0,
-  reporter: [['list']],
+  // CI also writes playwright-report/, which the workflow uploads when a run fails.
+  reporter: process.env.CI ? [['list'], ['html', { open: 'never' }]] : [['list']],
   use: { baseURL: 'http://localhost:4173' },
   webServer: {
     command: 'node tests/serve.js',

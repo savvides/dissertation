@@ -28,15 +28,15 @@ The whole site was built through iterative conversation with Claude Code. No han
 
 4. **Interactive charts.** The site uses D3.js to animate scatter plots and bar charts that respond to scrolling. The key moment is when dots get colorized by condition and the overall correlation visually falls apart.
 
-5. **Visual design.** An editorial design system with warm tones, serif typography, and generous whitespace. The goal was to feel like a magazine feature, not a dashboard.
+5. **Visual design.** A "Newsroom" direction: a white page, Libre Franklin for headlines and labels, Newsreader for the reading text, a distinct color and mark shape for each condition, and direct labels on the chart instead of a legend. The goal was to feel like an explainer in a newspaper, not a dashboard.
 
 6. **The Evidence Lab.** After the scrollytelling narrative, an interactive playground lets readers drive the same chart themselves — toggle overall vs. by-condition, swap the y-axis between learning gains and cognitive load, show or hide regression lines. The fallacy stops being a thing they watched and becomes a thing they can reproduce.
 
 7. **A personal coda and footer.** A first-person reflection closes the narrative ("Eight years later, I found a fallacy hiding in my own data."), and a three-column footer points to this write-up, my LinkedIn, and the open dataset.
 
-8. **Iteration.** Many rounds of conversation, refining the narrative, polishing the charts, adjusting the pacing. The AI handled the code. I handled the taste.
+8. **Iteration.** Many rounds of conversation, refining the narrative, polishing the charts, adjusting the pacing. The AI handled the code. I handled the taste. That included a full review of the first version, a round of corrections to claims the data didn't support, and then the Newsroom redesign described above.
 
-The entire thing is static HTML. No build tools, no server, no database. It's three static files plus a charting library, and it deploys on GitHub Pages for free.
+The entire thing is static HTML. No build tools, no server, no database. It's four static files plus a charting library, and it deploys on GitHub Pages for free.
 
 ## Try It Yourself
 
