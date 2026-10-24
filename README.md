@@ -16,10 +16,10 @@ The 2018 PhD study (n=108) asked whether VR headsets improve learning. VR did no
 ## What You'll See
 
 1. **The Experiment** — 108 participants randomly assigned to VR, desktop simulation, or video/text control
-2. **The Promise** — Simulations work, but VR doesn't beat desktop
+2. **The Promise** — Simulations work, but VR doesn't significantly beat desktop
 3. **The Deeper Question** — Presence as the theorized mechanism, with a convincing overall correlation
 4. **The Twist** — The ecological fallacy reveal: color the dots by condition and the correlation disappears
-5. **The Hidden Cost** — Cognitive load and the price of novelty
+5. **An Open Question** — The price of novelty? VR's cognitive load ran highest, but not significantly
 6. **The Evidence Lab** — An interactive scatter plot you can drive yourself: toggle overall vs. by-condition views, swap the y-axis between learning gains and cognitive load, and show or hide the regression lines to replay the fallacy on demand
 
 ## The Data
@@ -51,7 +51,7 @@ This entire site was built through conversation with [Claude Code](https://claud
 - Participants in high and medium immersion conditions scored significantly higher on knowledge tests at posttest and follow-up than the low immersion group
 - High and medium immersion groups reported significantly higher presence scores than the low immersion group
 - Higher immersion and presence correlated with higher knowledge scores
-- Presence was a significant predictor of posttest knowledge scores
+- Presence was a significant predictor of posttest knowledge scores (a 2026 reanalysis found this does not hold within conditions)
 
 ## Study Overview
 
@@ -98,7 +98,7 @@ These figures come from the 2018 analysis, which removed outliers. Descriptives 
 
 ## Updated Literature Review (2019–2026)
 
-The original dissertation's literature review cited sources through 2018. In 2026, an updated literature review was conducted to situate the study's findings within the current state of knowledge, covering seven years of rapid growth in VR education research — accelerated by the COVID-19 pandemic, advances in consumer VR hardware (Meta Quest, Apple Vision Pro), and a maturing theoretical understanding of immersive learning.
+The original dissertation's literature review cited sources through 2018. In 2026, an updated literature review was conducted to situate the study's findings within the current state of knowledge, drawing on papers published 2021–2025, a period of rapid growth in VR education research — accelerated by the COVID-19 pandemic, advances in consumer VR hardware (Meta Quest, Apple Vision Pro), and a maturing theoretical understanding of immersive learning.
 
 ### Method
 
@@ -110,7 +110,7 @@ An AI-powered academic literature search was conducted using [Consensus](https:/
 
 ### How New Evidence Aligns with the Study
 
-The post-2018 literature broadly validates the study's findings while providing new theoretical frameworks for interpreting them:
+The post-2018 literature is largely consistent with the study's findings while providing new theoretical frameworks for interpreting them:
 
 - **The CAMIL Model** (Makransky & Petersen, 2021) offers a theoretical framework predicting that presence mediates between immersion and learning outcomes — consistent with the original analysis, but challenged by the 2026 reanalysis
 - **"Platform is not destiny"** (Johnson-Glenberg et al., 2021) — the degree of embodied interaction matters more than display technology, consistent with the lack of a significant VR-desktop difference

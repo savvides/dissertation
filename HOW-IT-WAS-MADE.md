@@ -24,7 +24,7 @@ The whole site was built through iterative conversation with Claude Code. No han
 
 2. **Data preparation.** The original study data (de-identified, n=108) was already in a CSV. I made it available for visualization.
 
-3. **Narrative design.** Instead of presenting results in the traditional order, I restructured the story as a mystery: setup, promise, question, twist, resolution. The ecological fallacy became the narrative turning point.
+3. **Narrative design.** Instead of presenting results in the traditional order, I restructured the story as a mystery: setup, promise, question, twist, open question. The ecological fallacy became the narrative turning point.
 
 4. **Interactive charts.** The site uses D3.js to animate scatter plots and bar charts that respond to scrolling. The key moment is when dots get colorized by condition and the overall correlation visually falls apart.
 

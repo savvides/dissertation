@@ -13,6 +13,8 @@ and this project adheres to [Semantic Versioning](https://semver.org/spec/v2.0.0
 - **README and docs**: Removed overstated and unsourced claims, labeled dissertation-reported figures, deduplicated literature-search counts, and corrected the page count and file map.
 - **dissertation.md**: Tables 6 and 7 now match the PDF; the 2019–2026 addendum no longer treats the non-significant cognitive-load difference as a finding.
 - **Favicon**: Added an inline favicon, removing a 404 on every page load.
+- **Evidence Lab**: Rapid toggle clicks are no longer dropped, and a stale static aria-label that drifted out of sync with the chart was removed.
+- **Footer**: Removed an inaccurate author bio from the About column.
 
 ### Changed
 - **d3**: Pinned to 7.9.0 on jsDelivr with a Subresource Integrity hash.
