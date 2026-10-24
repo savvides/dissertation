@@ -27,6 +27,7 @@ The story, its order and the corrected 2.1.1 copy are unchanged. The page is reb
 - **Lab chart semantics**: The Lab chart is a named `role="group"`, not `role="img"` like the narrative chart, because it contains focusable dots and axe's nested-interactive rule forbids focusable content inside an img.
 - **Images**: `docs/screenshot.png` is now 1440×900 and `docs/social-preview.png` is exactly 1200×630, both showing step 4.
 - **Docs**: The visual-design step in `HOW-IT-WAS-MADE.md` describes the Newsroom direction.
+- **CI**: Runs on pull requests into any branch and on manual dispatch, and retries a failed test once on CI. Deploy still runs only after CI passes on a push to `main`.
 
 ### Removed
 - **Old design**: The warm gold palette and serif display type, the reading progress bar, and the floating hover tooltips.
