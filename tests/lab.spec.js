@@ -435,6 +435,50 @@ test.describe('Evidence Lab interrupted', () => {
     expect(r.problems).toEqual([]);
     expect(pageErrorsOf(page)).toEqual([]);
   });
+
+  test('9. a pinned dot’s ring never leaves its dot while a y-switch animates (C02)', async ({ page }) => {
+    await openLab(page);
+    const order = await byX(page);
+    await page.locator('#lab .seg[data-control="lines"] [aria-checked="true"]').focus();
+    await page.keyboard.press('Tab');
+    await page.keyboard.press('End');
+    const pinnedI = order[order.length - 1];
+    expect(await focusedDot(page)).toBe(pinnedI);
+    await expect(page.locator(`${LAB_SVG} circle.emph-ring`)).toHaveCount(1);
+    // Switch y from inside the page (focus stays on the dot) and sample the ring against its dot.
+    const samples = await page.evaluate(
+      async ({ sel, at }) => {
+        const { translate } = window.__probe;
+        const svg = document.querySelector(sel);
+        const sample = () => {
+          const ring = svg.querySelector('circle.emph-ring');
+          if (!ring) return { ring: false };
+          const [cx, cy] = translate(svg.querySelector(`.dot[data-i="${ring.__data__.i}"]`));
+          return { ring: true, i: ring.__data__.i, d: Math.hypot(Number(ring.getAttribute('cx')) - cx, Number(ring.getAttribute('cy')) - cy) };
+        };
+        document.querySelector('#lab .seg[data-control="y"] [data-value="cognitive_load"]').click();
+        const t0 = performance.now();
+        const out = [];
+        for (const ms of at) {
+          await new Promise((r) => setTimeout(r, ms - (performance.now() - t0)));
+          out.push({ ms, ...sample() });
+        }
+        return out;
+      },
+      { sel: LAB_SVG, at: [50, 150, 300, 400, 600] }
+    );
+    for (const s of samples) {
+      if (s.ring) expect(s.d, `ring ${s.d.toFixed(1)}px from its dot at ${s.ms}ms`).toBeLessThanOrEqual(3);
+    }
+    // Once settled, the pinned dot has its ring back, centred on it.
+    await settled(page, 'overall cognitive_load on');
+    await expect(page.locator(`${LAB_SVG} circle.emph-ring`)).toHaveCount(1);
+    await page.waitForTimeout(300); // the ring's fade-in
+    const r = await labInspect(page);
+    expect(r.problems).toEqual([]);
+    expect(await page.evaluate((sel) => document.querySelector(`${sel} circle.emph-ring`).__data__.i, LAB_SVG)).toBe(pinnedI);
+    expect(pageErrorsOf(page)).toEqual([]);
+  });
 });
 
 test.describe('Evidence Lab from file://', () => {

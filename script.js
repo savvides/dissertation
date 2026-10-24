@@ -791,9 +791,10 @@
 
     /**
      * Mark el[data-state] once the chart drawn into svg has settled: now when the draw was instant,
-     * otherwise when its step transition ends. A newer call supersedes an older pending one.
+     * otherwise when its step transition ends, then call done (optional). A newer call supersedes
+     * an older pending one, whose done never runs.
      */
-    settle: function (svg, el, state, animated) {
+    settle: function (svg, el, state, animated, done) {
       var gen = (el.__settleGen = (el.__settleGen || 0) + 1);
       svg.interrupt('settle');
       if (!animated) {
@@ -802,7 +803,9 @@
       }
       el.removeAttribute('data-state');
       svg.transition('settle').duration(Charts.STEP_MS).end().then(function () {
-        if (gen === el.__settleGen) el.setAttribute('data-state', state);
+        if (gen !== el.__settleGen) return;
+        el.setAttribute('data-state', state);
+        if (done) done();
       }, function () {});
     },
   };
@@ -1003,6 +1006,7 @@
     var pinned = null; // point inspected by click, tap or keyboard focus
     var hover = null; // point previewed under a mouse or pen
     var current = byX[0]; // the dot holding the chart's single tab stop
+    var moving = false; // dots are mid-transition: no ring until they land, or it would mark empty space
     var drawn = { width: 0, height: 0 };
 
     var reduced = function () {
@@ -1058,7 +1062,7 @@
     function render() {
       var shown = hover || pinned;
       setText(readout, shown ? readoutText(shown) : '');
-      Charts.emphasize(svg, shown || focusVisiblePoint(), { reducedMotion: reduced() });
+      Charts.emphasize(svg, moving ? null : shown || focusVisiblePoint(), { reducedMotion: reduced() });
       dots().attr('tabindex', function (p) {
         return p === current ? 0 : -1;
       }).attr('aria-selected', function (p) {
@@ -1092,8 +1096,12 @@
       setText(desc, 'Scatter plot of presence against ' + Y_NAME[state.y] + ' for all ' + Store.points.length +
         ' participants, ' + (state.view === 'overall' ? 'in one color' : 'colored by condition') +
         (state.lines === 'on' ? ', with trend lines. ' : '. ') + text);
+      moving = !instant;
       render();
-      Layout.settle(svg, section, key(), !instant);
+      Layout.settle(svg, section, key(), moving, function () {
+        moving = false;
+        render();
+      });
     }
 
     // ---- Controls: radiogroups with a roving tabindex; arrows move the checked option. ----
