@@ -296,6 +296,18 @@ async function expectTruePixelText(page, selector = '#story-figure svg.chart-svg
   for (const t of r.texts) expect(t.px, `rendered size of "${t.text}"`).toBeGreaterThanOrEqual(12);
 }
 
+/** Whether the chart svg has been redrawn at its container's current content-box size (after a resize). */
+const svgFits = (page, selector = '#story-figure svg.chart-svg') =>
+  page.evaluate((selector) => {
+    const svg = document.querySelector(selector);
+    const wrap = svg.parentElement;
+    const cs = getComputedStyle(wrap);
+    const box = wrap.getBoundingClientRect();
+    const w = box.width - parseFloat(cs.paddingLeft) - parseFloat(cs.paddingRight);
+    const h = box.height - parseFloat(cs.paddingTop) - parseFloat(cs.paddingBottom);
+    return Math.abs(Number(svg.getAttribute('width')) - w) <= 1 && Math.abs(Number(svg.getAttribute('height')) - h) <= 1;
+  }, selector);
+
 /** Emphasis rings in a chart right now: the dot each one marks and its group's opacity. */
 const ringsOf = (page, selector) =>
   page.evaluate(
@@ -307,4 +319,4 @@ const ringsOf = (page, selector) =>
     selector
   );
 
-module.exports = { STATES, HEADLINES, probe, openPage, pageErrorsOf, twoFrames, goToStep, recordStepOrder, expectTruePixelText, ringsOf };
+module.exports = { STATES, HEADLINES, probe, openPage, pageErrorsOf, twoFrames, goToStep, recordStepOrder, expectTruePixelText, ringsOf, svgFits };

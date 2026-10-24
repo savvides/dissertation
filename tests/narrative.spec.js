@@ -1,7 +1,7 @@
 // Narrative charts (spec §5): step activation, true-pixel text, resize, bars with CIs, the morphing
 // scatter, grid layering and chart text alternatives. Runs in every viewport project, both engines.
 const { test, expect } = require('@playwright/test');
-const { STATES, HEADLINES, openPage, pageErrorsOf, goToStep, recordStepOrder, expectTruePixelText, ringsOf } = require('./chart-helpers');
+const { STATES, HEADLINES, openPage, pageErrorsOf, goToStep, recordStepOrder, expectTruePixelText, ringsOf, svgFits } = require('./chart-helpers');
 
 const inspect = (page) => page.evaluate(() => window.__probe.inspect());
 
@@ -38,10 +38,10 @@ test.describe('narrative', () => {
     await page.setViewportSize({ width: 1440, height: 900 });
     await goToStep(page, 4);
     await page.setViewportSize({ width: 390, height: 844 });
-    await page.waitForTimeout(400);
+    await expect.poll(() => svgFits(page)).toBe(true);
     await expectTruePixelText(page);
     await page.setViewportSize({ width: 1440, height: 900 });
-    await page.waitForTimeout(400);
+    await expect.poll(() => svgFits(page)).toBe(true);
     await expectTruePixelText(page);
   });
 
@@ -182,7 +182,7 @@ test.describe('narrative with motion', () => {
     await page.mouse.move(2, 2);
     await page.mouse.move(pt.x, pt.y);
     await expect.poll(() => ringsOf(page, SVG)).toEqual([{ i: pt.i, opacity: 1 }]);
-    await page.waitForTimeout(400);
+    await page.waitForTimeout(400); // longer than a ring fade: the ring stays
     expect(await ringsOf(page, SVG)).toEqual([{ i: pt.i, opacity: 1 }]);
   });
 });

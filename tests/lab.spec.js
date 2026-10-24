@@ -2,7 +2,7 @@
 // summary, the cognitive-load y domain, keyboard and pointer inspection with a readout panel, and
 // clean settling after interrupted transitions. Expected values come from window.STUDY or the spec.
 const { test, expect } = require('@playwright/test');
-const { openPage, pageErrorsOf, expectTruePixelText, ringsOf } = require('./chart-helpers');
+const { openPage, pageErrorsOf, expectTruePixelText, ringsOf, svgFits } = require('./chart-helpers');
 
 // Spec §6.4: the exact summary sentences for the current data.
 const SUMMARIES = {
@@ -312,7 +312,7 @@ test.describe('Evidence Lab', () => {
     await page.keyboard.press('ArrowLeft');
     expect(await focusedDot(page)).toBe(order[0]);
     await expect.poll(() => ringsOf(page, LAB_SVG)).toEqual([{ i: order[0], opacity: 1 }]);
-    await page.waitForTimeout(400);
+    await page.waitForTimeout(400); // longer than a ring fade: the ring stays
     expect(await ringsOf(page, LAB_SVG)).toEqual([{ i: order[0], opacity: 1 }]);
     expect((await labInspect(page)).problems).toEqual([]);
 
@@ -380,7 +380,7 @@ test.describe('Evidence Lab', () => {
     await choose(page, 'view', 'condition');
     for (const [width, height] of [[1440, 900], [390, 844], [844, 390], [320, 640], [1440, 900]]) {
       await page.setViewportSize({ width, height });
-      await page.waitForTimeout(400);
+      await expect.poll(() => svgFits(page, LAB_SVG)).toBe(true);
       await expectTruePixelText(page, LAB_SVG);
       expect((await labInspect(page)).problems, `${width}×${height}`).toEqual([]);
     }
