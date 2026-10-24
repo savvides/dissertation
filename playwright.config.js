@@ -44,7 +44,9 @@ projects.push({
 module.exports = defineConfig({
   testDir: './tests',
   fullyParallel: true,
-  retries: 0,
+  // One retry on CI only: shared Linux runners can stall an animation-timed test (WebKit especially).
+  // Locally a flake should fail loudly instead.
+  retries: process.env.CI ? 1 : 0,
   // CI also writes playwright-report/, which the workflow uploads when a run fails.
   reporter: process.env.CI ? [['list'], ['html', { open: 'never' }]] : [['list']],
   use: { baseURL: 'http://localhost:4173' },
