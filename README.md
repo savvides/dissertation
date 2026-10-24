@@ -7,7 +7,7 @@
 
 An interactive data story exploring VR, learning, and a surprising statistical fallacy.
 
-![Step 4, "Look Closer": dots colored and shaped by condition, with a separate trend line per group that sits nearly flat while the pooled dashed line climbs](docs/screenshot.png)
+![Step 4, "Look Closer": dots colored and shaped by condition, each group with its own weak, non-significant trend line, and a dashed line for all 108 pooled that climbs far more steeply](docs/screenshot.png)
 
 The 2018 PhD study (n=108) asked whether VR headsets improve learning. VR did not significantly beat a desktop version of the same simulation (Cohen's d = 0.23, p = .33; the study was too small to detect a difference that size). Both simulation groups far outperformed a video-and-handout control (d > 2.4), though that comparison also changed the content and the session length. A 2026 reanalysis added something the original paper missed: the presence-learning correlation is an ecological fallacy — real at the group level, gone within each condition.
 
@@ -15,7 +15,7 @@ The 2018 PhD study (n=108) asked whether VR headsets improve learning. VR did no
 
 ## What You'll See
 
-The page opens on a **hero strip**: 108 marks in three rows (35 VR headset, 36 desktop, 37 video and text), one mark per participant. From there, a sticky chart redraws as you scroll through five steps, then hands over to an interactive Lab.
+The page opens on a **hero strip**: 108 marks grouped by condition (35 VR headset, 36 desktop, 37 video and text), one mark per participant. From there, a sticky chart redraws as you scroll through five steps, then hands over to an interactive Lab.
 
 1. **The Experiment** — 108 participants randomly assigned to VR, desktop simulation, or video/text control
 2. **The Promise** — Simulations work, but VR doesn't significantly beat desktop
@@ -24,7 +24,7 @@ The page opens on a **hero strip**: 108 marks in three rows (35 VR headset, 36 d
 5. **An Open Question** — The price of novelty? VR's cognitive load ran highest, but not significantly. The page frames novelty cost as a hypothesis the study raises, not one it confirms.
 6. **The Evidence Lab** — An interactive scatter plot you can drive yourself: toggle overall vs. by-condition views, swap the y-axis between learning gains and cognitive load, and show or hide the trend lines to replay the fallacy on demand. Hover, tap or focus any dot (or arrow through them with the keyboard) and a readout shows that participant's values; a summary sentence under the chart restates the current view from the computed statistics.
 
-Every number on the page is computed from `data.csv` by a script and stored in `data.js`; the browser never calculates a statistic.
+The charts, their text descriptions and the Lab's readout and summary take every number from `data.js`, which `scripts/csv_to_js.js` generates from `data.csv`; the browser never calculates a statistic. The statistics quoted in the text (the hero strip's counts, step 4's within-group r values and step 5's cognitive-load figures) are written by hand, and the test suite checks them against `data.js`.
 
 ## The Data
 
