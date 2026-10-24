@@ -75,7 +75,8 @@
     var EXIT_MS = 300;
     var EMPH_MS = 150;
     var COMPACT_BELOW = 240; // plot width (px) below which the compact variant is used
-    var LAYERS = ['grid', 'axes', 'marks', 'lines', 'labels', 'emph'];
+    // Trend lines sit under the dots (no participant is hidden by a line); CI whiskers ('lines') over the bars.
+    var LAYERS = ['grid', 'axes', 'trends', 'marks', 'lines', 'labels', 'emph'];
     // Paint tokens come from the CSS custom properties (spec §4.5), read once the stylesheet applies.
     var C = {};
     function readTokens() {
@@ -601,7 +602,7 @@
       var width = function (k) {
         return ghost(k) ? 1.75 : lineW;
       };
-      var trends = f.layer('lines').selectAll('g.trend-g').data(keys, String).join(
+      var trends = f.layer('trends').selectAll('g.trend-g').data(keys, String).join(
         function (enter) {
           var g = enter.append('g').attr('class', 'trend-g');
           // New lines start on the pooled line and swing out to their own slope.

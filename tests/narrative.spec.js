@@ -86,7 +86,7 @@ test.describe('narrative', () => {
     for (const s of ['r = .16', 'r = −.19', 'r = .12', 'r = .51']) expect(labels).toContain(s);
   });
 
-  test('6. grid lines sit in the bottom layer, before the marks', async ({ page }) => {
+  test('6. grid lines sit in the bottom layer, before the marks; trend lines sit under the dots', async ({ page }) => {
     for (const n of [2, 4]) {
       await goToStep(page, n);
       const order = await page.evaluate(() => {
@@ -97,9 +97,14 @@ test.describe('narrative', () => {
           first: plot.firstElementChild === grid,
           gridLines: grid ? grid.querySelectorAll('line').length : 0,
           before: !!(grid && marks && grid.compareDocumentPosition(marks) & Node.DOCUMENT_POSITION_FOLLOWING),
+          // No participant may be hidden by a trend line, so every trend path paints before the dots.
+          trendsUnder: [...plot.querySelectorAll('path.trend')].every(
+            (t) => !!(t.compareDocumentPosition(marks) & Node.DOCUMENT_POSITION_FOLLOWING)
+          ),
+          trends: plot.querySelectorAll('path.trend').length,
         };
       });
-      expect(order, `step ${n}`).toEqual({ first: true, gridLines: expect.any(Number), before: true });
+      expect(order, `step ${n}`).toEqual({ first: true, gridLines: expect.any(Number), before: true, trendsUnder: true, trends: n === 4 ? 4 : 0 });
       expect(order.gridLines).toBeGreaterThan(0);
     }
   });
