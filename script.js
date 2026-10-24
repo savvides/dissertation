@@ -285,7 +285,7 @@
       axisX(f, x, compact ? cfg.compactTicks : cfg.ticks, axisY, { width: plotW, grid: [compact ? labelH - 4 : 0, axisY], startFirst: compact }, m);
       oneLine(f.layer('axes'), 'zero', { x1: 0, x2: 0, y1: compact ? labelH - 4 : 0, y2: axisY }, m);
       axisTitle(f, 'x', titleLines, plotW + right - 1, axisY + 7 + 13 + 8 + 12, 'end', m);
-      return { f: f, m: m, x: x, band: band, compact: compact, left: left, plotW: plotW };
+      return { f: f, m: m, x: x, band: band, compact: compact, left: left };
     }
 
     /**
@@ -747,10 +747,6 @@
 
     return {
       STEP_MS: STEP_MS,
-      barsFrame: barsFrame,
-      scatterFrame: scatterFrame,
-      bars: bars,
-      scatter: scatter,
       emphasize: emphasize,
 
       participants: function (svg, opts) {
@@ -855,40 +851,30 @@
       return S.cor.learning_gains[g].p < 0.05;
     });
 
-    // Captions are spec §5.3; descriptions (§5.5) are generated from stats.
+    // Captions (spec §5.3) are read from each step's .card-cap; descriptions (§5.5) are generated from stats.
     var STEPS = [
       {
         state: 'participants',
-        hed: 'Three groups of nearly equal size',
-        dek: 'Participants per condition, randomly assigned',
         desc: 'Bar chart. Participants per condition: ' + G.map(function (g) { return L[g] + ' ' + S.groups[g].n; }).join(', ') + '.',
       },
       {
         state: 'gains',
-        hed: 'Both simulations far outpaced the video',
-        dek: 'Average points gained on a 10-question safety test. Lines show 95% confidence intervals.',
         desc: 'Bar chart. Average learning gain in points, with 95% confidence intervals: ' + withCi('learning_gains') + '.',
       },
       {
         state: 'scatterPooled',
-        hed: 'Pooled, presence tracks learning',
-        dek: 'Each dot is one participant (n = 108). Points are jittered slightly so overlapping participants are visible.',
         desc: 'Scatter plot of presence against learning gain for all ' + S.cor.learning_gains.all.n +
           ' participants. Pooled, the trend rises: r = ' + Format.r(S.cor.learning_gains.all.r) + ' (' +
           Format.p(S.cor.learning_gains.all.p) + ').',
       },
       {
         state: 'scatterByCondition',
-        hed: 'Within each group, the link fades',
-        dek: 'Solid lines: trend within each condition. Dashed: all 108 pooled.',
         desc: 'Scatter plot of presence against learning gain, colored by condition. Within each condition: ' +
           Format.list(within) + '; ' + (sig.length ? Format.list(sig.map(function (g) { return L[g]; })) : 'none') +
           ' statistically significant. Pooled, r = ' + Format.r(S.cor.learning_gains.all.r) + '.',
       },
       {
         state: 'load',
-        hed: 'VR felt hardest, but not significantly',
-        dek: 'Self-reported load, two NASA-TLX items. Lines show 95% confidence intervals.',
         desc: 'Bar chart. Average cognitive load on a 0 to 12 scale, with 95% confidence intervals: ' + withCi('cognitive_load') + '.',
       },
     ];
@@ -921,8 +907,8 @@
     function show(i, animate) {
       var s = STEPS[i];
       if (i !== shown) {
-        hed.textContent = s.hed;
-        dek.textContent = s.dek;
+        hed.textContent = steps[i].querySelector('.card-cap-hed').textContent;
+        dek.textContent = steps[i].querySelector('.card-cap-dek').textContent;
         desc.textContent = s.desc;
       }
       shown = i;
