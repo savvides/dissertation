@@ -50,10 +50,15 @@
     plain: function (v) {
       return (v < 0 ? MINUS : '') + Math.abs(v);
     },
-    /** Spec §6.4 p-text. */
+    /**
+     * Spec §6.4 p-text, with no-break spaces so "p < .001" never wraps. Two decimals, or more when
+     * rounding would make a significant p read .05 (.0496 → .0496) or .00 (.003).
+     */
     p: function (p) {
-      if (p < 0.001) return 'p < .001';
-      return 'p = ' + Format.r(p) + (p < 0.05 ? '' : ', not statistically significant');
+      if (p < 0.001) return 'p\u00a0<\u00a0.001';
+      var d = 2;
+      while (p < 0.05 && (Number(p.toFixed(d)) >= 0.05 || Number(p.toFixed(d)) === 0)) d++;
+      return 'p\u00a0=\u00a0' + p.toFixed(d).replace(/^0/, '') + (p < 0.05 ? '' : ', not statistically significant');
     },
     /** "a, b and c" */
     list: function (items) {

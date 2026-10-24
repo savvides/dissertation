@@ -400,6 +400,26 @@ test.describe('Evidence Lab', () => {
     await expect(page.locator(`${LAB_SVG} .dot[aria-selected="true"]`)).toHaveCount(0);
   });
 
+  test('14. p-text: no-break spaces, and rounding never turns a significant p into .05 or .00 (§6.4)', async ({ page }) => {
+    await choose(page, 'y', 'cognitive_load');
+    // The Lab reads window.STUDY.stats live; each redraw (here a trend-line toggle) rebuilds the summary.
+    const pText = (p) =>
+      page.evaluate((p) => {
+        window.STUDY.stats.cor.cognitive_load.all.p = p;
+        document.querySelector('#lab .seg[data-control="lines"] [aria-checked="false"]').click();
+        return document.querySelector('#lab p.lab-summary').textContent.match(/\((.*)\)/)[1];
+      }, p);
+    const cases = [
+      [2e-8, 'p < .001'],
+      [0.003, 'p = .003'],
+      [0.046, 'p = .046'],
+      [0.0496, 'p = .0496'],
+      [0.05, 'p = .05, not statistically significant'],
+      [0.2246, 'p = .22, not statistically significant'],
+    ];
+    for (const [p, want] of cases) expect(await pText(p), `p = ${p}`).toBe(want.replace(/ ([<=]) /, '\u00a0$1\u00a0'));
+  });
+
   test('12. the Lab chart is a named group: its dots are focusable, so it cannot be an img (§5.5)', async ({ page }) => {
     const svg = page.locator(LAB_SVG);
     await expect(svg).toHaveAttribute('role', 'group');
