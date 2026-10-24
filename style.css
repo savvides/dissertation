@@ -1,459 +1,624 @@
-/* ========================================
-   Editorial Redesign — Warm Academic Style
-   ======================================== */
+/* Newsroom Explainer (v3.0.0). Light theme only.
+   Tiers (spec §4.1): phone is the default; "wide" and "short" override it below.
+   Never set overflow on an ancestor of #story-figure: iOS Safari stops honoring sticky. */
 
+/* ---------- Tokens (spec §4.5) ---------- */
 :root {
-    --bg-color: #FAF8F5;
-    --text-color: #2D2A26;
-    --vr-color: #8B3A3A;
-    --desktop-color: #5C6B73;
-    --control-color: #3A5A8B;
-    --accent-color: #C4A35A;
-    --axis-color: #D4CFC8;
-    --dot-neutral: #A39E96;
+    color-scheme: light;
+    --bg: #FFFFFF;
+    --ink: #121212;
+    --text: #262626;
+    --muted: #5E5E5E;
+    --rule: #121212;
+    --axis: #767676;
+    --grid: #E8E8E8;
+    --track: #F2F2F2;
+    --accent: #FFDD33; /* fill only, never text */
+    --high: #D0450C;
+    --medium: #2A6FDB;
+    --low: #3A3A3A;
+    --neutral: #767676;
+    --ghost: #6B6B6B;
 
-    --font-display: 'Playfair Display', Georgia, 'Times New Roman', serif;
-    --font-body: 'Libre Baskerville', Georgia, serif;
-    --font-ui: 'Inter', 'Helvetica Neue', Helvetica, Arial, sans-serif;
+    --font-ui: 'Libre Franklin', -apple-system, BlinkMacSystemFont, 'Segoe UI', Helvetica, Arial, sans-serif;
+    --font-text: 'Newsreader', Georgia, 'Times New Roman', serif;
+
+    --gutter: 16px;
+    --band-h: max(47svh, 360px);
 }
 
-/* ---- Reset & Base ---- */
+/* ---------- Base ---------- */
+*, *::before, *::after { box-sizing: border-box; }
 
-*, *::before, *::after {
-    box-sizing: border-box;
+html {
+    -webkit-text-size-adjust: 100%;
+    text-size-adjust: 100%;
 }
 
-body, html {
+body {
     margin: 0;
-    padding: 0;
-    font-family: var(--font-body);
-    background-color: var(--bg-color);
-    color: var(--text-color);
-    line-height: 1.75;
+    background: var(--bg);
+    color: var(--text);
+    font-family: var(--font-text);
+    font-size: 18px;
+    line-height: 1.55;
     -webkit-font-smoothing: antialiased;
 }
 
-h1, h2, h3, h4, h5, h6 {
-    font-family: var(--font-display);
-    font-weight: 400;
-    margin-top: 0;
-    line-height: 1.3;
-}
+h1, h2, h3 { margin: 0; color: var(--ink); font-family: var(--font-ui); font-weight: 800; text-wrap: balance; }
+p { margin: 0; }
+em { font-style: italic; }
 
 a {
-    color: var(--vr-color);
+    color: var(--ink);
     text-decoration: underline;
     text-decoration-thickness: 1px;
-    text-underline-offset: 2px;
+    text-underline-offset: 3px;
+}
+a:hover { text-decoration-thickness: 2px; }
+
+/* The one highlighter mark on the page (step 4's key term). */
+mark {
+    color: var(--ink);
+    padding: 0 2px;
+    margin: 0 -1px;
+    background: linear-gradient(transparent 12%, var(--accent) 12%, var(--accent) 92%, transparent 92%);
+    -webkit-box-decoration-break: clone;
+    box-decoration-break: clone;
 }
 
-a:hover {
-    color: var(--accent-color);
+/* Focus ring: 3px ink outline outside a 2px white offset, on every interactive element. */
+:focus-visible {
+    outline: 3px solid var(--ink);
+    outline-offset: 2px;
+    box-shadow: 0 0 0 2px var(--bg);
 }
 
-/* ---- Progress Bar ---- */
-
-#progress-bar {
-    position: fixed;
-    top: 0;
-    left: 0;
-    height: 3px;
-    width: 0%;
-    background-color: var(--accent-color);
-    z-index: 1000;
-    transition: width 50ms linear;
-}
-
-/* ---- Hero Section ---- */
-
-#hero {
-    min-height: 100vh;
-    display: flex;
-    flex-direction: column;
-    align-items: center;
-    justify-content: center;
-    text-align: center;
-    padding: 2rem;
-}
-
-#hero h1 {
-    font-family: var(--font-display);
-    font-weight: 700;
-    font-size: 2rem;
-    max-width: 700px;
-    margin-bottom: 1.5rem;
-    line-height: 1.25;
-}
-
-#hero .hook {
-    font-family: var(--font-body);
-    font-style: italic;
-    font-size: 1.15rem;
-    margin-bottom: 1rem;
-    opacity: 0.85;
-}
-
-#hero .author {
-    font-family: var(--font-ui);
-    font-size: 0.85rem;
-    letter-spacing: 0.03em;
-    opacity: 0.6;
-    margin-bottom: 3rem;
-}
-
-.scroll-indicator {
-    display: flex;
-    flex-direction: column;
-    align-items: center;
-    gap: 0.25rem;
-    opacity: 0.5;
-    animation: pulse 2.5s ease-in-out infinite;
-    transition: opacity 0.6s ease;
-}
-
-.scroll-indicator span {
-    font-family: var(--font-ui);
-    font-size: 0.75rem;
-    letter-spacing: 0.15em;
-    text-transform: uppercase;
-}
-
-.scroll-indicator.hidden {
-    opacity: 0;
-    pointer-events: none;
-}
-
-@keyframes pulse {
-    0%, 100% { transform: translateY(0); }
-    50% { transform: translateY(6px); }
-}
-
-/* ---- Scrolltelling Layout ---- */
-
-#scroll-container {
-    display: flex;
-    flex-direction: column-reverse;
-    position: relative;
-}
-
-#text-column {
-    padding: 0 1.5rem;
-    z-index: 5;
-}
-
-/* ---- Steps ---- */
-
-.step {
-    padding: 3rem 1.5rem;
-    margin-bottom: 60vh;
-    border-left: 4px solid transparent;
-    opacity: 0.4;
-    transition: opacity 0.4s ease, border-color 0.4s ease;
-}
-
-.step:last-child {
-    margin-bottom: 20vh;
-}
-
-.step.active {
-    opacity: 1;
-    border-left-color: var(--accent-color);
-}
-
-.step-label {
-    display: block;
-    font-family: var(--font-ui);
-    font-weight: 500;
-    font-size: 0.8rem;
-    letter-spacing: 0.12em;
-    text-transform: uppercase;
-    color: var(--accent-color);
-    margin-bottom: 0.75rem;
-}
-
-.step h2 {
-    font-family: var(--font-display);
-    font-size: 1.8rem;
-    margin-bottom: 1rem;
-}
-
-.step p {
-    font-size: 1.05rem;
-    margin-bottom: 1rem;
-}
-
-.step p:last-child {
-    margin-bottom: 0;
-}
-
-/* ---- Chart Container ---- */
-
-#chart-container {
-    position: sticky;
-    top: 0;
-    height: 40vh;
-    width: 100%;
-    display: flex;
-    align-items: center;
-    justify-content: center;
-    z-index: 10;
-    padding: 1rem;
-    background-color: var(--bg-color);
-}
-
-/* ---- Coda ---- */
-
-#coda {
-    max-width: 640px;
-    margin: 0 auto;
-    padding: 6rem 1.5rem 3rem;
-    text-align: center;
-}
-
-#coda h2 {
-    font-size: 1.8rem;
-    margin-bottom: 1.5rem;
-}
-
-#coda p {
-    font-size: 1.05rem;
-    margin-bottom: 1.25rem;
-    text-align: left;
-}
-
-/* ---- Chart Tooltip ---- */
-
-.chart-tooltip {
-    position: absolute;
-    background: var(--text-color);
-    color: var(--bg-color);
-    font-family: var(--font-ui);
-    font-size: 0.75rem;
-    padding: 0.4rem 0.6rem;
-    border-radius: 4px;
-    pointer-events: none;
-    opacity: 0;
-    transition: opacity 0.15s ease;
-    z-index: 100;
+.visually-hidden {
+    position: absolute !important;
+    width: 1px;
+    height: 1px;
+    margin: -1px;
+    padding: 0;
+    border: 0;
+    clip: rect(0 0 0 0);
+    clip-path: inset(50%);
     white-space: nowrap;
 }
 
-/* ---- Evidence Lab ---- */
+/* ---------- Hero (spec §4.2) ---------- */
+#hero {
+    display: flex;
+    flex-direction: column;
+    justify-content: center;
+    min-height: 100svh;
+    padding: 24px var(--gutter);
+    border-top: 6px solid var(--rule);
+}
 
-#evidence-lab {
-    max-width: 800px;
+.hero-inner,
+.scroll-cue {
+    width: 100%;
+    max-width: 1200px;
     margin: 0 auto;
-    padding: 2rem 1.5rem 4rem;
-    border-top: 1px solid var(--axis-color);
-    margin-top: 2rem;
 }
 
-.lab-header {
-    text-align: center;
-    margin-bottom: 2rem;
+.hero-title {
+    font-size: clamp(32px, 8.5vw, 52px);
+    line-height: 1.02;
+    letter-spacing: -0.028em;
 }
 
-#evidence-lab h2 {
-    font-size: 1.8rem;
-    margin-bottom: 1rem;
+.hero-kicker {
+    display: block;
+    margin: 0 0 10px;
+    font-size: clamp(17px, 4.4vw, 22px);
+    font-weight: 600;
+    line-height: 1.2;
+    letter-spacing: -0.005em;
 }
 
-.lab-intro {
-    font-family: var(--font-body);
-    font-size: 1rem;
-    line-height: 1.7;
-    max-width: 580px;
+.hero-hed { display: block; }
+
+.hook {
+    max-width: 52ch;
+    margin-top: 12px;
+    font-size: clamp(19px, 5vw, 26px);
+    font-style: italic;
+    line-height: 1.3;
+}
+
+/* Participant strip: one mark per participant, in the condition colors and shapes. */
+.hero-strip {
+    display: grid;
+    grid-template-columns: minmax(0, 1fr);
+    gap: 10px clamp(16px, 2.6vw, 32px);
+    margin: 20px 0 0;
+    padding: 0;
+    list-style: none;
+}
+
+.strip-label {
+    display: block;
+    margin: 0 0 5px;
+    font-family: var(--font-ui);
+    font-size: 13px;
+    font-weight: 600;
+    line-height: 1.2;
+    color: var(--ink);
+}
+
+.strip-n { color: var(--muted); font-weight: 400; font-variant-numeric: tabular-nums; }
+[data-group="High"] .strip-name { color: var(--high); }
+[data-group="Medium"] .strip-name { color: var(--medium); }
+[data-group="Low"] .strip-name { color: var(--low); }
+
+.strip-marks {
+    display: block;
+    width: 100%;
+    max-width: 333px;
+    height: auto;
+}
+
+.strip-marks--high .mk { fill: var(--high); stroke: var(--bg); stroke-width: 0.7; }
+.strip-marks--medium .mk { fill: var(--bg); stroke: var(--medium); stroke-width: 1.4; }
+.strip-marks--low .mk { fill: var(--low); stroke: var(--bg); stroke-width: 0.7; }
+
+.byline {
+    margin-top: 18px;
+    padding-top: 10px;
+    border-top: 1px solid var(--grid);
+    font-family: var(--font-ui);
+    font-size: 14px;
+    line-height: 1.4;
+    color: var(--muted);
+}
+
+.byline-name { color: var(--ink); font-weight: 600; }
+
+.scroll-cue {
+    display: flex;
+    align-items: center;
+    gap: 6px;
+    margin-top: 28px;
+    font-family: var(--font-ui);
+    font-size: 13px;
+    font-weight: 600;
+    letter-spacing: 0.09em;
+    text-transform: uppercase;
+    color: var(--muted);
+}
+
+/* One gentle bounce, and only when motion is welcome (C18, C27). */
+@media (prefers-reduced-motion: no-preference) {
+    .scroll-cue { animation: cue-bounce 1.4s ease-in-out 1.2s 1 both; }
+}
+
+@keyframes cue-bounce {
+    0%, 100% { transform: translateY(0); }
+    35% { transform: translateY(6px); }
+    65% { transform: translateY(-2px); }
+}
+
+/* ---------- Narrative: phone tier (default) ---------- */
+#story { position: relative; }
+
+/* The sticky chart band. */
+#story-figure {
+    position: sticky;
+    top: 0;
+    z-index: 2;
+    height: var(--band-h);
+    background: var(--bg);
+    border-bottom: 1px solid var(--grid);
+}
+
+figure.chart {
+    display: flex;
+    flex-direction: column;
+    height: 100%;
+    max-width: 640px;
     margin: 0 auto;
-    text-align: left;
+    padding: 10px var(--gutter) 8px;
 }
+
+figure.chart figcaption { flex: none; margin: 0 0 6px; }
+
+.chart-hed,
+.card-cap-hed {
+    display: block;
+    margin: 0 0 2px;
+    font-family: var(--font-ui);
+    font-size: 17px;
+    font-weight: 800;
+    line-height: 1.25;
+    letter-spacing: -0.01em;
+    color: var(--ink);
+    text-wrap: balance;
+}
+
+.chart-dek,
+.card-cap-dek {
+    display: block;
+    font-family: var(--font-ui);
+    font-size: 14px;
+    line-height: 1.4;
+    color: var(--muted);
+}
+
+/* Charts are drawn into these at their measured content-box size. */
+.chart-svg-wrap {
+    position: relative;
+    flex: 1 1 0;
+    min-height: 0;
+}
+
+.steps {
+    padding: 0 0 calc((100svh - var(--band-h)) * 0.6);
+    background: var(--track);
+}
+
+.step {
+    position: relative;
+    margin: 0 0 34svh;
+    /* Full-bleed card; on wider phones the text centers in a column of at most 600px. */
+    padding: 22px max(var(--gutter), calc((100% - 600px) / 2)) 26px;
+    background: var(--bg);
+}
+
+.step:last-child { margin-bottom: 0; }
+
+/* Active step: a 4px ink rule on the leading edge and full ink. Inactive steps are never dimmed (C23). */
+.step[aria-current="step"] { box-shadow: inset 4px 0 0 var(--ink); }
+.step[aria-current="step"] p:not(.step-label) { color: var(--ink); }
+
+.step-label {
+    display: flex;
+    align-items: center;
+    gap: 8px;
+    margin-bottom: 14px;
+    font-family: var(--font-ui);
+    font-size: 13px;
+    font-weight: 800;
+    line-height: 1;
+    letter-spacing: 0.09em;
+    text-transform: uppercase;
+    color: var(--ink);
+}
+
+.step-num {
+    padding: 5px 6px 4px;
+    background: var(--accent);
+    letter-spacing: 0.02em;
+    font-variant-numeric: tabular-nums;
+}
+
+.step h2 {
+    margin-bottom: 14px;
+    font-size: clamp(28px, 7.4vw, 40px);
+    line-height: 1.04;
+    letter-spacing: -0.025em;
+}
+
+.step p:not(.step-label) {
+    max-width: 60ch;
+    font-size: clamp(18px, 1.6vw, 20px);
+    line-height: 1.55;
+    color: var(--text);
+}
+
+.step p:not(.step-label) + p { margin-top: 0.8em; }
+
+/* Short tier only: the active chart's caption sits at the top of its step card. */
+.card-cap { display: none; }
+
+/* ---------- Coda, Evidence Lab, footer (spec §4.4) ---------- */
+#coda,
+#lab {
+    max-width: calc(960px + 2 * var(--gutter));
+    margin: 0 auto;
+    padding: clamp(56px, 10vw, 112px) var(--gutter) 0;
+}
+
+#coda > *,
+.lab-head > * { max-width: 64ch; }
+
+#coda h2,
+.lab-head h2 {
+    margin-bottom: 18px;
+    font-size: clamp(28px, 6vw, 40px);
+    line-height: 1.04;
+    letter-spacing: -0.025em;
+}
+
+#coda p { font-size: clamp(18px, 1.6vw, 20px); }
+#coda p + p { margin-top: 0.9em; }
+
+.lab-intro { font-size: clamp(18px, 1.6vw, 20px); }
+.lab-intro strong { font-family: var(--font-ui); font-size: 0.9em; font-weight: 600; color: var(--ink); }
+
+.lab-stage { margin-top: 28px; }
 
 .lab-controls {
     display: flex;
-    flex-direction: column;
-    gap: 1.25rem;
-    margin-bottom: 2rem;
-    padding: 1.25rem;
-    background: rgba(212, 207, 200, 0.18);
-    border-radius: 6px;
+    flex-wrap: wrap;
+    gap: 14px 28px;
+    padding-top: 14px;
+    border-top: 2px solid var(--rule);
 }
 
-.control-group {
-    display: flex;
-    flex-direction: column;
-    gap: 0.5rem;
-}
+.lab-control { display: flex; flex-direction: column; gap: 6px; flex: 1 1 100%; }
 
-.control-label {
+.lab-control-label {
     font-family: var(--font-ui);
-    font-weight: 500;
-    font-size: 0.75rem;
-    letter-spacing: 0.12em;
+    font-size: 13px;
+    font-weight: 600;
+    line-height: 1;
+    letter-spacing: 0.09em;
     text-transform: uppercase;
-    color: var(--text-color);
-    opacity: 0.65;
+    color: var(--muted);
 }
 
-.control-buttons {
+/* Segmented control: selected = ink with white text; unselected = white with ink text, 1px ink border. */
+.seg {
     display: flex;
-    gap: 0.5rem;
+    border: 1px solid var(--ink);
+    background: var(--bg);
 }
 
-.lab-toggle {
-    flex: 1;
+.seg button {
+    flex: 1 1 0;
+    min-height: 44px;
+    margin: 0;
+    padding: 0 16px;
+    border: 0;
+    border-radius: 0;
+    background: var(--bg);
+    color: var(--ink);
     font-family: var(--font-ui);
-    font-size: 0.9rem;
-    font-weight: 500;
-    padding: 0.65rem 1rem;
-    background: transparent;
-    color: var(--text-color);
-    border: 1px solid var(--axis-color);
-    border-radius: 999px;
+    font-size: 15px;
+    font-weight: 600;
+    line-height: 1.1;
     cursor: pointer;
-    transition: background-color 0.18s ease, border-color 0.18s ease, color 0.18s ease;
-    min-height: 44px; /* thumb tap target */
+    -webkit-appearance: none;
+    appearance: none;
 }
 
-.lab-toggle:hover {
-    border-color: var(--accent-color);
-}
+.seg button + button { border-left: 1px solid var(--ink); }
+.seg button[aria-checked="true"] { background: var(--ink); color: var(--bg); }
+.seg button:focus-visible { position: relative; z-index: 1; }
 
-.lab-toggle:focus-visible {
-    outline: 2px solid var(--accent-color);
-    outline-offset: 2px;
-}
-
-.lab-toggle.active,
-.lab-toggle[aria-pressed="true"] {
-    background: var(--accent-color);
-    border-color: var(--accent-color);
-    color: var(--bg-color);
-}
-
-#lab-chart-container {
+.lab-svg-wrap {
     position: relative;
-    width: 100%;
-    height: 420px;
-    background: var(--bg-color);
-    border: 1px solid var(--axis-color);
-    border-radius: 6px;
-    padding: 0.5rem;
+    height: clamp(300px, 70svh, 440px);
+    margin-top: 16px;
 }
 
-.lab-fallback {
-    text-align: center;
-    padding: 2rem;
+.lab-readout {
+    min-height: calc(1.5em + 22px);
+    margin-top: 12px;
+    padding: 10px 12px;
+    border-left: 4px solid var(--ink);
+    background: var(--track);
     font-family: var(--font-ui);
-    color: var(--text-color);
-    opacity: 0.7;
+    font-size: 16px;
+    line-height: 1.5;
+    color: var(--ink);
+    font-variant-numeric: tabular-nums;
 }
 
-/* ---- About Footer ---- */
+/* Keep the readout's space reserved (no layout shift) but show no empty panel. */
+.lab-readout:empty { border-left-color: transparent; background: none; }
 
-#about {
-    border-top: 1px solid var(--axis-color);
-    padding: 3rem 1.5rem 4rem;
-    background: rgba(212, 207, 200, 0.12);
+.lab-summary {
+    max-width: 64ch;
+    margin-top: 14px;
+    font-size: 18px;
+    line-height: 1.5;
+    color: var(--text);
+}
+
+footer#about {
+    margin-top: clamp(72px, 12vw, 128px);
+    border-top: 6px solid var(--rule);
+}
+
+.footer-inner {
     display: grid;
-    grid-template-columns: 1fr;
-    gap: 2.5rem;
-    max-width: 1100px;
-    margin: 4rem auto 0;
+    grid-template-columns: minmax(0, 1fr);
+    gap: 32px;
+    max-width: calc(1200px + 2 * var(--gutter));
+    margin: 0 auto;
+    padding: 32px var(--gutter) 56px;
 }
 
-.about-column h3 {
-    font-family: var(--font-display);
-    font-weight: 700;
-    font-size: 1.15rem;
-    margin-bottom: 0.75rem;
+.about-column h2 {
+    margin-bottom: 8px;
+    font-size: 16px;
+    line-height: 1.3;
+    letter-spacing: 0;
 }
 
-.about-column p {
-    font-family: var(--font-body);
-    font-size: 0.95rem;
-    line-height: 1.65;
-    margin-bottom: 1rem;
-}
+.about-column p { font-size: 16px; line-height: 1.55; }
+.about-column p + p { margin-top: 0.6em; }
+.about-column a { font-family: var(--font-ui); font-weight: 600; font-size: 15px; line-height: 2; }
 
-.about-column a {
+/* ---------- Fallbacks: d3 failed to load (C04). No-JS uses the <noscript> style in index.html. ---------- */
+.chart-fallback { display: none; }
+
+.chart-fallback p,
+.chart-noscript {
+    padding: 12px 14px;
+    border-left: 4px solid var(--ink);
+    background: var(--track);
     font-family: var(--font-ui);
-    font-size: 0.9rem;
-    font-weight: 500;
-    color: var(--vr-color);
-    text-decoration: none;
-    border-bottom: 1px solid var(--axis-color);
-    padding-bottom: 1px;
-    transition: color 0.18s ease, border-color 0.18s ease;
-    display: inline-block;
-    line-height: 2;
+    font-size: 16px;
+    line-height: 1.5;
+    color: var(--ink);
 }
 
-.about-column a:hover {
-    color: var(--accent-color);
-    border-bottom-color: var(--accent-color);
+.chart-noscript { margin-top: 16px; }
+
+html.js:not(.has-d3) .chart-fallback { display: block; margin-top: 16px; }
+html.js:not(.has-d3) #story { display: block; }
+html.js:not(.has-d3) #story-figure { position: static; height: auto; }
+html.js:not(.has-d3) #story-figure figcaption,
+html.js:not(.has-d3) .chart-svg-wrap,
+html.js:not(.has-d3) .card-cap,
+html.js:not(.has-d3) .lab-stage,
+html.js:not(.has-d3) .lab-readout,
+html.js:not(.has-d3) .lab-summary { display: none; }
+
+/* ---------- Participant strip and footer columns on roomy screens ---------- */
+@media (min-width: 900px), (max-height: 500px) and (orientation: landscape) {
+    .hero-strip { grid-template-columns: repeat(3, minmax(0, 1fr)); }
 }
 
-/* ---- Desktop Layout ---- */
+@media (min-width: 900px) {
+    .footer-inner { grid-template-columns: repeat(3, minmax(0, 1fr)); gap: clamp(24px, 4vw, 56px); }
+    .lab-control { flex: 0 1 auto; }
+    .seg button { flex: 0 0 auto; padding: 0 18px; }
+}
 
-@media (min-width: 768px) {
-    #hero h1 {
-        font-size: 3rem;
+/* ---------- Wide tier: (min-width: 900px) and not short ---------- */
+@media (min-width: 900px) and (min-height: 501px) {
+    :root { --gutter: clamp(16px, 4vw, 56px); }
+
+    #hero {
+        min-height: 0;
+        padding-top: clamp(32px, 4vw, 56px);
+        padding-bottom: 28px;
+        border-bottom: 1px solid var(--grid);
     }
 
-    #scroll-container {
-        flex-direction: row;
-        max-width: 1200px;
+    .hero-title { font-size: clamp(40px, 4.75vw, 60px); }
+    .hero-kicker { margin-bottom: 12px; font-size: clamp(17px, 1.75vw, 22px); }
+    .hook { margin-top: 16px; font-size: clamp(19px, 2.05vw, 26px); }
+
+    #story {
+        display: grid;
+        grid-template-columns: minmax(300px, 38%) minmax(0, 1fr);
+        column-gap: clamp(24px, 3.6vw, 52px);
+        max-width: calc(1200px + 2 * var(--gutter));
         margin: 0 auto;
+        padding: 0 var(--gutter);
     }
 
-    #text-column {
-        width: 50%;
-        padding: 0 3rem 0 2rem;
+    /* Text on the left, the sticky chart column on the right. */
+    .steps {
+        grid-column: 1;
+        grid-row: 1;
+        padding: 30svh 0 50svh;
+        background: none;
+    }
+
+    #story-figure {
+        grid-column: 2;
+        grid-row: 1;
+        align-self: start;
+        display: flex;
+        align-items: center;
+        height: 100svh;
+        border-bottom: 0;
+    }
+
+    figure.chart {
+        width: 100%;
+        height: auto;
+        max-width: none;
+        padding: 0;
+    }
+
+    figure.chart figcaption { margin-bottom: 10px; }
+    .chart-hed { font-size: clamp(17px, 1.6vw, 20px); }
+
+    .chart-svg-wrap {
+        flex: none;
+        height: clamp(280px, 68svh, 620px);
     }
 
     .step {
-        padding: 50vh 0;
-        margin-bottom: 0;
-        padding-right: 2rem;
-        border-left: 4px solid transparent;
+        margin: 0 0 70svh;
+        padding: 6px 0 6px 20px;
     }
 
-    .step.active {
-        border-left-color: var(--accent-color);
+
+    .lab-svg-wrap { height: clamp(320px, 60svh, 520px); }
+}
+
+/* ---------- Short tier: landscape phones (spec §4.1). Comes last so it wins ties. ---------- */
+@media (max-height: 500px) and (orientation: landscape) {
+    #hero { padding-top: 16px; padding-bottom: 16px; }
+    .hero-title { font-size: 36px; }
+    .hero-kicker { font-size: 17px; }
+    .hook { font-size: 19px; }
+    .scroll-cue { margin-top: 16px; }
+
+    #story {
+        display: grid;
+        grid-template-columns: 58% minmax(0, 1fr);
     }
 
-    #chart-container {
-        width: 50%;
-        height: 100vh;
-        padding: 2rem;
+    /* Chart pinned on the left at full height; its caption moves into the step cards. */
+    #story-figure {
+        grid-column: 1;
+        grid-row: 1;
+        align-self: start;
+        height: 100svh;
+        border-bottom: 0;
+        border-right: 1px solid var(--grid);
     }
 
-    #coda {
-        padding: 8rem 2rem 4rem;
+    figure.chart { max-width: none; padding: 8px 8px 8px var(--gutter); }
+
+    figure.chart figcaption {
+        position: absolute;
+        width: 1px;
+        height: 1px;
+        margin: -1px;
+        overflow: hidden;
+        clip-path: inset(50%);
+        white-space: nowrap;
     }
 
-    #evidence-lab {
-        padding: 4rem 2rem 5rem;
+    .steps {
+        grid-column: 2;
+        grid-row: 1;
+        min-width: 0;
+        padding: 35svh 0 40svh;
     }
 
-    .lab-controls {
-        flex-direction: row;
-        justify-content: space-between;
-        gap: 2rem;
-        padding: 1.5rem 2rem;
+    .step {
+        margin-bottom: 45svh;
+        padding: 18px var(--gutter) 22px 18px;
     }
 
-    .control-group {
-        flex: 1;
+    .step h2 { font-size: 28px; }
+
+    .card-cap {
+        display: block;
+        margin: 0 0 16px;
+        padding-top: 8px;
+        border-top: 3px solid var(--rule);
     }
 
-    #lab-chart-container {
-        height: 480px;
-        padding: 1rem;
+    .card-cap-hed { font-size: 16px; }
+
+    /* The Lab chart fills the screen minus the controls. */
+    .lab-stage {
+        display: flex;
+        flex-direction: column;
+        height: 100svh;
+        padding: 8px 0;
     }
 
-    #about {
-        grid-template-columns: repeat(3, 1fr);
-        gap: 3rem;
-        padding: 4rem 3rem 5rem;
+    .lab-controls { flex: none; }
+    .lab-control { flex: 1 1 0; min-width: 0; }
+    .seg button { padding: 0 8px; }
+
+    .lab-svg-wrap {
+        flex: 1 1 0;
+        height: auto;
+        min-height: 0;
     }
 }
