@@ -29,6 +29,7 @@ const SCENARIOS = {
   '3→4 with a hover at 200ms': [[3, 1500], [4, 200, hoverDot]],
   'rapid 1→5→1': [[1, 1500], [2, 60], [3, 60], [4, 60], [5, 60], [4, 60], [3, 60], [2, 60], [1, 0]],
   '5→1→4 jumps': [[5, 1500], [1, 150], [4, 0]],
+  'fresh step 3 with a hover during entry': [[2, 1500], [3, 150, hoverDot]],
 };
 
 test.describe('interrupted transitions', () => {
