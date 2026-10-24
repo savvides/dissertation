@@ -776,8 +776,6 @@ function drawGridLines(yScale) {
 }
 
 function updateChart(stepIndex) {
-    console.log(`Active step: ${stepIndex}`);
-
     if (stepIndex === 1) {
         drawBarChart('count', 'Participants per Condition');
     } else if (stepIndex === 2) {
@@ -787,7 +785,7 @@ function updateChart(stepIndex) {
     } else if (stepIndex === 4) {
         drawScatterPlot(true);
     } else if (stepIndex === 5) {
-        drawBarChart('cognitive_load', 'Average Cognitive Load');
+        drawBarChart('cognitive_load', 'Average Cognitive Load (not significant)');
     } else {
         clearChart();
     }
