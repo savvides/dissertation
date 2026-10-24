@@ -351,10 +351,12 @@ figure.chart figcaption { flex: none; margin: 0 0 6px; }
 /* Short tier only: the active chart's caption sits at the top of its step card. */
 .card-cap { display: none; }
 
-/* ---------- Coda, Evidence Lab, footer (spec §4.4) ---------- */
+/* ---------- Coda, Evidence Lab, footer (spec §4.4) ----------
+   Same 1200px container as the hero, story and footer, so every section shares one left edge;
+   prose stays at 64ch and the Lab chart at 960px inside it. */
 #coda,
 #lab {
-    max-width: calc(960px + 2 * var(--gutter));
+    max-width: calc(1200px + 2 * var(--gutter));
     margin: 0 auto;
     padding: clamp(56px, 10vw, 112px) var(--gutter) 0;
 }
@@ -375,6 +377,9 @@ figure.chart figcaption { flex: none; margin: 0 0 6px; }
 
 .lab-intro { font-size: clamp(18px, 1.6vw, 20px); }
 .lab-intro strong { font-family: var(--font-ui); font-size: 0.9em; font-weight: 600; color: var(--ink); }
+
+.lab-stage,
+.lab-readout { max-width: 960px; }
 
 .lab-stage { margin-top: 28px; }
 
@@ -478,7 +483,7 @@ footer#about {
     letter-spacing: 0;
 }
 
-.about-column p { font-size: 16px; line-height: 1.55; }
+.about-column p { max-width: 64ch; font-size: 16px; line-height: 1.55; }
 .about-column p + p { margin-top: 0.6em; }
 .about-column a { font-family: var(--font-ui); font-weight: 600; line-height: 2; }
 
@@ -581,7 +586,7 @@ html.js:not(.has-d3) .lab-summary { display: none; }
     }
 
     .step {
-        margin: 0 0 70svh;
+        margin: 0 0 70svh -20px; /* the active-step rule sits in the gutter; text aligns with the hero */
         padding: 6px 0 6px 20px;
     }
 
