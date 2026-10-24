@@ -24,11 +24,13 @@ test.describe('axe-core', () => {
 
   test('page top', async ({ page }) => {
     await expect(page.locator('#story-figure')).toHaveAttribute('data-state', 'participants');
+    await expect(page.locator('#lab')).toHaveAttribute('data-state', 'overall learning_gains on');
     await expectNoSeriousViolations(page);
   });
 
   test('step 4', async ({ page }) => {
     await goToStep(page, 4);
+    await expect(page.locator('#lab')).toHaveAttribute('data-state', 'overall learning_gains on');
     await expectNoSeriousViolations(page);
   });
 
