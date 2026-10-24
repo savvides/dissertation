@@ -385,6 +385,28 @@ test.describe('Evidence Lab', () => {
       expect((await labInspect(page)).problems, `${width}×${height}`).toEqual([]);
     }
   });
+
+  test('11. Escape unpins from anywhere in the Lab, including a control (§6.3)', async ({ page }) => {
+    const order = await byX(page);
+    await page.locator('#lab .seg[data-control="lines"] [aria-checked="true"]').focus();
+    await page.keyboard.press('Tab');
+    await page.keyboard.press('End');
+    await expect(readout(page)).toHaveText(await expectedReadout(page, order[order.length - 1], 'learning_gains'));
+    const control = page.locator('#lab .seg[data-control="view"] [aria-checked="true"]');
+    await control.focus();
+    await page.keyboard.press('Escape');
+    await expect(readout(page)).toHaveText('');
+    await expect(control).toBeFocused();
+    await expect(page.locator(`${LAB_SVG} .dot[aria-selected="true"]`)).toHaveCount(0);
+  });
+
+  test('12. the Lab chart is a named group: its dots are focusable, so it cannot be an img (§5.5)', async ({ page }) => {
+    const svg = page.locator(LAB_SVG);
+    await expect(svg).toHaveAttribute('role', 'group');
+    await expect(svg).toHaveAccessibleName(/Scatter plot of presence against learning gain/);
+    await choose(page, 'y', 'cognitive_load');
+    await expect(svg).toHaveAccessibleName(/Scatter plot of presence against cognitive load/);
+  });
 });
 
 test.describe('Evidence Lab on touch', () => {
@@ -489,6 +511,34 @@ test.describe('Evidence Lab interrupted', () => {
     expect(r.problems).toEqual([]);
     expect(await page.evaluate((sel) => document.querySelector(`${sel} circle.emph-ring`).__data__.i, LAB_SVG)).toBe(pinnedI);
     expect(pageErrorsOf(page)).toEqual([]);
+  });
+
+  test('13. toggling trend lines keeps the pinned dot’s ring: the dots do not move', async ({ page }) => {
+    await openLab(page);
+    const order = await byX(page);
+    await page.locator('#lab .seg[data-control="lines"] [aria-checked="true"]').focus();
+    await page.keyboard.press('Tab');
+    await page.keyboard.press('End');
+    const pinnedI = order[order.length - 1];
+    await expect.poll(() => ringsOf(page, LAB_SVG)).toEqual([{ i: pinnedI, opacity: 1 }]);
+    // Toggle from inside the page (focus stays on the dot) and sample the ring while lines fade.
+    const samples = await page.evaluate(
+      async ({ sel, at }) => {
+        document.querySelector('#lab .seg[data-control="lines"] [data-value="off"]').click();
+        const t0 = performance.now();
+        const out = [];
+        for (const ms of at) {
+          await new Promise((r) => setTimeout(r, ms - (performance.now() - t0)));
+          out.push({ ms, rings: [...document.querySelectorAll(`${sel} circle.emph-ring`)].map((c) => c.__data__.i) });
+        }
+        return out;
+      },
+      { sel: LAB_SVG, at: [100, 300, 500] }
+    );
+    for (const s of samples) expect(s.rings, `rings at ${s.ms}ms`).toEqual([pinnedI]);
+    await settled(page, 'overall learning_gains off');
+    await expect.poll(() => ringsOf(page, LAB_SVG)).toEqual([{ i: pinnedI, opacity: 1 }]);
+    expect((await labInspect(page)).problems).toEqual([]);
   });
 });
 

@@ -1030,6 +1030,7 @@
     var hover = null; // point previewed under a mouse or pen
     var current = byX[0]; // the dot holding the chart's single tab stop
     var moving = false; // dots are mid-transition: no ring until they land, or it would mark empty space
+    var placed = ''; // view and y the dots were last drawn for; only these move the dots
     var drawn = { width: 0, height: 0 };
 
     var reduced = function () {
@@ -1119,9 +1120,11 @@
       setText(desc, 'Scatter plot of presence against ' + Y_NAME[state.y] + ' for all ' + Store.points.length +
         ' participants, ' + (state.view === 'overall' ? 'in one color' : 'colored by condition') +
         (state.lines === 'on' ? ', with trend lines. ' : '. ') + text);
-      moving = !instant;
+      var where = state.view + ' ' + state.y;
+      moving = !instant && (moving || where !== placed); // a trend-line toggle leaves the dots (and ring) in place
+      placed = where;
       render();
-      Layout.settle(svg, section, key(), moving, function () {
+      Layout.settle(svg, section, key(), !instant, function () {
         moving = false;
         render();
       });
@@ -1221,13 +1224,16 @@
       if (!p) return;
       var k = rank[p.i];
       var next = { ArrowRight: k + 1, ArrowDown: k + 1, ArrowLeft: k - 1, ArrowUp: k - 1, Home: 0, End: byX.length - 1 }[event.key];
-      if (event.key === 'Escape') {
-        hover = null;
-        pin(null);
-      } else if (next !== undefined) {
-        focusPoint(byX[Math.max(0, Math.min(byX.length - 1, next))]);
-      } else return;
+      if (next === undefined) return;
+      focusPoint(byX[Math.max(0, Math.min(byX.length - 1, next))]);
       event.preventDefault();
+    });
+
+    // Escape unpins from anywhere in the Lab: a dot, a control or the chart.
+    section.addEventListener('keydown', function (event) {
+      if (event.key !== 'Escape') return;
+      hover = null;
+      pin(null);
     });
 
     function init() {
