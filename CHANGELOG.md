@@ -18,7 +18,7 @@ and this project adheres to [Semantic Versioning](https://semver.org/spec/v2.0.0
 
 ### Changed
 - **d3**: Pinned to 7.9.0 on jsDelivr with a Subresource Integrity hash.
-- **CI/CD**: Deploy now runs only after CI passes; `vnu-jar` and `lychee-action` are pinned. Also includes the 2026-04-27 CI fixes (switch to the `vnu-jar` npm package; exclude linkedin.com from link checks).
+- **CI/CD**: Deploy now runs only after CI passes; `vnu-jar` and `lychee-action` are pinned. Also includes the 2026-04-27 CI fixes (switch to the `vnu-jar` npm package; exclude linkedin.com from link checks). The link check now excludes claude.ai, which serves a Cloudflare bot challenge to non-browser clients.
 
 ## [2.1.0] - 2026-04-25
 
