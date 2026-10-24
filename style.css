@@ -81,6 +81,7 @@ mark {
     margin: -1px;
     padding: 0;
     border: 0;
+    overflow: hidden; /* WebKit otherwise counts long hidden text (chart descriptions) as page overflow */
     clip: rect(0 0 0 0);
     clip-path: inset(50%);
     white-space: nowrap;
@@ -251,6 +252,44 @@ figure.chart figcaption { flex: none; margin: 0 0 6px; }
     flex: 1 1 0;
     min-height: 0;
 }
+
+/* ---------- Chart SVG (spec §5.2). Paint that D3 animates (fills, line colors) is set as attributes,
+   so these rules only cover type and static strokes. Text sizes are true CSS pixels. ---------- */
+.chart-svg {
+    position: absolute; /* never feeds back into the container size it is drawn at */
+    top: 0;
+    left: 0;
+    display: block;
+}
+
+.chart-svg text { font-family: var(--font-ui); letter-spacing: 0; }
+.chart-svg .t-tick { font-size: 13px; font-weight: 400; fill: var(--muted); font-variant-numeric: tabular-nums; }
+.chart-svg .t-axis { font-size: 13px; font-weight: 600; fill: var(--text); }
+.chart-svg .t-name { font-size: 14px; font-weight: 800; letter-spacing: -0.005em; }
+.chart-svg .t-r { font-size: 13px; font-weight: 400; fill: var(--text); font-variant-numeric: tabular-nums; }
+.chart-svg .t-cat { font-size: 14px; font-weight: 800; letter-spacing: -0.005em; }
+.chart-svg .t-value { font-size: 13px; font-weight: 600; fill: var(--ink); font-variant-numeric: tabular-nums; }
+
+/* White halo behind text that can sit over grid lines or whiskers. */
+.chart-svg .t-cat,
+.chart-svg .t-value {
+    paint-order: stroke;
+    stroke: var(--bg);
+    stroke-width: 4px;
+    stroke-linejoin: round;
+}
+
+.chart-svg .grid { stroke: var(--grid); stroke-width: 1; }
+.chart-svg .tick-line,
+.chart-svg .domain { stroke: var(--axis); stroke-width: 1; }
+.chart-svg .zero { stroke: var(--ink); stroke-width: 1.25; }
+.chart-svg .ci,
+.chart-svg .ci-cap { stroke: var(--ink); stroke-width: 1.5; }
+.chart-svg .ci-halo { stroke: var(--bg); stroke-width: 3.5; stroke-linecap: round; }
+.chart-svg .trend,
+.chart-svg .trend-halo { fill: none; stroke-linecap: round; }
+.chart-svg .leader { stroke-width: 1; }
+.chart-svg .emph-ring { fill: none; stroke: var(--ink); stroke-width: 2; pointer-events: none; }
 
 .steps {
     padding: 0 0 calc((100svh - var(--band-h)) * 0.6);
