@@ -196,7 +196,25 @@ function probe() {
     };
   }
 
-  window.__probe = { midline, centerStep, activeStep, inspect, scaleFrom, translate, svg, geometry };
+  /** C30: pairs of visible chart texts (ticks, axis titles, labels) whose boxes overlap by > 0.5px. */
+  function overlaps(selector) {
+    const ts = [...document.querySelectorAll(`${selector} text`)]
+      .filter((t) => t.textContent.trim() && t.getAttribute('visibility') !== 'hidden')
+      .map((t) => ({ s: t.textContent, r: t.getBoundingClientRect() }));
+    const out = [];
+    for (let i = 0; i < ts.length; i++) {
+      for (let j = i + 1; j < ts.length; j++) {
+        const a = ts[i].r;
+        const c = ts[j].r;
+        if (a.left < c.right - 0.5 && c.left < a.right - 0.5 && a.top < c.bottom - 0.5 && c.top < a.bottom - 0.5) {
+          out.push(`${ts[i].s} / ${ts[j].s}`);
+        }
+      }
+    }
+    return out;
+  }
+
+  window.__probe = { midline, centerStep, activeStep, inspect, scaleFrom, translate, svg, geometry, overlaps };
 }
 
 const pageErrors = new WeakMap();

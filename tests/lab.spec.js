@@ -562,6 +562,24 @@ test.describe('Evidence Lab interrupted', () => {
   });
 });
 
+test.describe('Evidence Lab text overlap', () => {
+  test.use({ reducedMotion: 'reduce' });
+
+  test('15. no chart texts overlap in any view (C30)', async ({ page }) => {
+    await openLab(page);
+    for (const y of ['learning_gains', 'cognitive_load']) {
+      await choose(page, 'y', y);
+      for (const view of ['overall', 'condition']) {
+        await choose(page, 'view', view);
+        for (const lines of ['on', 'off']) {
+          await choose(page, 'lines', lines);
+          expect(await page.evaluate((sel) => window.__probe.overlaps(sel), LAB_SVG), `${view} ${y} ${lines}`).toEqual([]);
+        }
+      }
+    }
+  });
+});
+
 test.describe('Evidence Lab from file://', () => {
   test('10. the Lab renders from file://', { tag: '@file' }, async ({ page }) => {
     await openLab(page);

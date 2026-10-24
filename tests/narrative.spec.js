@@ -186,3 +186,17 @@ test.describe('narrative with motion', () => {
     expect(await ringsOf(page, SVG)).toEqual([{ i: pt.i, opacity: 1 }]);
   });
 });
+
+test.describe('narrative text overlap', () => {
+  test.use({ reducedMotion: 'reduce' });
+
+  test('10. no chart texts overlap at any step (C30)', async ({ page }) => {
+    await openPage(page);
+    for (let n = 1; n <= 5; n++) {
+      await goToStep(page, n);
+      const texts = await page.evaluate(() => document.querySelectorAll('#story-figure svg.chart-svg text').length);
+      expect(texts, `step ${n} has chart text`).toBeGreaterThan(3);
+      expect(await page.evaluate(() => window.__probe.overlaps('#story-figure svg.chart-svg')), `step ${n}`).toEqual([]);
+    }
+  });
+});
