@@ -110,7 +110,11 @@ test.describe('layout', () => {
         '#lab .lab-readout',
         'footer p',
       ].join(', '),
-      (els) => els.map((el) => ({ text: el.textContent.slice(0, 40), px: parseFloat(getComputedStyle(el).fontSize) }))
+      // Check each block and the inline elements inside it (links, emphasis), since those render the text too.
+      (els) =>
+        els
+          .flatMap((el) => [el, ...el.querySelectorAll('a, strong, em, mark, span')])
+          .map((el) => ({ text: el.textContent.slice(0, 40), px: parseFloat(getComputedStyle(el).fontSize) }))
     );
     expect(sizes.length).toBeGreaterThan(10);
     for (const s of sizes) expect(s.px, `font-size of "${s.text}"`).toBeGreaterThanOrEqual(16);

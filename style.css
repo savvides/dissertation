@@ -217,8 +217,7 @@ figure.chart {
     display: flex;
     flex-direction: column;
     height: 100%;
-    max-width: 640px;
-    margin: 0 auto;
+    margin: 0;
     padding: 10px var(--gutter) 8px;
 }
 
@@ -261,8 +260,7 @@ figure.chart figcaption { flex: none; margin: 0 0 6px; }
 .step {
     position: relative;
     margin: 0 0 34svh;
-    /* Full-bleed card; on wider phones the text centers in a column of at most 600px. */
-    padding: 22px max(var(--gutter), calc((100% - 600px) / 2)) 26px;
+    padding: 22px var(--gutter) 26px;
     background: var(--bg);
 }
 
@@ -441,7 +439,7 @@ footer#about {
 
 .about-column p { font-size: 16px; line-height: 1.55; }
 .about-column p + p { margin-top: 0.6em; }
-.about-column a { font-family: var(--font-ui); font-weight: 600; font-size: 15px; line-height: 2; }
+.about-column a { font-family: var(--font-ui); font-weight: 600; line-height: 2; }
 
 /* ---------- Fallbacks: d3 failed to load (C04). No-JS uses the <noscript> style in index.html. ---------- */
 .chart-fallback { display: none; }
@@ -525,7 +523,6 @@ html.js:not(.has-d3) .lab-summary { display: none; }
     figure.chart {
         width: 100%;
         height: auto;
-        max-width: none;
         padding: 0;
     }
 
@@ -569,7 +566,7 @@ html.js:not(.has-d3) .lab-summary { display: none; }
         border-right: 1px solid var(--grid);
     }
 
-    figure.chart { max-width: none; padding: 8px 8px 8px var(--gutter); }
+    figure.chart { padding: 8px 8px 8px var(--gutter); }
 
     figure.chart figcaption {
         position: absolute;

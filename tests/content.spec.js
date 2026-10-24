@@ -72,6 +72,11 @@ test.describe('page copy and structure', { tag: '@once' }, () => {
       'An interactive scrolltelling presentation of the 2018 VR Learning Dissertation results and 2026 retrospective on presence and cognitive load.'
     );
     expect(await meta('meta[property="og:title"]')).toBe('Are Virtual Simulations Effective?');
+    expect(await meta('meta[property="og:description"]')).toBe(
+      'An interactive data story exploring VR, learning, and a surprising statistical fallacy — built from a 2018 PhD study (n=108).'
+    );
+    expect(await meta('meta[property="og:type"]')).toBe('website');
+    expect(await meta('meta[name="twitter:card"]')).toBe('summary_large_image');
     expect(await meta('meta[property="og:image"]')).toBe(
       'https://savvides.github.io/dissertation/docs/social-preview.png'
     );
