@@ -1,35 +1,7 @@
 // Narrative charts (spec §5): step activation, true-pixel text, resize, bars with CIs, the morphing
 // scatter, grid layering and chart text alternatives. Runs in every viewport project, both engines.
 const { test, expect } = require('@playwright/test');
-const { STATES, HEADLINES, openPage, pageErrorsOf, goToStep, recordStepOrder } = require('./chart-helpers');
-
-/** Every chart text renders at ≥ 12 CSS px, and the SVG is sized to its container's content box. */
-async function expectTruePixelText(page) {
-  const r = await page.evaluate(() => {
-    const svg = window.__probe.svg();
-    const wrap = svg.parentElement;
-    const cs = getComputedStyle(wrap);
-    const contentW = wrap.getBoundingClientRect().width - parseFloat(cs.paddingLeft) - parseFloat(cs.paddingRight);
-    const contentH = wrap.getBoundingClientRect().height - parseFloat(cs.paddingTop) - parseFloat(cs.paddingBottom);
-    const texts = [...svg.querySelectorAll('text')].map((t) => ({
-      text: t.textContent,
-      px: parseFloat(getComputedStyle(t).fontSize) * t.getScreenCTM().a,
-    }));
-    return {
-      width: Number(svg.getAttribute('width')),
-      height: Number(svg.getAttribute('height')),
-      viewBox: svg.getAttribute('viewBox'),
-      contentW,
-      contentH,
-      texts,
-    };
-  });
-  expect(Math.abs(r.width - r.contentW), `svg width ${r.width} vs content ${r.contentW}`).toBeLessThanOrEqual(1);
-  expect(Math.abs(r.height - r.contentH), `svg height ${r.height} vs content ${r.contentH}`).toBeLessThanOrEqual(1);
-  expect(r.viewBox).toBe(`0 0 ${r.width} ${r.height}`);
-  expect(r.texts.length).toBeGreaterThan(3);
-  for (const t of r.texts) expect(t.px, `rendered size of "${t.text}"`).toBeGreaterThanOrEqual(12);
-}
+const { STATES, HEADLINES, openPage, pageErrorsOf, goToStep, recordStepOrder, expectTruePixelText } = require('./chart-helpers');
 
 const inspect = (page) => page.evaluate(() => window.__probe.inspect());
 

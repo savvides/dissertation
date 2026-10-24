@@ -6,7 +6,7 @@
 //   2. Format     number formatting shared by the narrative and the Lab
 //   3. Charts     pure chart functions drawn with keyed D3 joins, plus shared frame helpers
 //   4. Narrative  the sticky figure: picks the active step on scroll and draws its chart
-//   5. Lab        the Evidence Lab (Task 4)
+//   5. Lab        the Evidence Lab: controls, inspection, readout and summary
 //   6. Layout     ResizeObserver redraws
 (function () {
   'use strict';
@@ -395,7 +395,8 @@
 
     var Y_VARS = {
       learning_gains: { title: 'Learning gain (post − pre)', tick: Format.signed },
-      cognitive_load: { title: 'Cognitive load (0–12)', tick: Format.plain },
+      // Cognitive load can't go below 0, so its axis starts there (C17), never at −1.
+      cognitive_load: { title: 'Cognitive load (0–12)', tick: Format.plain, floor: 0 },
     };
     var DRAW_ORDER = { Low: 0, High: 1, Medium: 2 }; // open rings on top so they stay readable
     var N_VERTS = 24; // every dot shape is a 24-gon, so circle, ring and diamond morph smoothly
@@ -441,7 +442,8 @@
       var ext = d3.extent(Store.points, function (p) {
         return p[cfg.yVar];
       });
-      var yDomain = [ext[0] - 0.5, ext[1] + 0.5]; // the data's real range, padded half a unit
+      var floored = Y.floor !== undefined;
+      var yDomain = [floored ? Y.floor : ext[0] - 0.5, ext[1] + 0.5]; // the data's real range, padded half a unit
       var yTicksAll = d3.range(Math.ceil(yDomain[0] / 2) * 2, yDomain[1], 2);
       var tickW = measure(svg, 't-tick', yTicksAll.map(Y.tick));
       var left = Math.ceil(tickW + 9 + 1);
@@ -457,7 +459,10 @@
       var r = compact ? 3.1 : 3.6;
       var pad = Math.ceil((0.9 * plotW) / 60 + 1.3 * r + 2); // max |jx| plus the widest marker
       var x = d3.scaleLinear().domain([0, 60]).range([pad, plotW - pad]);
-      var y = d3.scaleLinear().domain(yDomain).range([plotH, 0]);
+      // A floored domain leaves no room for markers jittered below the floor (|jy| ≤ 0.28), so the
+      // plot gains that room in pixels instead, as x does.
+      var padY = floored ? Math.ceil((0.28 * plotH) / (yDomain[1] - yDomain[0]) + 1.3 * r + 2) : 0;
+      var y = d3.scaleLinear().domain(yDomain).range([plotH - padY, 0]);
       var yTicks = plotH / yTicksAll.length < 24 ? yTicksAll.filter(function (v) { return v % 4 === 0; }) : yTicksAll;
 
       m.t(f.plot).attr('transform', 'translate(' + left + ',' + top + ')');
@@ -465,6 +470,7 @@
 
       // y axis: tick labels only; horizontal grid lines carry the scale.
       var axis = f.layer('axes').selectAll('g.axis-y').data([0]).join('g').attr('class', 'axis-y');
+      axis.attr('data-domain', y.domain().join(','));
       var tick = axis.selectAll('g.tick').data(yTicks, String).join(
         function (enter) {
           var g = enter.append('g').attr('class', 'tick').attr('transform', function (v) {
@@ -603,11 +609,14 @@
       m.t(halo).attr('d', function (k) { return seg(k); }).attr('stroke-width', function (k) { return width(k) + 3; });
       m.t(line).attr('d', function (k) { return seg(k); }).attr('stroke', stroke).attr('stroke-width', width);
 
-      directLabels(S, cfg, keys.length && cfg.labels ? keys : [], seg);
+      // With lines off, the by-condition labels stay (without leaders) as the key to colors and
+      // shapes (C16, C19); the pooled view has nothing left to label.
+      var labelKeys = !cfg.labels ? [] : cfg.lines ? keys : cfg.byCondition ? Store.groups : [];
+      directLabels(S, cfg, labelKeys);
     }
 
     /** Right-gutter direct labels with leaders: key, name, r value (C16, C19: no legend needed). */
-    function directLabels(S, cfg, keys, seg) {
+    function directLabels(S, cfg, keys) {
       var f = S.f;
       var m = S.m;
       var x = S.x;
@@ -651,6 +660,7 @@
         return k === 'all' ? (cfg.byCondition ? C.ghost : C.ink) : C[k];
       };
       var keyMid = -5; // vertical middle of the name's x-height
+      labels.select('line.leader').attr('display', cfg.lines ? null : 'none');
       m.t(labels.select('line.leader')).attr('stroke', color).attr('x1', function (k) {
         return at[k].ex + 4 - lx;
       }).attr('y1', function (k) {
@@ -739,6 +749,10 @@
       scatterByCondition: function (svg, opts) {
         scatter(svg, opts, { yVar: 'learning_gains', byCondition: true, lines: true, labels: true });
       },
+      /** The Evidence Lab: state = { view: 'overall' | 'condition', yVar, lines (bool) }. */
+      labScatter: function (svg, opts, state) {
+        scatter(svg, opts, { yVar: state.yVar, byCondition: state.view === 'condition', lines: state.lines, labels: true });
+      },
       load: function (svg, opts) {
         bars(svg, opts, {
           domain: [0, 12], ticks: [0, 3, 6, 9, 12], compactTicks: [0, 6, 12],
@@ -751,7 +765,8 @@
   })();
 
   // ---------------------------------------------------------------------------------------------
-  // 6. Layout (defined before use): one ResizeObserver per figure container, debounced to a rAF.
+  // 6. Layout (defined before use): one ResizeObserver per figure container, debounced to a rAF,
+  //    and the settled-state marker the tests wait on.
   // ---------------------------------------------------------------------------------------------
   var Layout = {
     observe: function (el, onResize) {
@@ -768,6 +783,23 @@
       });
       ro.observe(el);
       return ro;
+    },
+
+    /**
+     * Mark el[data-state] once the chart drawn into svg has settled: now when the draw was instant,
+     * otherwise when its step transition ends. A newer call supersedes an older pending one.
+     */
+    settle: function (svg, el, state, animated) {
+      var gen = (el.__settleGen = (el.__settleGen || 0) + 1);
+      svg.interrupt('settle');
+      if (!animated) {
+        el.setAttribute('data-state', state);
+        return;
+      }
+      el.removeAttribute('data-state');
+      svg.transition('settle').duration(Charts.STEP_MS).end().then(function () {
+        if (gen === el.__settleGen) el.setAttribute('data-state', state);
+      }, function () {});
     },
   };
 
@@ -847,7 +879,6 @@
     var shown = -1; // index of the chart state currently drawn
     var active = -2; // index of the step carrying aria-current (-1: none yet)
     var drawn = { width: 0, height: 0 };
-    var generation = 0;
     var ticking = false;
 
     /** The midline of the visible text area (spec §5.1). */
@@ -870,17 +901,7 @@
       var reduced = matchMedia(REDUCE).matches;
       Charts[s.state](svg, { width: box.width, height: box.height, reducedMotion: reduced, animate: animate });
 
-      // data-state marks the settled state: now when instant, else when the step transition ends.
-      var gen = ++generation;
-      svg.interrupt('settle');
-      if (animate && !reduced) {
-        figure.removeAttribute('data-state');
-        svg.transition('settle').duration(Charts.STEP_MS).end().then(function () {
-          if (gen === generation) figure.setAttribute('data-state', s.state);
-        }, function () {});
-      } else {
-        figure.setAttribute('data-state', s.state);
-      }
+      Layout.settle(svg, figure, s.state, animate && !reduced);
     }
 
     /** rAF-throttled scroll check: the active step is the last one whose top is at or above the midline. */
@@ -937,11 +958,267 @@
   })();
 
   // ---------------------------------------------------------------------------------------------
-  // 5. Lab — STUB. The Evidence Lab (controls, readout, inspection) is implemented in Task 4 and
-  // must reuse Charts.scatterFrame / Charts.scatter, Store and Layout.observe rather than duplicate them.
+  // 5. Lab: three radiogroup controls, the Lab scatter (Charts.labScatter), point inspection with a
+  // readout panel instead of floating tooltips (C07, C11, C26), and a summary sentence from stats.
   // ---------------------------------------------------------------------------------------------
+  var Lab = (function () {
+    var REDUCE = '(prefers-reduced-motion: reduce)';
+    var HIT_RADIUS = 20; // px: a click or tap this close to a dot inspects it; farther away unpins
+    var G = Store.groups;
+    var SHORT = { High: 'VR', Medium: 'desktop', Low: 'video' }; // spec §6.4 wording
+    var Y_NAME = { learning_gains: 'learning gain', cognitive_load: 'cognitive load' };
+
+    var section = document.getElementById('lab');
+    var wrap = section.querySelector('.lab-svg-wrap');
+    var readout = section.querySelector('.lab-readout');
+    var summary = section.querySelector('.lab-summary');
+    var segs = Array.prototype.slice.call(section.querySelectorAll('.seg[role="radiogroup"]'));
+    var desc = document.createElement('p');
+    desc.id = 'lab-desc';
+    desc.className = 'chart-desc visually-hidden';
+    wrap.appendChild(desc);
+    var svg = d3.select(wrap).append('svg').attr('class', 'chart-svg lab-svg')
+      // A group, not an img: its dots are focusable, and an img's children are presentational.
+      .attr('role', 'group').attr('aria-labelledby', 'lab-desc')
+      .attr('tabindex', -1); // Chromium would otherwise add the svg itself as a tab stop before the dots
+
+    // Arrow keys walk the dots in the order they sit along x (true presence plus its fixed jitter).
+    var byX = Store.points.slice().sort(function (a, b) {
+      return a.presence + a.jx - (b.presence + b.jx) || a.i - b.i;
+    });
+    var rank = {};
+    byX.forEach(function (p, k) {
+      rank[p.i] = k;
+    });
+
+    // Control state, read from the markup's checked options: view, y and lines.
+    var state = {};
+    segs.forEach(function (seg) {
+      state[seg.dataset.control] = seg.querySelector('[aria-checked="true"]').dataset.value;
+    });
+    var pinned = null; // point inspected by click, tap or keyboard focus
+    var hover = null; // point previewed under a mouse or pen
+    var current = byX[0]; // the dot holding the chart's single tab stop
+    var drawn = { width: 0, height: 0 };
+
+    var reduced = function () {
+      return matchMedia(REDUCE).matches;
+    };
+    var key = function () {
+      return state.view + ' ' + state.y + ' ' + state.lines;
+    };
+
+    /** "Desktop sim · presence 41 · learning gain +4": the true, unjittered values. */
+    function readoutText(p) {
+      var v = p[state.y];
+      return Store.labels[p.condition] + ' · presence ' + p.presence + ' · ' + Y_NAME[state.y] + ' ' +
+        (state.y === 'learning_gains' ? Format.signed(v) : Format.plain(v));
+    }
+
+    /** Spec §6.4 summary sentence, worded by significance (p < .05). */
+    function summaryText() {
+      var cor = Store.stats.cor[state.y];
+      if (state.view === 'overall') {
+        return 'Pooled across all ' + cor.all.n + ' participants: r = ' + Format.r(cor.all.r) + ' (' + Format.p(cor.all.p) + ').';
+      }
+      var sig = G.filter(function (g) {
+        return cor[g].p < 0.05;
+      }).map(function (g) {
+        return SHORT[g];
+      });
+      return 'Within each condition: r = ' + G.map(function (g) {
+        return Format.r(cor[g].r) + ' for ' + SHORT[g];
+      }).join(', ') + ' — ' + (sig.length ? Format.list(sig) : 'none') + ' statistically significant.';
+    }
+
+    function dots() {
+      return svg.selectAll('g.frame:not(.exiting) .dot');
+    }
+
+    /** The dot under keyboard focus, when its focus is visible (it then keeps a ring after Escape). */
+    function focusVisiblePoint() {
+      var el = document.activeElement;
+      if (!el || !wrap.contains(el) || !el.classList.contains('dot')) return null;
+      try {
+        if (!el.matches(':focus-visible')) return null;
+      } catch (e) {} // very old engines: treat keyboard focus as visible
+      return d3.select(el).datum();
+    }
+
+    /** Set text only when it changes, so live regions announce real changes only. */
+    function setText(el, text) {
+      if (el.textContent !== text) el.textContent = text;
+    }
+
+    /** Readout, ring, selection and the roving tab stop, from pinned / hover / focus. */
+    function render() {
+      var shown = hover || pinned;
+      setText(readout, shown ? readoutText(shown) : '');
+      Charts.emphasize(svg, shown || focusVisiblePoint(), { reducedMotion: reduced() });
+      dots().attr('tabindex', function (p) {
+        return p === current ? 0 : -1;
+      }).attr('aria-selected', function (p) {
+        return p === pinned ? 'true' : 'false';
+      });
+    }
+
+    /** Draw the chart for the current state; animated for control changes, instant on resize. */
+    function draw(animate) {
+      var box = wrap.getBoundingClientRect();
+      drawn = { width: box.width, height: box.height };
+      var instant = !animate || reduced();
+      Charts.labScatter(svg, { width: box.width, height: box.height, reducedMotion: reduced(), animate: animate }, {
+        view: state.view, yVar: state.y, lines: state.lines === 'on',
+      });
+
+      // Accessibility: only the dots are exposed (a listbox of options, one tab stop); axes, grid,
+      // lines and labels are decorative here, since the summary sentence carries the numbers.
+      var frame = svg.select('g.frame:not(.exiting)').attr('aria-hidden', null);
+      frame.selectAll('g.plot > g').attr('aria-hidden', function () {
+        return this.classList.contains('layer-marks') ? null : 'true';
+      });
+      frame.select('g.layer-marks').attr('role', 'listbox').attr('aria-label', 'Participants by presence score');
+      dots().attr('role', 'option').attr('aria-label', readoutText).attr('aria-setsize', byX.length)
+        .attr('aria-posinset', function (p) {
+          return rank[p.i] + 1;
+        });
+
+      var text = summaryText();
+      setText(summary, text);
+      setText(desc, 'Scatter plot of presence against ' + Y_NAME[state.y] + ' for all ' + Store.points.length +
+        ' participants, ' + (state.view === 'overall' ? 'in one color' : 'colored by condition') +
+        (state.lines === 'on' ? ', with trend lines. ' : '. ') + text);
+      render();
+      Layout.settle(svg, section, key(), !instant);
+    }
+
+    // ---- Controls: radiogroups with a roving tabindex; arrows move the checked option. ----
+    function check(btn, focus) {
+      var seg = btn.parentNode;
+      seg.querySelectorAll('[role="radio"]').forEach(function (b) {
+        b.setAttribute('aria-checked', b === btn ? 'true' : 'false');
+        b.tabIndex = b === btn ? 0 : -1;
+      });
+      if (focus) btn.focus();
+      if (state[seg.dataset.control] === btn.dataset.value) return;
+      state[seg.dataset.control] = btn.dataset.value;
+      draw(true);
+    }
+
+    var STEP = { ArrowRight: 1, ArrowDown: 1, ArrowLeft: -1, ArrowUp: -1 };
+    segs.forEach(function (seg) {
+      var radios = Array.prototype.slice.call(seg.querySelectorAll('[role="radio"]'));
+      // Buttons turn Enter and Space into clicks, so a click covers mouse, touch and those keys.
+      seg.addEventListener('click', function (event) {
+        var btn = event.target.closest('[role="radio"]');
+        if (btn) check(btn, false);
+      });
+      seg.addEventListener('keydown', function (event) {
+        var i = radios.indexOf(event.target);
+        if (!STEP[event.key] || i < 0) return;
+        event.preventDefault();
+        check(radios[(i + STEP[event.key] + radios.length) % radios.length], true);
+      });
+    });
+
+    // ---- Point inspection ----
+    function pin(p) {
+      pinned = p;
+      if (p) current = p;
+      render();
+    }
+
+    function focusPoint(p) {
+      current = p;
+      render(); // moves the tab stop first, so focus lands on a tabindex=0 dot
+      var el = dots().filter(function (d) {
+        return d === p;
+      }).node();
+      if (el && document.activeElement !== el) el.focus();
+    }
+
+    /** The dot nearest a pointer event, if within HIT_RADIUS px; taps on tiny dots need the slack. */
+    function nearest(event) {
+      var frame = svg.select('g.frame:not(.exiting)');
+      var sc = frame.property('__scales');
+      if (!sc) return null;
+      var m = d3.pointer(event, frame.select('g.plot').node());
+      var best = null;
+      var bestD = HIT_RADIUS;
+      Store.points.forEach(function (p) {
+        var d = Math.hypot(sc.x(p.presence + p.jx) - m[0], sc.y(p[sc.yVar] + p.jy) - m[1]);
+        if (d <= bestD) {
+          best = p;
+          bestD = d;
+        }
+      });
+      return best;
+    }
+
+    function dotOf(target) {
+      var el = target.closest && target.closest('g.frame:not(.exiting) .dot');
+      return el ? d3.select(el).datum() : null;
+    }
+
+    svg.on('pointerover', function (event) {
+      if (event.pointerType === 'touch') return; // touch has no hover; a tap pins instead
+      hover = dotOf(event.target);
+      render();
+    }).on('pointerleave', function () {
+      hover = null;
+      render();
+    }).on('click', function (event) {
+      var p = dotOf(event.target) || nearest(event);
+      if (!p) {
+        pin(null); // empty plot space unpins
+        return;
+      }
+      pin(p);
+      focusPoint(p);
+    }).on('focusin', function (event) {
+      var p = dotOf(event.target);
+      if (p) pin(p); // selection follows keyboard focus
+    }).on('focusout', function () {
+      // Let focus land first, then drop a focus-only ring.
+      requestAnimationFrame(render);
+    }).on('keydown', function (event) {
+      var p = dotOf(event.target);
+      if (!p) return;
+      var k = rank[p.i];
+      var next = { ArrowRight: k + 1, ArrowDown: k + 1, ArrowLeft: k - 1, ArrowUp: k - 1, Home: 0, End: byX.length - 1 }[event.key];
+      if (event.key === 'Escape') {
+        hover = null;
+        pin(null);
+      } else if (next !== undefined) {
+        focusPoint(byX[Math.max(0, Math.min(byX.length - 1, next))]);
+      } else return;
+      event.preventDefault();
+    });
+
+    function init() {
+      draw(false);
+      // Screen readers hear the summary change with the controls (not on page load).
+      summary.setAttribute('aria-live', 'polite');
+      // Redraw at the new size without a transition; skip when the size is what was just drawn.
+      Layout.observe(wrap, function (box) {
+        if (Math.abs(box.width - drawn.width) < 0.5 && Math.abs(box.height - drawn.height) < 0.5) return;
+        draw(false);
+      });
+      if (document.fonts && document.fonts.status !== 'loaded') {
+        document.fonts.ready.then(function () {
+          draw(false);
+        });
+      }
+    }
+
+    return { init: init };
+  })();
 
   // WebKit can run deferred scripts before style.css applies; charts need its tokens and type sizes.
-  if (getComputedStyle(root).getPropertyValue('--ink').trim()) Narrative.init();
-  else window.addEventListener('load', Narrative.init, { once: true });
+  function start() {
+    Narrative.init();
+    Lab.init();
+  }
+  if (getComputedStyle(root).getPropertyValue('--ink').trim()) start();
+  else window.addEventListener('load', start, { once: true });
 })();

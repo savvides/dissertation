@@ -2,6 +2,7 @@
 // addInitScript) and exposes window.__probe: midline-aware step centering and an inspector that
 // checks the settled chart DOM against window.STUDY. Expected values come from STUDY, never from
 // script.js internals; scales are recovered from the rendered axis ticks.
+const { expect } = require('@playwright/test');
 
 const STATES = ['participants', 'gains', 'scatterPooled', 'scatterByCondition', 'load'];
 
@@ -222,4 +223,35 @@ const recordStepOrder = (page, direction) =>
 /** Uncaught errors seen since openPage (chart code must never throw). */
 const pageErrorsOf = (page) => pageErrors.get(page) || [];
 
-module.exports = { STATES, HEADLINES, probe, openPage, pageErrorsOf, twoFrames, goToStep, recordStepOrder };
+/**
+ * Every chart text renders at ≥ 12 CSS px, and the SVG is sized to its container's content box.
+ * `selector` picks the chart: the narrative figure by default, or the Lab's svg.
+ */
+async function expectTruePixelText(page, selector = '#story-figure svg.chart-svg') {
+  const r = await page.evaluate((selector) => {
+    const svg = document.querySelector(selector);
+    const wrap = svg.parentElement;
+    const cs = getComputedStyle(wrap);
+    const contentW = wrap.getBoundingClientRect().width - parseFloat(cs.paddingLeft) - parseFloat(cs.paddingRight);
+    const contentH = wrap.getBoundingClientRect().height - parseFloat(cs.paddingTop) - parseFloat(cs.paddingBottom);
+    const texts = [...svg.querySelectorAll('text')].map((t) => ({
+      text: t.textContent,
+      px: parseFloat(getComputedStyle(t).fontSize) * t.getScreenCTM().a,
+    }));
+    return {
+      width: Number(svg.getAttribute('width')),
+      height: Number(svg.getAttribute('height')),
+      viewBox: svg.getAttribute('viewBox'),
+      contentW,
+      contentH,
+      texts,
+    };
+  }, selector);
+  expect(Math.abs(r.width - r.contentW), `svg width ${r.width} vs content ${r.contentW}`).toBeLessThanOrEqual(1);
+  expect(Math.abs(r.height - r.contentH), `svg height ${r.height} vs content ${r.contentH}`).toBeLessThanOrEqual(1);
+  expect(r.viewBox).toBe(`0 0 ${r.width} ${r.height}`);
+  expect(r.texts.length).toBeGreaterThan(3);
+  for (const t of r.texts) expect(t.px, `rendered size of "${t.text}"`).toBeGreaterThanOrEqual(12);
+}
+
+module.exports = { STATES, HEADLINES, probe, openPage, pageErrorsOf, twoFrames, goToStep, recordStepOrder, expectTruePixelText };

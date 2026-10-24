@@ -25,6 +25,7 @@
 
     --gutter: 16px;
     --band-h: max(47svh, 360px);
+    --readout-h: 46px; /* Lab readout box: one 16px/1.5 line plus its padding */
 }
 
 /* ---------- Base ---------- */
@@ -432,7 +433,7 @@ figure.chart figcaption { flex: none; margin: 0 0 6px; }
 }
 
 .lab-readout {
-    min-height: calc(1.5em + 22px);
+    min-height: var(--readout-h);
     margin-top: 12px;
     padding: 10px 12px;
     border-left: 4px solid var(--ink);
@@ -513,6 +514,11 @@ html.js:not(.has-d3) .lab-summary { display: none; }
 
 @media (min-width: 900px) {
     .footer-inner { grid-template-columns: repeat(3, minmax(0, 1fr)); gap: clamp(24px, 4vw, 56px); }
+}
+
+/* The three Lab controls fit on one row from 700px, leaving the chart and readout more height.
+   (The short tier lays them out as three equal columns instead.) */
+@media (min-width: 700px) and (min-height: 501px) {
     .lab-control { flex: 0 1 auto; }
     .seg button { flex: 0 0 auto; padding: 0 18px; }
 }
@@ -640,13 +646,16 @@ html.js:not(.has-d3) .lab-summary { display: none; }
 
     .card-cap-hed { font-size: 16px; }
 
-    /* The Lab chart fills the screen minus the controls. */
+    /* The Lab chart fills the screen minus the controls, and minus one line of readout so the
+       inspected point's details stay on screen while tapping (the readout's reserved box). */
     .lab-stage {
         display: flex;
         flex-direction: column;
-        height: 100svh;
-        padding: 8px 0;
+        height: calc(100svh - var(--readout-h) - 8px);
+        padding: 8px 0 0;
     }
+
+    .lab-readout { margin-top: 8px; }
 
     .lab-controls { flex: none; }
     .lab-control { flex: 1 1 0; min-width: 0; }
@@ -658,3 +667,13 @@ html.js:not(.has-d3) .lab-summary { display: none; }
         min-height: 0;
     }
 }
+
+/* ---------- Evidence Lab chart: point inspection (spec §6.3) ---------- */
+.lab-svg .dot { cursor: pointer; }
+
+/* The SVG ring drawn around the inspected or focused dot is its focus indicator: WebKit paints no
+   outline on SVG children, and an outline would trace the dot's box rather than the dot. */
+.lab-svg .dot:focus,
+.lab-svg .dot:focus-visible { outline: none; box-shadow: none; }
+
+.lab-svg .emph-ring { stroke-width: 3; }
