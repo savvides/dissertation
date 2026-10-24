@@ -176,7 +176,7 @@ window.STUDY = {
       "learning_gains": {
         "all": {
           "r": 0.505958,
-          "p": 0,
+          "p": 2.3265e-8,
           "n": 108,
           "slope": 0.055262,
           "intercept": 0.852058,

@@ -91,6 +91,7 @@ test.describe('data.js', { tag: '@once' }, () => {
     const lg = cor.learning_gains;
     expect(round(lg.all.r, 3)).toBe(0.506);
     expect(lg.all.p).toBeLessThan(0.001);
+    expect(lg.all.p, 'a tiny p is stored, not rounded to 0').toBeGreaterThan(0);
     expect(round(lg.High.r, 3)).toBe(0.156);
     expect(round(lg.Medium.r, 3)).toBe(-0.186);
     expect(round(lg.Low.r, 3)).toBe(0.115);
@@ -148,7 +149,7 @@ test.describe('data.js', { tag: '@once' }, () => {
     expect(Math.max(...points.map((p) => Math.abs(p.jx)))).toBeGreaterThan(0.6);
   });
 
-  test('numbers are rounded to 6 decimal places', () => {
+  test('numbers are rounded to 6 decimal places (a p below 1e-6 keeps 6 significant figures)', () => {
     const text = fs.readFileSync(DATA_JS, 'utf8');
     expect(text).not.toMatch(/\d\.\d{7,}/);
   });

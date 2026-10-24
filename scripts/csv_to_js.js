@@ -7,7 +7,8 @@
  *   node scripts/csv_to_js.js --stdout   print it instead (used by the tests)
  *
  * No dependencies. Output is deterministic: stable key order, numbers rounded to
- * 6 decimal places, trailing newline.
+ * 6 decimal places (a p value below 1e-6 keeps 6 significant figures, so it is
+ * never written as 0), trailing newline.
  */
 const fs = require('fs');
 const path = require('path');
@@ -198,8 +199,13 @@ function build(csvBuffer) {
   };
 }
 
-// Round every number to 6 dp (and drop negative zero) while serializing.
-const round6 = (key, v) => (typeof v === 'number' ? Math.round(v * 1e6) / 1e6 + 0 : v);
+// Round every number to 6 dp (and drop negative zero) while serializing. A p value below 1e-6
+// keeps 6 significant figures instead, so a tiny p is never written as 0.
+const round6 = (key, v) => {
+  if (typeof v !== 'number') return v;
+  if (key === 'p' && v > 0 && v < 1e-6) return Number(v.toPrecision(6));
+  return Math.round(v * 1e6) / 1e6 + 0;
+};
 
 function render(study) {
   const json = (v, indent) => JSON.stringify(v, round6, indent);
