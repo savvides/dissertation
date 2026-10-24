@@ -19,7 +19,13 @@ const TYPES = {
 
 http
   .createServer((req, res) => {
-    const pathname = decodeURIComponent(new URL(req.url, 'http://localhost').pathname);
+    let pathname;
+    try {
+      pathname = decodeURIComponent(new URL(req.url, 'http://localhost').pathname);
+    } catch {
+      res.writeHead(400, { 'Content-Type': 'text/plain' }).end('Bad request');
+      return;
+    }
     let file = path.join(ROOT, pathname);
     if (file !== ROOT && !file.startsWith(ROOT + path.sep)) {
       res.writeHead(403).end('Forbidden');
