@@ -271,8 +271,11 @@
       var top = 2;
       var bottom = 7 + 13 + 8 + titleLines.length * 16 + 4;
       var labelH = compact ? 20 : 0;
-      var stepH = Math.min((H - top - bottom) / 3, compact ? 84 : 96);
-      var barH = Math.max(10, Math.min(compact ? 30 : 34, (stepH - labelH) * (compact ? 0.62 : 0.56)));
+      // The bars fill the chart box (so the figure stays centred and the x axis sits where the
+      // scatter's does); bars thicken with the room, up to 64px.
+      var stepH = compact ? Math.min((H - top - bottom) / 3, 84) : (H - top - bottom) / 3;
+      var barMax = compact ? 30 : Math.min(64, Math.max(34, stepH * 0.34));
+      var barH = Math.max(10, Math.min(barMax, (stepH - labelH) * (compact ? 0.62 : 0.56)));
       var axisY = 3 * stepH + 6;
       var x = d3.scaleLinear().domain(cfg.domain).range([0, plotW]);
       var band = {};
