@@ -1,7 +1,7 @@
 // Narrative charts (spec §5): step activation, true-pixel text, resize, bars with CIs, the morphing
 // scatter, grid layering and chart text alternatives. Runs in every viewport project, both engines.
 const { test, expect } = require('@playwright/test');
-const { STATES, HEADLINES, openPage, pageErrorsOf, goToStep, recordStepOrder, expectTruePixelText } = require('./chart-helpers');
+const { STATES, HEADLINES, openPage, pageErrorsOf, goToStep, recordStepOrder, expectTruePixelText, ringsOf } = require('./chart-helpers');
 
 const inspect = (page) => page.evaluate(() => window.__probe.inspect());
 
@@ -156,5 +156,28 @@ test.describe('narrative with motion', () => {
         }
       }
     }
+  });
+
+  test('9. a quick re-hover within the ring fade leaves exactly one ring on the dot', async ({ page }) => {
+    await openPage(page);
+    await goToStep(page, 3);
+    // A dot whose centre is not covered by a line or another dot, so the pointer lands on it.
+    const pt = await page.evaluate(() => {
+      for (const d of document.querySelectorAll('#story-figure g.frame:not(.exiting) .dot')) {
+        const r = d.getBoundingClientRect();
+        const c = { i: Number(d.dataset.i), x: r.left + r.width / 2, y: r.top + r.height / 2 };
+        if (document.elementFromPoint(c.x, c.y) === d) return c;
+      }
+      return null;
+    });
+    expect(pt).not.toBeNull();
+    const SVG = '#story-figure svg.chart-svg';
+    await page.mouse.move(pt.x, pt.y);
+    await expect.poll(() => ringsOf(page, SVG)).toEqual([{ i: pt.i, opacity: 1 }]);
+    await page.mouse.move(2, 2);
+    await page.mouse.move(pt.x, pt.y);
+    await expect.poll(() => ringsOf(page, SVG)).toEqual([{ i: pt.i, opacity: 1 }]);
+    await page.waitForTimeout(400);
+    expect(await ringsOf(page, SVG)).toEqual([{ i: pt.i, opacity: 1 }]);
   });
 });

@@ -2,7 +2,7 @@
 // summary, the cognitive-load y domain, keyboard and pointer inspection with a readout panel, and
 // clean settling after interrupted transitions. Expected values come from window.STUDY or the spec.
 const { test, expect } = require('@playwright/test');
-const { openPage, pageErrorsOf, expectTruePixelText } = require('./chart-helpers');
+const { openPage, pageErrorsOf, expectTruePixelText, ringsOf } = require('./chart-helpers');
 
 // Spec §6.4: the exact summary sentences for the current data.
 const SUMMARIES = {
@@ -304,6 +304,17 @@ test.describe('Evidence Lab', () => {
 
     await page.keyboard.press('ArrowLeft');
     expect(await focusedDot(page)).toBe(order[0]);
+    await expect.poll(() => ringsOf(page, LAB_SVG)).toEqual([{ i: order[0], opacity: 1 }]);
+
+    // A quick Right then Left returns to a dot whose ring is still fading out: once settled it has
+    // exactly one fully drawn ring (WCAG 2.4.7; the ring is the dot's only focus indicator).
+    await page.keyboard.press('ArrowRight');
+    await page.keyboard.press('ArrowLeft');
+    expect(await focusedDot(page)).toBe(order[0]);
+    await expect.poll(() => ringsOf(page, LAB_SVG)).toEqual([{ i: order[0], opacity: 1 }]);
+    await page.waitForTimeout(400);
+    expect(await ringsOf(page, LAB_SVG)).toEqual([{ i: order[0], opacity: 1 }]);
+    expect((await labInspect(page)).problems).toEqual([]);
 
     // End reaches the rightmost dot without page overflow (C07, C11).
     await page.keyboard.press('End');

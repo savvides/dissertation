@@ -278,4 +278,15 @@ async function expectTruePixelText(page, selector = '#story-figure svg.chart-svg
   for (const t of r.texts) expect(t.px, `rendered size of "${t.text}"`).toBeGreaterThanOrEqual(12);
 }
 
-module.exports = { STATES, HEADLINES, probe, openPage, pageErrorsOf, twoFrames, goToStep, recordStepOrder, expectTruePixelText };
+/** Emphasis rings in a chart right now: the dot each one marks and its group's opacity. */
+const ringsOf = (page, selector) =>
+  page.evaluate(
+    (sel) =>
+      [...document.querySelectorAll(`${sel} circle.emph-ring`)].map((c) => ({
+        i: c.__data__.i,
+        opacity: Number(getComputedStyle(c.parentElement).opacity),
+      })),
+    selector
+  );
+
+module.exports = { STATES, HEADLINES, probe, openPage, pageErrorsOf, twoFrames, goToStep, recordStepOrder, expectTruePixelText, ringsOf };

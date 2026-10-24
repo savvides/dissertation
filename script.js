@@ -141,7 +141,7 @@
       svg.attr('width', opts.width).attr('height', opts.height).attr('viewBox', '0 0 ' + opts.width + ' ' + opts.height);
       svg.selectAll('*').interrupt('step');
       svg.selectAll('.exiting').remove(); // anything mid-exit is finished off now, never rebound
-      svg.selectAll('g.emph').interrupt('emph').remove();
+      svg.selectAll('g.emph, g.emph-out').interrupt('emph').remove();
       exitFade(svg.selectAll('g.frame').filter(function () {
         return this.getAttribute('data-frame') !== type;
       }), m);
@@ -716,8 +716,9 @@
       var rings = frame.select('g.layer-emph').selectAll('g.emph').data(point ? [point] : [], function (p) {
         return p.i;
       });
+      // A fading ring leaves the join (g.emph-out), so re-emphasizing its dot draws a fresh ring.
       rings.exit().interrupt('emph').each(function () {
-        var sel = d3.select(this);
+        var sel = d3.select(this).attr('class', 'emph-out');
         if (on) sel.transition('emph').duration(EMPH_MS).attr('opacity', 0).remove();
         else sel.remove();
       });
