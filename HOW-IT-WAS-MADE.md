@@ -4,7 +4,7 @@ A PhD dissertation turned into an interactive data story, built entirely through
 
 ## The Problem
 
-I defended my dissertation in 2018. It was 200+ pages on whether VR headsets improve learning. The study was solid: 108 participants, three conditions, statistically significant results. It sits in ProQuest where almost nobody will ever read it.
+I defended my dissertation in 2018. It was 76 pages on whether VR headsets improve learning. The study was solid: 108 participants, three conditions, statistically significant results. It sits in ProQuest where almost nobody will ever read it.
 
 That's the fate of most dissertations. Years of work, compressed into a PDF, filed away. The format never matched the ambition.
 
@@ -36,7 +36,7 @@ The whole site was built through iterative conversation with Claude Code. No han
 
 8. **Iteration.** Many rounds of conversation, refining the narrative, polishing the charts, adjusting the pacing. The AI handled the code. I handled the taste.
 
-The entire thing is static HTML. No build tools, no server, no database. It runs from a single file and deploys on GitHub Pages for free.
+The entire thing is static HTML. No build tools, no server, no database. It's three static files plus a charting library, and it deploys on GitHub Pages for free.
 
 ## Try It Yourself
 

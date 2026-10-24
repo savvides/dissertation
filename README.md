@@ -1,6 +1,7 @@
+![CI](https://github.com/savvides/dissertation/actions/workflows/ci.yml/badge.svg)
 ![Deploy](https://github.com/savvides/dissertation/actions/workflows/deploy.yml/badge.svg)
 ![License: CC BY 4.0](https://img.shields.io/badge/License-CC_BY_4.0-lightgrey.svg)
-![Version](https://img.shields.io/badge/version-2.1.0-blue.svg)
+![Version](https://img.shields.io/badge/version-2.1.1-blue.svg)
 
 # Teaching Science Lab Safety: Are Virtual Simulations Effective?
 
@@ -8,7 +9,7 @@ An interactive data story exploring VR, learning, and a surprising statistical f
 
 ![The ecological fallacy reveal — dots colorized by condition show the overall correlation disappears within each group](docs/screenshot.png)
 
-The 2018 PhD study (n=108) asked whether VR headsets improve learning. They don't. VR and desktop produced identical outcomes (Cohen's d = 0.23); both crushed passive instruction (d > 2.4). What mattered was the simulation, not the display. A 2026 reanalysis added something the original paper missed: the presence-learning correlation is an ecological fallacy — real at the group level, gone within each condition.
+The 2018 PhD study (n=108) asked whether VR headsets improve learning. VR did not significantly beat a desktop version of the same simulation (Cohen's d = 0.23, p = .33; the study was too small to detect a difference that size). Both simulation groups far outperformed a video-and-handout control (d > 2.4), though that comparison also changed the content and the session length. A 2026 reanalysis added something the original paper missed: the presence-learning correlation is an ecological fallacy — real at the group level, gone within each condition.
 
 [**View the Interactive Story**](https://savvides.github.io/dissertation/)
 
@@ -23,10 +24,10 @@ The 2018 PhD study (n=108) asked whether VR headsets improve learning. They don'
 
 ## The Data
 
-The study data is included for reproducibility:
+The study data is included so the 2026 reanalysis can be reproduced:
 
 - [`data.csv`](data.csv) — De-identified data for all 108 participants: learning gains, condition, presence scores, cognitive load
-- [`litreview.csv`](litreview.csv) — 219 unique peer-reviewed papers (2019–2026) from an updated literature search
+- [`litreview.csv`](litreview.csv) — Raw Consensus search export: 249 rows covering 219 unique peer-reviewed papers (30 rows are exact duplicates), published 2021–2025
 
 ## How It Was Made
 
@@ -86,11 +87,13 @@ The study draws on four theoretical perspectives:
 
 Participants completed a pretest, the intervention, a posttest, presence and cognitive load questionnaires, and a one-week follow-up test. Of the 108 participants, 92 completed the follow-up.
 
-### Key Results
+### Key Results (as reported in the dissertation)
+
+These figures come from the 2018 analysis, which removed outliers. Descriptives recomputed from `data.csv` differ (presence means of 44.3, 41.8 and 16.6), and outlier removal alone does not explain the gap.
 
 - **Knowledge**: High and medium immersion groups scored significantly higher at posttest (M = 9.03 and 9.34 vs. 6.13) and follow-up (M = 8.65 and 8.94 vs. 5.80) compared to low immersion. The interaction between immersion and time of test was significant, F(3.43, 154.14) = 42.77, p < .001, partial η² = .488.
 - **Presence**: High and medium immersion groups reported significantly higher presence than low immersion (M = 46.26 and 46.22 vs. 11.24, p < .001). Notably, high and medium immersion presence scores were nearly identical — a surprising finding.
-- **Cognitive Load**: No significant differences across conditions, F(2,104) = 2.28, p = .107, though the VR condition had the highest mean cognitive load (M = 2.85), possibly due to the novelty of the headset interface.
+- **Cognitive Load**: No significant differences across conditions, F(2,104) = 2.28, p = .107, though the VR condition had the highest mean cognitive load (M = 2.85), which the dissertation suggested might reflect the headset's novelty (not tested).
 - **Prediction**: The original analysis found that presence significantly improved the prediction of posttest knowledge scores (R² change = .057, p < .001). However, a 2026 reanalysis revealed this relationship is driven entirely by between-group differences — see reanalysis below.
 
 ## Updated Literature Review (2019–2026)
@@ -99,31 +102,30 @@ The original dissertation's literature review cited sources through 2018. In 202
 
 ### Method
 
-An AI-powered academic literature search was conducted using [Consensus](https://consensus.app), yielding 219 unique peer-reviewed papers (2019–2026). Of these, 43 were selected for the addendum based on evidence quality and relevance:
+An AI-powered academic literature search was conducted using [Consensus](https://consensus.app), yielding 219 unique peer-reviewed papers, published 2021–2025 (the raw export has 249 rows, including 30 duplicates). Of these, 43 were selected for the addendum based on evidence quality and relevance:
 
-- 22 meta-analyses and 57 systematic reviews in the search pool
-- 38 randomized controlled trials
-- 185 papers from Q1 journals (SJR quartile)
+- 18 meta-analyses and 51 systematic reviews in the search pool
+- 33 randomized controlled trials
+- 164 papers from Q1 journals (SJR quartile)
 
 ### How New Evidence Aligns with the Study
 
 The post-2018 literature broadly validates the study's findings while providing new theoretical frameworks for interpreting them:
 
 - **The CAMIL Model** (Makransky & Petersen, 2021) offers a theoretical framework predicting that presence mediates between immersion and learning outcomes — consistent with the original analysis, but challenged by the 2026 reanalysis
-- **"Platform is not destiny"** (Johnson-Glenberg et al., 2021) — the degree of embodied interaction matters more than display technology, directly explaining the VR-desktop equivalence
-- **Novelty effects** (Miguel-Alonso et al., 2024) — VR novelty contributes to reduced learning during initial experiences, supporting the cognitive load interpretation
-- **Interactive simulations consistently outperform passive instruction** across meta-analyses (Pellas et al., 2021; Villena-Taranilla et al., 2022; Matovu et al., 2022)
+- **"Platform is not destiny"** (Johnson-Glenberg et al., 2021) — the degree of embodied interaction matters more than display technology, consistent with the lack of a significant VR-desktop difference
+- **Novelty effects** (Miguel-Alonso et al., 2024) — VR novelty contributes to reduced learning during initial experiences, consistent with, though not evidence for, the cognitive-load hypothesis
+- **Evidence on VR and learning outcomes is positive but mixed** — a K-6 meta-analysis found VR outperformed control conditions (Villena-Taranilla et al., 2022); a systematic review found immersive VR can improve learning performance but flagged usability and design issues (Pellas et al., 2021); a review of immersive VR for science learning found its effect on learning outcomes unclear (Matovu et al., 2022)
 
 The full addendum with all citations is in [`dissertation.md`](dissertation.md#updated-literature-review-2019-2026).
 
 ## 2026 Retrospective
 
-In 2026, I went back to the original data ([`data.csv`](data.csv)) and red-teamed the methodology with newer statistical tools. The headline finding holds: interactive simulations crushed passive instruction (Cohen's d > 2.4). The theoretical story about *why* doesn't:
+In 2026, I went back to the original data ([`data.csv`](data.csv)) and red-teamed the methodology with newer statistical tools. The headline finding holds: the simulation groups far outperformed the video-and-handout control (Cohen's d > 2.4), though content and session length differed too. The theoretical story about *why* doesn't:
 
 - **Confounded conditions** — The low immersion group received fundamentally different content (video/text vs. interactive simulation), confounding immersion with interactivity
-- **Uncontrolled time on task** — VR group spent ~10 more minutes than control (25.9 vs. 16.2 min)
-- **Ceiling effect** — 69% of VR participants scored 9-10/10, compressing score differences
-- **Ecological fallacy** — The overall presence-learning correlation (r = .506, p < .001) disappeared within conditions (High: r = .156, Medium: r = -.186, Low: r = .115 — all non-significant). The apparent relationship was an artifact of condition assignment.
+- **Uncontrolled session length** — VR sessions averaged 25.9 min vs. 16.2 min for control (whole session; intervention time was not recorded separately)
+- **Ecological fallacy** — The overall presence-learning correlation (r = .506, p < .001) disappeared within conditions (High: r = .156, Medium: r = -.186, Low: r = .115 — all non-significant). The apparent relationship was driven by differences between conditions.
 - **Instrument validity** — The Witmer & Singer presence questionnaire was meaningless for video-watching participants (38% scored exactly zero)
 
 </details>
