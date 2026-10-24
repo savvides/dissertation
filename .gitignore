@@ -5,3 +5,6 @@ final_ps.sav
 .gstack/
 .superpowers/
 docs/superpowers/
+node_modules/
+test-results/
+playwright-report/
