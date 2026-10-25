@@ -41,6 +41,32 @@ function probe() {
     window.scrollTo(0, r.top + scrollY + r.height / 2 - midline());
   }
 
+  /**
+   * Center step n and resolve with performance.now() at the moment the page activates it. Timing
+   * tests measure from here, not from the scroll: on a slow runner the scroll handler can lag.
+   */
+  function activateStep(n, timeout = 5000) {
+    return new Promise((resolve, reject) => {
+      const step = document.querySelector(`.step[data-step="${n}"]`);
+      if (step.getAttribute('aria-current') === 'step') {
+        resolve(performance.now());
+        return;
+      }
+      const mo = new MutationObserver(() => {
+        if (step.getAttribute('aria-current') !== 'step') return;
+        mo.disconnect();
+        clearTimeout(timer);
+        resolve(performance.now());
+      });
+      const timer = setTimeout(() => {
+        mo.disconnect();
+        reject(new Error(`step ${n} not activated within ${timeout}ms`));
+      }, timeout);
+      mo.observe(step, { attributes: true, attributeFilter: ['aria-current'] });
+      centerStep(n);
+    });
+  }
+
   function activeStep() {
     const el = document.querySelector('.step[aria-current="step"]');
     return el ? Number(el.dataset.step) : null;
@@ -214,7 +240,7 @@ function probe() {
     return out;
   }
 
-  window.__probe = { midline, centerStep, activeStep, inspect, scaleFrom, translate, svg, geometry, overlaps };
+  window.__probe = { midline, centerStep, activateStep, activeStep, inspect, scaleFrom, translate, svg, geometry, overlaps };
 }
 
 const pageErrors = new WeakMap();

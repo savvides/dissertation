@@ -139,7 +139,7 @@ test.describe('narrative with motion', () => {
     for (const [from, to] of [[4, 5], [2, 3], [1, 2]]) {
       await goToStep(page, from);
       const mid = await page.evaluate(async (to) => {
-        window.__probe.centerStep(to);
+        await window.__probe.activateStep(to); // time the transition, not the scroll handler
         await new Promise((r) => setTimeout(r, 300));
         return window.__probe.geometry();
       }, to);
