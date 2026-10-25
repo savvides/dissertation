@@ -5,6 +5,43 @@ All notable changes to this project will be documented in this file.
 The format is based on [Keep a Changelog](https://keepachangelog.com/en/1.0.0/),
 and this project adheres to [Semantic Versioning](https://semver.org/spec/v2.0.0.html).
 
+## [3.0.0] - 2026-10-24
+
+The story, its order and the corrected 2.1.1 copy are unchanged. The page is rebuilt around them.
+
+### Added
+- **Newsroom design**: A white page with Libre Franklin for headlines and labels and Newsreader for reading text. Each condition has its own color and mark shape (VR a filled circle, desktop an open ring, video and text a diamond) and is labeled directly on the charts, so no chart relies on color alone.
+- **Hero strip**: 108 marks grouped by condition (35, 36 and 37), one per participant: three rows on phones, three columns on wider screens.
+- **Chart captions**: Each step has a headline and a dek above its chart, and each chart has a text description that updates for screen readers.
+- **Responsive layout**: Charts redraw at their measured width from 320px to 1920px. On phones the chart sits in a sticky band above the text; on short landscape phones it pins to the left beside it.
+- **Evidence Lab readout**: Hover, tap or focus a dot (or arrow through them with the keyboard) to see that participant's values in a readout below the chart, plus a summary sentence generated from the statistics.
+- **`data.js`**: Generated from `data.csv` by `scripts/csv_to_js.js` with the points, labels and every statistic the page shows (means, 95% confidence intervals, correlations and p values). The browser calculates nothing.
+- **Test suite**: Playwright tests in Chromium and WebKit at six viewports plus a `file://` run, including axe-core accessibility, contrast and color-vision checks, interrupted-transition stress cases, keyboard-only use of the Lab and a d3-unavailable fallback. CI runs them in a new `test` job.
+- **`scripts/screenshots.js`**: Regenerates `docs/screenshot.png` and `docs/social-preview.png` from the live page.
+- **README and docs**: A Development section, an updated "What You'll See" and "Built With", and a file map and command list in `CLAUDE.md`.
+
+### Changed
+- **d3**: Now self-hosted (`vendor/d3.v7.9.0.min.js`, with its license) instead of loaded from jsDelivr.
+- **Charts**: Redrawn live with D3 on every step, with named transitions so a hover can't interrupt a step change, and with reduced-motion support.
+- **Evidence Lab**: Rebuilt as three segmented controls (View, Y-axis, Trendlines) with a cognitive-load axis that starts at 0.
+- **Lab chart semantics**: The Lab chart is a named `role="group"`, not `role="img"` like the narrative chart, because it contains focusable dots and axe's nested-interactive rule forbids focusable content inside an img.
+- **Images**: `docs/screenshot.png` is now 1440×900 and `docs/social-preview.png` is exactly 1200×630, both showing step 4.
+- **Docs**: The visual-design step in `HOW-IT-WAS-MADE.md` describes the Newsroom direction.
+- **CI**: Runs on pull requests into any branch and on manual dispatch, and retries a failed test once on CI. Deploy still runs only after CI passes on a push to `main`.
+
+### Removed
+- **Old design**: The warm gold palette and serif display type, the reading progress bar, and the floating hover tooltips.
+- **Inlined data**: The 108-row `globalData` array that was inlined at the top of `script.js`.
+- **jsDelivr script tag** and its Subresource Integrity hash.
+
+### Fixed
+- **Step activation** on short and narrow viewports, in both directions, in Chromium and WebKit.
+- **Interrupted transitions**: A hover during a step change no longer leaves stale dots or wrong fills.
+- **Horizontal overflow** from tooltips and the rightmost Lab dot.
+- **Fixed-size charts**: Text stays at least 12px and each chart fits its container after a resize or rotation, including at 320px.
+- **d3 failure**: If d3 can't load, the text and coda stay readable and the chart areas show a note instead of erroring.
+- **Accessibility**: Focus rings on every interactive element, 44px control targets, text contrast of at least 4.5:1, landmark structure, and a text alternative for every chart.
+
 ## [2.1.1] - 2026-10-24
 
 ### Fixed
@@ -60,6 +97,7 @@ and this project adheres to [Semantic Versioning](https://semver.org/spec/v2.0.0
 - **Original Dissertation**: PhD Dissertation "Teaching Science Lab Safety: Are Virtual Simulations Effective?" (Savvides, 2018).
 - **Literature Review (2018)**: Citations and analysis covering VR in science education through 2018.
 
+[3.0.0]: https://github.com/savvides/dissertation/compare/v2.1.1...v3.0.0
 [2.1.1]: https://github.com/savvides/dissertation/compare/v2.1.0...v2.1.1
 [2.1.0]: https://github.com/savvides/dissertation/compare/v2.0.0...v2.1.0
 [2.0.0]: https://github.com/savvides/dissertation/releases/tag/v2.0.0

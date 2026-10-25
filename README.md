@@ -1,13 +1,13 @@
 ![CI](https://github.com/savvides/dissertation/actions/workflows/ci.yml/badge.svg)
 ![Deploy](https://github.com/savvides/dissertation/actions/workflows/deploy.yml/badge.svg)
 ![License: CC BY 4.0](https://img.shields.io/badge/License-CC_BY_4.0-lightgrey.svg)
-![Version](https://img.shields.io/badge/version-2.1.1-blue.svg)
+![Version](https://img.shields.io/badge/version-3.0.0-blue.svg)
 
 # Teaching Science Lab Safety: Are Virtual Simulations Effective?
 
 An interactive data story exploring VR, learning, and a surprising statistical fallacy.
 
-![The ecological fallacy reveal — dots colorized by condition show the overall correlation disappears within each group](docs/screenshot.png)
+![Step 4, "Look Closer": dots colored and shaped by condition, each group with its own weak, non-significant trend line, and a dashed line for all 108 pooled that climbs far more steeply](docs/screenshot.png)
 
 The 2018 PhD study (n=108) asked whether VR headsets improve learning. VR did not significantly beat a desktop version of the same simulation (Cohen's d = 0.23, p = .33; the study was too small to detect a difference that size). Both simulation groups far outperformed a video-and-handout control (d > 2.4), though that comparison also changed the content and the session length. A 2026 reanalysis added something the original paper missed: the presence-learning correlation is an ecological fallacy — real at the group level, gone within each condition.
 
@@ -15,12 +15,16 @@ The 2018 PhD study (n=108) asked whether VR headsets improve learning. VR did no
 
 ## What You'll See
 
+The page opens on a **hero strip**: 108 marks grouped by condition (35 VR headset, 36 desktop, 37 video and text), one mark per participant. From there, a sticky chart redraws as you scroll through five steps, then hands over to an interactive Lab.
+
 1. **The Experiment** — 108 participants randomly assigned to VR, desktop simulation, or video/text control
 2. **The Promise** — Simulations work, but VR doesn't significantly beat desktop
 3. **The Deeper Question** — Presence as the theorized mechanism, with a convincing overall correlation
 4. **The Twist** — The ecological fallacy reveal: color the dots by condition and the correlation disappears
-5. **An Open Question** — The price of novelty? VR's cognitive load ran highest, but not significantly
-6. **The Evidence Lab** — An interactive scatter plot you can drive yourself: toggle overall vs. by-condition views, swap the y-axis between learning gains and cognitive load, and show or hide the regression lines to replay the fallacy on demand
+5. **An Open Question** — The price of novelty? VR's cognitive load ran highest, but not significantly. The page frames novelty cost as a hypothesis the study raises, not one it confirms.
+6. **The Evidence Lab** — An interactive scatter plot you can drive yourself: toggle overall vs. by-condition views, swap the y-axis between learning gains and cognitive load, and show or hide the trend lines to replay the fallacy on demand. Hover, tap or focus any dot (or arrow through them with the keyboard) and a readout shows that participant's values; a summary sentence under the chart restates the current view from the computed statistics.
+
+The charts, their text descriptions and the Lab's readout and summary take every number from `data.js`, which `scripts/csv_to_js.js` generates from `data.csv`; the browser never calculates a statistic. The statistics quoted in the text (the hero strip's counts, step 4's within-group r values and step 5's cognitive-load figures) are written by hand, and the test suite checks them against `data.js`.
 
 ## The Data
 
@@ -35,9 +39,22 @@ This entire site was built through conversation with [Claude Code](https://claud
 
 ## Built With
 
-- [D3.js](https://d3js.org/) v7 for data visualization
-- Vanilla CSS with an editorial design system
-- No build tools — static HTML that works from `file://`
+- [D3.js](https://d3js.org/) 7.9.0, self-hosted in `vendor/` (no CDN), redraws every chart live at its container's width
+- Vanilla CSS with the "Newsroom" design system: Libre Franklin for display and UI, Newsreader for reading text
+- A [Playwright](https://playwright.dev/) test suite (Chromium and WebKit, six viewports from 320px to 1440px, plus axe-core accessibility and contrast checks)
+- No build tools. Static HTML that works from `file://`
+
+## Development
+
+```
+npm ci                      # dev-only tooling: Playwright and axe-core
+npx playwright install chromium webkit
+npx playwright test         # the full suite; it serves the repo itself
+node scripts/csv_to_js.js   # regenerate data.js after changing data.csv
+node scripts/screenshots.js # regenerate docs/screenshot.png and docs/social-preview.png
+```
+
+`data.js` is generated; never edit it by hand.
 
 <details>
 <summary><strong>Full Academic Details</strong></summary>

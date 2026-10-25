@@ -1,0 +1,13 @@
+{
+  "name": "dissertation-site",
+  "private": true,
+  "description": "Dev-only tooling (tests and data generation) for the static dissertation site.",
+  "scripts": {
+    "test": "playwright test",
+    "data": "node scripts/csv_to_js.js"
+  },
+  "devDependencies": {
+    "@playwright/test": "1.64.0",
+    "@axe-core/playwright": "4.13.0"
+  }
+}
