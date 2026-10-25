@@ -98,7 +98,7 @@ test.describe('reduced motion', () => {
     await openPage(page);
     await goToStep(page, 1);
     const r = await page.evaluate(async () => {
-      window.__probe.centerStep(4);
+      await window.__probe.activateStep(4); // time the step change, not the scroll handler
       await new Promise((res) => setTimeout(res, 50));
       return window.__probe.inspect();
     });
