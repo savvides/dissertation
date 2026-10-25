@@ -11,11 +11,15 @@ This repository contains Philippos Savvides's 2018 PhD dissertation from Arizona
 - `Savvides_asu_0010E_18427.pdf` — Original dissertation PDF (source of truth for figures and formatting)
 - `dissertation.md` — Full markdown conversion with an "Updated Literature Review (2019-2026)" addendum section
 - `data.csv` — De-identified study data (n=108): learning gains, condition, presence, cognitive load
-- `litreview.csv` — Consensus search results (219 unique papers, 2019-2026)
+- `litreview.csv` — Consensus search export (249 rows; 219 unique papers published 2021–2025)
 - `README.md` — Project overview, study summary, literature review addendum summary, and methodological retrospective
 - `HOW-IT-WAS-MADE.md` — Process write-up explaining how the interactive site was built with Claude Code
 - `CHANGELOG.md` — Versioned release notes for the interactive site (Keep a Changelog format, SemVer)
 - `index.html` / `style.css` / `script.js` — Single-page interactive scrollytelling site (D3.js v7, vanilla CSS, no build tools). Sections: scroll-driven narrative (`#chart-container`), personal coda (`#coda`), interactive Evidence Lab (`#evidence-lab`), and portfolio footer (`#about`).
+- `scripts/csv_to_js.js` — Regenerates the `globalData` array inlined at the top of `script.js` from `data.csv`; rerun it if `data.csv` changes
+- `LICENSE` — CC BY 4.0
+- `docs/` — README screenshot and social preview image
+- `.github/workflows/` — `ci.yml` (vnu HTML validation, lychee link check) and `deploy.yml` (GitHub Pages, runs after CI passes)
 
 ## Key Context
 
@@ -24,7 +28,7 @@ This repository contains Philippos Savvides's 2018 PhD dissertation from Arizona
 - A 2026 reanalysis found the presence-learning correlation is an ecological fallacy (significant overall, non-significant within conditions) — the README retrospective documents this
 - Figures are referenced but not embedded — they live in the original PDF
 - Citation style is APA 6th edition throughout
-- The "Updated Literature Review (2019-2026)" addendum is organized to mirror the original literature review subsections: Simulations, Educational Virtual Environments, VR in Science Education, Immersion and Presence, Embodied Cognition, Constructivism, and Cognitive Load Theory
+- The "Updated Literature Review (2019-2026)" addendum is organized to mirror the original literature review subsections: Simulations and Educational Virtual Environments; Applications of VR in Science Education; Immersion and Presence; Embodied Cognition; Constructivism and Problem-based Learning; Cognitive Load Theory
 
 ## Working with the Addendum
 

@@ -776,8 +776,6 @@ function drawGridLines(yScale) {
 }
 
 function updateChart(stepIndex) {
-    console.log(`Active step: ${stepIndex}`);
-
     if (stepIndex === 1) {
         drawBarChart('count', 'Participants per Condition');
     } else if (stepIndex === 2) {
@@ -787,7 +785,7 @@ function updateChart(stepIndex) {
     } else if (stepIndex === 4) {
         drawScatterPlot(true);
     } else if (stepIndex === 5) {
-        drawBarChart('cognitive_load', 'Average Cognitive Load');
+        drawBarChart('cognitive_load', 'Cognitive Load (not significant)');
     } else {
         clearChart();
     }
@@ -1102,10 +1100,11 @@ function drawBarChart(metric, title, yMax) {
 function initObserver() {
     const steps = document.querySelectorAll('.step');
     
+    // Activate whichever step crosses the viewport midline, regardless of step height
     const observerOptions = {
         root: null,
-        rootMargin: '0px',
-        threshold: 0.5
+        rootMargin: '-50% 0px -50% 0px',
+        threshold: 0
     };
 
     const observer = new IntersectionObserver((entries) => {

@@ -14,7 +14,8 @@
     <link rel="preconnect" href="https://fonts.gstatic.com" crossorigin>
     <link href="https://fonts.googleapis.com/css2?family=Inter:wght@400;500&family=Libre+Baskerville:ital,wght@0,400;1,400&family=Playfair+Display:wght@400;700&display=swap" rel="stylesheet">
     <link rel="stylesheet" href="style.css">
-    <script src="https://d3js.org/d3.v7.min.js" defer></script>
+    <link rel="icon" href="data:image/svg+xml,%3Csvg%20xmlns='http://www.w3.org/2000/svg'%20viewBox='0%200%2016%2016'%3E%3Ccircle%20cx='8'%20cy='8'%20r='6'%20fill='%238B3A3A'/%3E%3C/svg%3E">
+    <script src="https://cdn.jsdelivr.net/npm/d3@7.9.0/dist/d3.min.js" integrity="sha384-CjloA8y00+1SDAUkjs099PVfnY2KmDC2BZnws9kh8D/lX1s46w6EPhpXdqMfjK6i" crossorigin="anonymous" defer></script>
 </head>
 <body>
     <div id="progress-bar"></div>
@@ -36,15 +37,15 @@
             <div class="step" data-step="1">
                 <span class="step-label">01 — The Experiment</span>
                 <h2>108 Participants, Three Worlds</h2>
-                <p>What happens when you teach lab safety inside a virtual world instead of a classroom? To find out, 108 university students were randomly assigned to one of three conditions: a fully immersive VR headset, a desktop-based 3D simulation, or a traditional video-and-text control group. Each participant completed the same lab safety curriculum — only the level of immersion changed.</p>
+                <p>What happens when you teach lab safety inside a virtual world? To find out, 108 university students were randomly assigned to one of three conditions: a Labster lab-safety simulation in a VR headset, the same simulation on a desktop computer, or a video-and-handout control. The two simulation groups saw identical content; the control group learned the same safety topic from a CrashCourse video and a handout.</p>
                 <p>Would more immersion mean more learning?</p>
             </div>
 
             <div class="step" data-step="2">
                 <span class="step-label">02 — The Promise</span>
                 <h2>Simulations Work</h2>
-                <p>The initial results were encouraging. Both the VR and Desktop groups significantly outperformed the control group in procedural knowledge and knowledge transfer. Simulations — regardless of immersion level — proved to be an effective teaching tool for lab safety.</p>
-                <p>But here's the catch: the VR group did not significantly outperform the Desktop group. Higher immersion didn't translate to higher learning gains. Why not?</p>
+                <p>The initial results were encouraging. On a 10-question lab-safety knowledge test, both simulation groups scored significantly higher than the control group, right after the session and again a week later. Whether it ran in a headset or on a desktop, the simulation group learned far more than the group that watched the video.</p>
+                <p>But here's the catch: the VR group did not significantly outperform the desktop group. More immersion didn't produce a detectably larger learning gain. Why not?</p>
             </div>
 
             <div class="step" data-step="3">
@@ -57,15 +58,15 @@
             <div class="step" data-step="4">
                 <span class="step-label">04 — The Twist</span>
                 <h2>Look Closer</h2>
-                <p>Not quite. A 2026 reanalysis revealed something the original study missed: an <em>ecological fallacy</em>. The overall correlation between presence and learning was real — but it was an artifact of the groups, not the individuals.</p>
-                <p>When we color each dot by its experimental condition, the picture changes dramatically. Within each group, the relationship between presence and learning virtually disappears. The "trend" was created by the fact that VR participants had both higher presence <em>and</em> higher learning — but one wasn't causing the other.</p>
+                <p>Not quite. A 2026 reanalysis found something the original study missed: an <em>ecological fallacy</em>, a group-level pattern mistaken for an individual-level one. The overall correlation between presence and learning was real, but it came from differences between the groups, not from anything happening within individuals.</p>
+                <p>When we color each dot by its experimental condition, the picture changes. Within each group, presence barely tracks learning (r = .16 for VR, −.19 for desktop and .12 for video; none statistically significant). The overall trend comes from the gap between groups: both simulation groups reported far more presence <em>and</em> learned far more than the video group. Inside any one group, there was no reliable link between feeling present and learning.</p>
             </div>
 
             <div class="step" data-step="5">
-                <span class="step-label">05 — The Hidden Cost</span>
-                <h2>The Price of Novelty</h2>
-                <p>If presence wasn't the mechanism, what was holding VR back from outperforming desktop? The likely culprit: <em>cognitive load</em>. The VR environment was novel and complex. Participants spent mental energy simply navigating the unfamiliar interface — energy that could have been directed toward learning.</p>
-                <p>"More immersive" isn't automatically "better for learning" — not until the novelty cost is accounted for.</p>
+                <span class="step-label">05 — An Open Question</span>
+                <h2>The Price of Novelty?</h2>
+                <p>If presence wasn't the mechanism, why didn't VR pull ahead of desktop? One candidate is <em>cognitive load</em>. The VR group reported the highest average load (2.9, vs. 2.2 for desktop and 2.0 for video), which fits the idea that an unfamiliar headset costs attention.</p>
+                <p>But the differences weren't statistically significant, and inside the VR group, people who reported more load didn't learn less (r = .14, not significant). Novelty cost is a hypothesis this study raises, not one it confirms.</p>
             </div>
         </div>
 
@@ -76,15 +77,15 @@
 
     <section id="coda">
         <h2>What I Found</h2>
-        <p>Eight years later, I found a fallacy hiding in my own data. The original 2018 analysis showed that presence correlates with learning gains. The 2026 reanalysis showed the correlation was an artifact of how the groups were sliced — within each condition, it vanishes. The dataset hadn't changed. My eyes had.</p>
-        <p>If you're designing learning technology, the takeaway is narrower than the theoretical implication. A strong group-level pattern can be seductive and false. Ask whether you're measuring the thing or the bucket. Ask whether the relationship survives at the individual level. It usually doesn't.</p>
-        <p>If you're specifically building VR for learning, the practical move is to reduce novelty cost before measuring effectiveness — train people on the interface before measuring what they learned with it. The cognitive load of "where do I look, how do I move" steals bandwidth that should be going to the content. Familiarity precedes flow.</p>
+        <p>Eight years later, I found a fallacy hiding in my own data. In 2018, I reported that presence predicted how well participants scored after training. The 2026 reanalysis showed that relationship lived between the groups, not within them: inside each condition, it vanishes. The dataset hadn't changed. My eyes had.</p>
+        <p>If you're designing learning technology, the takeaway is narrower than the theoretical implication. A strong group-level pattern can be seductive and false. Ask whether you're measuring the thing or the bucket. Ask whether the relationship survives at the individual level. Here, it didn't.</p>
+        <p>If you're specifically building VR for learning, one cheap precaution follows, even though this study couldn't prove the mechanism: train people on the interface before you measure what they learned with it. Attention spent on "where do I look, how do I move" is attention not spent on the content. Familiarity precedes flow.</p>
     </section>
 
     <section id="evidence-lab" aria-labelledby="lab-heading">
         <div class="lab-header">
             <h2 id="lab-heading">Explore the Evidence</h2>
-            <p class="lab-intro">Same data, your hands on the controls. Toggle the view between overall and by-condition, switch the y-axis, show or hide the trendlines. The fallacy from step 4 is the easiest to spot — flip from <strong>Overall</strong> to <strong>By Condition</strong> and watch the slope flatten.</p>
+            <p class="lab-intro">Same data, your hands on the controls. Toggle the view between overall and by-condition, switch the y-axis, show or hide the trendlines. The fallacy from step 4 is the easiest to spot — flip from <strong>Overall</strong> to <strong>By Condition</strong> and watch one steep line break into three nearly flat ones.</p>
         </div>
 
         <div class="lab-controls">
@@ -134,7 +135,7 @@
 
         <div class="about-column">
             <h3>The Data</h3>
-            <p>The full dataset and original dissertation are open. License: CC BY 4.0 — reuse with attribution.</p>
+            <p>The de-identified study data (learning gains, presence, cognitive load) and the original dissertation are open. License: CC BY 4.0 — reuse with attribution.</p>
             <a href="data.csv">Download data.csv &rarr;</a><br>
             <a href="Savvides_asu_0010E_18427.pdf">Dissertation (PDF) &rarr;</a>
         </div>
