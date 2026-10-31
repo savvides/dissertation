@@ -34,10 +34,14 @@ This repository contains Philippos Savvides's 2018 PhD dissertation from Arizona
 - `npx playwright test tests/lab.spec.js --project=chromium-1440x900` — one file in one project
 - `node scripts/csv_to_js.js` — regenerate `data.js` after `data.csv` changes
 - `node scripts/screenshots.js` — regenerate the two docs images
+- `node tests/serve.js` — preview the site at http://localhost:4173 (the suite reuses this server if it's already running)
 
 ## Key Context
 
 - Never hand-edit `data.js`; it is generated from `data.csv` (see Commands). The page shows only numbers that come from `window.STUDY`
+- Test tags (see `playwright.config.js`): tag pure-Node tests `@once` so they run in one project, not 12; `@file` tests run only in `file-chromium`
+- `tests/repo.spec.js` runs a dead-code sweep: every CSS selector must appear in `index.html` or `script.js`, and every `script.js` function must be referenced. Remove markup, CSS and JS together
+- `tests/repo.spec.js` also pins docs content: the README version badge, the CHANGELOG entry and compare link, and required strings in this file. A version bump means updating that test too
 - The original dissertation was published December 2018; all original citations are pre-2019
 - The markdown version preserves the original text verbatim; new content goes only in the addendum section
 - A 2026 reanalysis found the presence-learning correlation is an ecological fallacy (significant overall, non-significant within conditions) — the README retrospective documents this
