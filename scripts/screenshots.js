@@ -1,5 +1,5 @@
 // Renders the two README/social images from the live page (dev-only; needs `npm ci` and
-// `npx playwright install chromium`). Both show step 4 ("Look Closer"), the page's turning point.
+// `npx playwright install chromium`). Both show step 4 ("Inside each group, the presence effect vanishes"), the page's turning point.
 //   docs/screenshot.png      1440×900
 //   docs/social-preview.png  1200×630 (the og:image size)
 // Usage: node scripts/screenshots.js

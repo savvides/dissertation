@@ -4,20 +4,20 @@
     <meta charset="UTF-8">
     <meta name="viewport" content="width=device-width, initial-scale=1.0">
     <meta name="color-scheme" content="light">
-    <meta name="description" content="An interactive scrolltelling presentation of the 2018 VR Learning Dissertation results and 2026 retrospective on presence and cognitive load.">
-    <meta property="og:title" content="Are Virtual Simulations Effective?">
-    <meta property="og:description" content="An interactive data story exploring VR, learning, and a surprising statistical fallacy — built from a 2018 PhD study (n=108).">
+    <meta name="description" content="Interactive reanalysis of a 2018 PhD dissertation (n=108): VR headsets didn't beat desktop simulations, and the presence-learning link was an ecological fallacy.">
+    <meta property="og:title" content="VR Didn't Beat Desktop — and the &quot;Presence&quot; Effect Was a Mirage">
+    <meta property="og:description" content="Eight years after defending my 2018 PhD study (n=108), I reanalyzed the results and uncovered an ecological fallacy.">
     <meta property="og:image" content="https://savvides.github.io/dissertation/docs/social-preview.png">
     <meta property="og:type" content="website">
     <meta name="twitter:card" content="summary_large_image">
-    <title>Are Virtual Simulations Effective? — Dissertation Results</title>
+    <title>Are Virtual Simulations Effective? — Dissertation Reanalysis</title>
     <link rel="preconnect" href="https://fonts.googleapis.com">
     <link rel="preconnect" href="https://fonts.gstatic.com" crossorigin>
     <link href="https://fonts.googleapis.com/css2?family=Libre+Franklin:wght@400;600;800&amp;family=Newsreader:ital,opsz,wght@0,6..72,400;1,6..72,400&amp;display=swap" rel="stylesheet">
     <link rel="stylesheet" href="style.css">
     <link rel="icon" href="data:image/svg+xml,%3Csvg%20xmlns='http://www.w3.org/2000/svg'%20viewBox='0%200%2016%2016'%3E%3Ccircle%20cx='8'%20cy='8'%20r='6'%20fill='%23D0450C'/%3E%3C/svg%3E">
     <!-- Without JavaScript there are no charts: collapse the chart areas so the text reads normally. -->
-    <noscript><style>#story{display:block}#story-figure{position:static;height:auto}#story-figure figcaption,.chart-svg-wrap,.card-cap,.lab-stage,.lab-readout,.lab-summary{display:none}</style></noscript>
+    <noscript><style>#story{display:block}#story-figure{position:static;height:auto}#story-figure figcaption,.chart-svg-wrap,.card-cap,.lab-presets,.lab-stage,.lab-readout,.lab-summary{display:none}</style></noscript>
     <script src="vendor/d3.v7.9.0.min.js" defer></script>
     <script src="data.js" defer></script>
     <script src="script.js" defer></script>
@@ -25,17 +25,40 @@
 <body>
     <header id="hero">
         <div class="hero-inner">
-            <h1 class="hero-title"><span class="hero-kicker">Teaching Science Lab Safety:</span> <span class="hero-hed">Are Virtual Simulations Effective?</span></h1>
-            <p class="hook">108 participants. Three conditions. One surprising fallacy.</p>
+            <h1 class="hero-title">
+                <span class="hero-kicker">Teaching Science Lab Safety &middot; ASU PhD (2018) &amp; 2026 Reanalysis</span>
+                <span class="hero-hed">VR Didn't Beat Desktop &mdash; and the &ldquo;Presence&rdquo; Effect Was a Mirage</span>
+            </h1>
+            <p class="hook">Eight years after defending my dissertation (n&nbsp;=&nbsp;108), I reanalyzed the study and uncovered an ecological fallacy.</p>
+
+            <ul class="hero-stats" aria-label="Headline study findings">
+                <li class="stat-card">
+                    <span class="stat-num">+4.1 vs. +3.8</span>
+                    <span class="stat-label">VR vs. desktop learning gain</span>
+                    <span class="stat-sub">No detectable VR edge (d = 0.23, p = .33)</span>
+                </li>
+                <li class="stat-card">
+                    <span class="stat-num">8.5&times;</span>
+                    <span class="stat-label">Simulation gain over video</span>
+                    <span class="stat-sub">Means +3.9 vs. +0.5; 21 of 37 video learners gained &le; 0</span>
+                </li>
+                <li class="stat-card">
+                    <span class="stat-num">r = .51 &rarr; n.s.</span>
+                    <span class="stat-label">Presence&ndash;learning link</span>
+                    <span class="stat-sub">Steep across all 108; vanishes inside every group</span>
+                </li>
+            </ul>
+
             <ul class="hero-strip" aria-label="Participants per condition">
                 <li data-group="High"><span class="strip-label"><span class="strip-name">VR headset</span> <span class="strip-n">35</span></span><svg class="strip-marks strip-marks--high" viewBox="0 0 333 14" width="333" height="14" aria-hidden="true" focusable="false"><circle class="mk" cx="4.5" cy="7" r="3.2"/><circle class="mk" cx="13.5" cy="7" r="3.2"/><circle class="mk" cx="22.5" cy="7" r="3.2"/><circle class="mk" cx="31.5" cy="7" r="3.2"/><circle class="mk" cx="40.5" cy="7" r="3.2"/><circle class="mk" cx="49.5" cy="7" r="3.2"/><circle class="mk" cx="58.5" cy="7" r="3.2"/><circle class="mk" cx="67.5" cy="7" r="3.2"/><circle class="mk" cx="76.5" cy="7" r="3.2"/><circle class="mk" cx="85.5" cy="7" r="3.2"/><circle class="mk" cx="94.5" cy="7" r="3.2"/><circle class="mk" cx="103.5" cy="7" r="3.2"/><circle class="mk" cx="112.5" cy="7" r="3.2"/><circle class="mk" cx="121.5" cy="7" r="3.2"/><circle class="mk" cx="130.5" cy="7" r="3.2"/><circle class="mk" cx="139.5" cy="7" r="3.2"/><circle class="mk" cx="148.5" cy="7" r="3.2"/><circle class="mk" cx="157.5" cy="7" r="3.2"/><circle class="mk" cx="166.5" cy="7" r="3.2"/><circle class="mk" cx="175.5" cy="7" r="3.2"/><circle class="mk" cx="184.5" cy="7" r="3.2"/><circle class="mk" cx="193.5" cy="7" r="3.2"/><circle class="mk" cx="202.5" cy="7" r="3.2"/><circle class="mk" cx="211.5" cy="7" r="3.2"/><circle class="mk" cx="220.5" cy="7" r="3.2"/><circle class="mk" cx="229.5" cy="7" r="3.2"/><circle class="mk" cx="238.5" cy="7" r="3.2"/><circle class="mk" cx="247.5" cy="7" r="3.2"/><circle class="mk" cx="256.5" cy="7" r="3.2"/><circle class="mk" cx="265.5" cy="7" r="3.2"/><circle class="mk" cx="274.5" cy="7" r="3.2"/><circle class="mk" cx="283.5" cy="7" r="3.2"/><circle class="mk" cx="292.5" cy="7" r="3.2"/><circle class="mk" cx="301.5" cy="7" r="3.2"/><circle class="mk" cx="310.5" cy="7" r="3.2"/></svg></li>
                 <li data-group="Medium"><span class="strip-label"><span class="strip-name">Desktop sim</span> <span class="strip-n">36</span></span><svg class="strip-marks strip-marks--medium" viewBox="0 0 333 14" width="333" height="14" aria-hidden="true" focusable="false"><circle class="mk" cx="4.5" cy="7" r="2.8"/><circle class="mk" cx="13.5" cy="7" r="2.8"/><circle class="mk" cx="22.5" cy="7" r="2.8"/><circle class="mk" cx="31.5" cy="7" r="2.8"/><circle class="mk" cx="40.5" cy="7" r="2.8"/><circle class="mk" cx="49.5" cy="7" r="2.8"/><circle class="mk" cx="58.5" cy="7" r="2.8"/><circle class="mk" cx="67.5" cy="7" r="2.8"/><circle class="mk" cx="76.5" cy="7" r="2.8"/><circle class="mk" cx="85.5" cy="7" r="2.8"/><circle class="mk" cx="94.5" cy="7" r="2.8"/><circle class="mk" cx="103.5" cy="7" r="2.8"/><circle class="mk" cx="112.5" cy="7" r="2.8"/><circle class="mk" cx="121.5" cy="7" r="2.8"/><circle class="mk" cx="130.5" cy="7" r="2.8"/><circle class="mk" cx="139.5" cy="7" r="2.8"/><circle class="mk" cx="148.5" cy="7" r="2.8"/><circle class="mk" cx="157.5" cy="7" r="2.8"/><circle class="mk" cx="166.5" cy="7" r="2.8"/><circle class="mk" cx="175.5" cy="7" r="2.8"/><circle class="mk" cx="184.5" cy="7" r="2.8"/><circle class="mk" cx="193.5" cy="7" r="2.8"/><circle class="mk" cx="202.5" cy="7" r="2.8"/><circle class="mk" cx="211.5" cy="7" r="2.8"/><circle class="mk" cx="220.5" cy="7" r="2.8"/><circle class="mk" cx="229.5" cy="7" r="2.8"/><circle class="mk" cx="238.5" cy="7" r="2.8"/><circle class="mk" cx="247.5" cy="7" r="2.8"/><circle class="mk" cx="256.5" cy="7" r="2.8"/><circle class="mk" cx="265.5" cy="7" r="2.8"/><circle class="mk" cx="274.5" cy="7" r="2.8"/><circle class="mk" cx="283.5" cy="7" r="2.8"/><circle class="mk" cx="292.5" cy="7" r="2.8"/><circle class="mk" cx="301.5" cy="7" r="2.8"/><circle class="mk" cx="310.5" cy="7" r="2.8"/><circle class="mk" cx="319.5" cy="7" r="2.8"/></svg></li>
                 <li data-group="Low"><span class="strip-label"><span class="strip-name">Video + text</span> <span class="strip-n">37</span></span><svg class="strip-marks strip-marks--low" viewBox="0 0 333 14" width="333" height="14" aria-hidden="true" focusable="false"><path class="mk" d="M4.5 2.8L8.7 7L4.5 11.2L0.3 7Z"/><path class="mk" d="M13.5 2.8L17.7 7L13.5 11.2L9.3 7Z"/><path class="mk" d="M22.5 2.8L26.7 7L22.5 11.2L18.3 7Z"/><path class="mk" d="M31.5 2.8L35.7 7L31.5 11.2L27.3 7Z"/><path class="mk" d="M40.5 2.8L44.7 7L40.5 11.2L36.3 7Z"/><path class="mk" d="M49.5 2.8L53.7 7L49.5 11.2L45.3 7Z"/><path class="mk" d="M58.5 2.8L62.7 7L58.5 11.2L54.3 7Z"/><path class="mk" d="M67.5 2.8L71.7 7L67.5 11.2L63.3 7Z"/><path class="mk" d="M76.5 2.8L80.7 7L76.5 11.2L72.3 7Z"/><path class="mk" d="M85.5 2.8L89.7 7L85.5 11.2L81.3 7Z"/><path class="mk" d="M94.5 2.8L98.7 7L94.5 11.2L90.3 7Z"/><path class="mk" d="M103.5 2.8L107.7 7L103.5 11.2L99.3 7Z"/><path class="mk" d="M112.5 2.8L116.7 7L112.5 11.2L108.3 7Z"/><path class="mk" d="M121.5 2.8L125.7 7L121.5 11.2L117.3 7Z"/><path class="mk" d="M130.5 2.8L134.7 7L130.5 11.2L126.3 7Z"/><path class="mk" d="M139.5 2.8L143.7 7L139.5 11.2L135.3 7Z"/><path class="mk" d="M148.5 2.8L152.7 7L148.5 11.2L144.3 7Z"/><path class="mk" d="M157.5 2.8L161.7 7L157.5 11.2L153.3 7Z"/><path class="mk" d="M166.5 2.8L170.7 7L166.5 11.2L162.3 7Z"/><path class="mk" d="M175.5 2.8L179.7 7L175.5 11.2L171.3 7Z"/><path class="mk" d="M184.5 2.8L188.7 7L184.5 11.2L180.3 7Z"/><path class="mk" d="M193.5 2.8L197.7 7L193.5 11.2L189.3 7Z"/><path class="mk" d="M202.5 2.8L206.7 7L202.5 11.2L198.3 7Z"/><path class="mk" d="M211.5 2.8L215.7 7L211.5 11.2L207.3 7Z"/><path class="mk" d="M220.5 2.8L224.7 7L220.5 11.2L216.3 7Z"/><path class="mk" d="M229.5 2.8L233.7 7L229.5 11.2L225.3 7Z"/><path class="mk" d="M238.5 2.8L242.7 7L238.5 11.2L234.3 7Z"/><path class="mk" d="M247.5 2.8L251.7 7L247.5 11.2L243.3 7Z"/><path class="mk" d="M256.5 2.8L260.7 7L256.5 11.2L252.3 7Z"/><path class="mk" d="M265.5 2.8L269.7 7L265.5 11.2L261.3 7Z"/><path class="mk" d="M274.5 2.8L278.7 7L274.5 11.2L270.3 7Z"/><path class="mk" d="M283.5 2.8L287.7 7L283.5 11.2L279.3 7Z"/><path class="mk" d="M292.5 2.8L296.7 7L292.5 11.2L288.3 7Z"/><path class="mk" d="M301.5 2.8L305.7 7L301.5 11.2L297.3 7Z"/><path class="mk" d="M310.5 2.8L314.7 7L310.5 11.2L306.3 7Z"/><path class="mk" d="M319.5 2.8L323.7 7L319.5 11.2L315.3 7Z"/><path class="mk" d="M328.5 2.8L332.7 7L328.5 11.2L324.3 7Z"/></svg></li>
             </ul>
-            <p class="byline"><span class="byline-name">Philippos Savvides</span> &middot; Arizona State University &middot; 2018</p>
+
+            <p class="byline"><span class="byline-name">Philippos Savvides</span> &middot; Arizona State University &middot; 2018 study, 2026 reanalysis &middot; Open data (<a href="#about">CC BY 4.0</a>)</p>
         </div>
         <div class="scroll-cue" aria-hidden="true">
-            <span>Scroll</span>
+            <span>Scroll to watch the illusion break</span>
             <svg width="16" height="16" viewBox="0 0 16 16" fill="none" stroke="currentColor" stroke-width="2" focusable="false"><path d="M8 2v11M3 8.5l5 5 5-5"/></svg>
         </div>
     </header>
@@ -45,70 +68,159 @@
             <div id="story-figure">
                 <figure class="chart">
                     <figcaption>
-                        <span class="chart-hed" id="chart-hed">Three groups of nearly equal size</span>
-                        <span class="chart-dek">Participants per condition, randomly assigned</span>
+                        <div class="chart-meta">
+                            <span class="chart-hed" id="chart-hed">Experimental design: three balanced cohorts</span>
+                            <span class="chart-dek">108 participants, randomly assigned. Both simulation groups used identical Labster content.</span>
+                        </div>
+                        <nav class="story-nav" aria-label="Jump to story step">
+                            <button type="button" data-jump="1" aria-pressed="true" aria-label="Step 1: Two groups used an interactive lab">01</button>
+                            <button type="button" data-jump="2" aria-pressed="false" aria-label="Step 2: Simulations beat video 8.5 times">02</button>
+                            <button type="button" data-jump="3" aria-pressed="false" aria-label="Step 3: In the pooled data, presence looked like the cause">03</button>
+                            <button type="button" data-jump="4" aria-pressed="false" aria-label="Step 4: Inside each group, the presence effect vanishes">04</button>
+                            <button type="button" data-jump="5" aria-pressed="false" aria-label="Step 5: Pull the groups apart, and the mirage collapses">05</button>
+                            <button type="button" data-jump="6" aria-pressed="false" aria-label="Step 6: Headset friction didn't explain the tie">06</button>
+                        </nav>
                     </figcaption>
                     <div class="chart-svg-wrap"></div>
                     <div class="chart-live" aria-live="polite"><p class="chart-desc visually-hidden" id="chart-desc"></p></div>
-                    <div class="chart-fallback"><p>The charts couldn't load. The text conveys the same finding without them.</p></div>
-                    <noscript><p class="chart-noscript">The charts need JavaScript. The text conveys the same finding without them.</p></noscript>
+                    <div class="chart-fallback"><p>The charts couldn't load. The text conveys the full finding.</p></div>
+                    <noscript><p class="chart-noscript">The charts need JavaScript. The text conveys the full finding.</p></noscript>
                 </figure>
             </div>
 
             <div class="steps">
-                <div class="step" data-step="1">
-                    <div class="card-cap" aria-hidden="true"><span class="card-cap-hed">Three groups of nearly equal size</span> <span class="card-cap-dek">Participants per condition, randomly assigned</span></div>
-                    <p class="step-label"><span class="step-num">01</span> — The Experiment</p>
-                    <h2>108 Participants, Three Worlds</h2>
-                    <p>What happens when you teach lab safety inside a virtual world? To find out, 108 university students were randomly assigned to one of three conditions: a Labster lab-safety simulation in a VR headset, the same simulation on a desktop computer, or a video-and-handout control. The two simulation groups saw identical content; the control group learned the same safety topic from a CrashCourse video and a handout.</p>
-                    <p>Would more immersion mean more learning?</p>
+                <div class="step" data-step="1" id="step-1">
+                    <div class="card-cap" aria-hidden="true"><span class="card-cap-hed">Experimental design: three balanced cohorts</span> <span class="card-cap-dek">108 participants, randomly assigned. Both simulation groups used identical Labster content.</span></div>
+                    <p class="step-label"><span class="step-num">01 / 06</span> The Experiment</p>
+                    <h2>Two groups used an interactive lab. One watched a video.</h2>
+                    <p>I randomly assigned 108 university students to three conditions: a Labster lab-safety simulation in a VR headset, the same simulation on a desktop computer, or a CrashCourse video and handout.</p>
+                    <p>Notice the asymmetry: VR and desktop isolated immersion on identical content; the control group changed both interactivity and material.</p>
+                    <details class="method-note">
+                        <summary>Study protocol</summary>
+                        <p>Standalone Lenovo Mirage Solo headset (High, n&nbsp;=&nbsp;35), desktop PC (Medium, n&nbsp;=&nbsp;36), and video with a rules handout (Low, n&nbsp;=&nbsp;37). Sessions averaged 25.9&nbsp;min in VR vs. 16.2&nbsp;min in control; 92 students completed the one-week follow-up.</p>
+                    </details>
                 </div>
 
-                <div class="step" data-step="2">
-                    <div class="card-cap" aria-hidden="true"><span class="card-cap-hed">Both simulations far outpaced the video</span> <span class="card-cap-dek">Average points gained on a 10-question safety test. Lines show 95% confidence intervals.</span></div>
-                    <p class="step-label"><span class="step-num">02</span> — The Promise</p>
-                    <h2>Simulations Work</h2>
-                    <p>The initial results were encouraging. On a 10-question lab-safety knowledge test, both simulation groups scored significantly higher than the control group, right after the session and again a week later. Whether it ran in a headset or on a desktop, the simulation group learned far more than the group that watched the video.</p>
-                    <p>But here's the catch: the VR group did not significantly outperform the desktop group. More immersion didn't produce a detectably larger learning gain. Why not?</p>
+                <div class="step" data-step="2" id="step-2">
+                    <div class="card-cap" aria-hidden="true"><span class="card-cap-hed">Learning gain by condition (10-question test)</span> <span class="card-cap-dek">All 108 post &minus; pre scores, with group means and 95% confidence intervals.</span></div>
+                    <p class="step-label"><span class="step-num">02 / 06</span> The Outcome</p>
+                    <h2>Simulations beat video 8.5&times;, but VR didn't beat desktop</h2>
+                    <p>On a 10-question lab-safety knowledge test, simulation learners averaged +3.9 points and held that lead a week later. In the video group, 21 of 37 learners gained nothing or lost points.</p>
+                    <p>Yet more immersion didn't produce a detectably larger learning gain (+4.1 vs. +3.8; d&nbsp;=&nbsp;0.23, p&nbsp;=&nbsp;.33). Why didn't the headset pull ahead?</p>
+                    <details class="method-note">
+                        <summary>Outcome scale</summary>
+                        <p>Learning gain is posttest minus pretest on a 10-item safety exam (range &minus;2 to +7). Simulation groups averaged +3.92 vs. +0.46 for video (d&nbsp;&gt;&nbsp;2.4), though content and session length also differed.</p>
+                    </details>
                 </div>
 
-                <div class="step" data-step="3">
-                    <div class="card-cap" aria-hidden="true"><span class="card-cap-hed">Pooled, presence tracks learning</span> <span class="card-cap-dek">Each dot is one participant (n = 108). Points are jittered slightly so overlapping participants are visible.</span></div>
-                    <p class="step-label"><span class="step-num">03</span> — The Deeper Question</p>
-                    <h2>But Why?</h2>
-                    <p>The original hypothesis centered on <em>presence</em> — the psychological sense of "being there" inside a virtual environment. The theory was elegant: higher immersion induces stronger presence, and stronger presence drives deeper learning.</p>
-                    <p>When we plot every participant's presence score against their learning gains, the data seems to support this. A clear positive trend emerges across all 108 participants. Case closed?</p>
+                <div class="step" data-step="3" id="step-3">
+                    <div class="card-cap" aria-hidden="true"><span class="card-cap-hed">Pooled across all 108, presence tracks learning</span> <span class="card-cap-dek">Each mark is one participant (jittered slightly). Line: overall OLS trend.</span></div>
+                    <p class="step-label"><span class="step-num">03 / 06</span> The 2018 Theory</p>
+                    <h2>In the pooled data, &ldquo;being there&rdquo; looked like the cause</h2>
+                    <div class="causal-fig" role="img" aria-label="2018 causal hypothesis: immersion increases presence, which increases learning">
+                        <svg viewBox="0 0 360 44" width="360" height="44" focusable="false" aria-hidden="true">
+                            <rect class="cf-box" x="1" y="6" width="94" height="32" rx="3"/>
+                            <text class="cf-txt" x="48" y="26" text-anchor="middle">Immersion</text>
+                            <line class="cf-arrow" x1="99" y1="22" x2="128" y2="22"/>
+                            <path class="cf-head" d="M124,18 L131,22 L124,26"/>
+                            <rect class="cf-box" x="133" y="6" width="94" height="32" rx="3"/>
+                            <text class="cf-txt" x="180" y="26" text-anchor="middle">Presence</text>
+                            <line class="cf-arrow" x1="231" y1="22" x2="260" y2="22"/>
+                            <path class="cf-head" d="M256,18 L263,22 L256,26"/>
+                            <rect class="cf-box cf-box--strong" x="265" y="6" width="94" height="32" rx="3"/>
+                            <text class="cf-txt cf-txt--strong" x="312" y="26" text-anchor="middle">Learning</text>
+                        </svg>
+                    </div>
+                    <p>The original hypothesis centered on <em>presence</em> &mdash; the sense of &ldquo;being there.&rdquo; In theory, richer immersion deepens presence, and presence drives learning.</p>
+                    <p>Plot all 108 students, and the slope confirms it: presence strongly predicts gain (r&nbsp;=&nbsp;.51, p&nbsp;&lt;&nbsp;.001). In 2018, that looked like the mechanism.</p>
                 </div>
 
-                <div class="step" data-step="4">
-                    <div class="card-cap" aria-hidden="true"><span class="card-cap-hed">Within each group, the link fades</span> <span class="card-cap-dek">Solid lines: trend within each condition. Dashed: all 108 pooled.</span></div>
-                    <p class="step-label"><span class="step-num">04</span> — The Twist</p>
-                    <h2>Look Closer</h2>
-                    <p>Not quite. A 2026 reanalysis found something the original study missed: an <mark><em>ecological fallacy</em></mark>, a group-level pattern mistaken for an individual-level one. The overall correlation between presence and learning was real, but it came from differences between the groups, not from anything happening within individuals.</p>
-                    <p>When we color each dot by its experimental condition, the picture changes. Within each group, presence barely tracks learning (r = .16 for VR, −.19 for desktop and .12 for video; none statistically significant). The overall trend comes from the gap between groups: both simulation groups reported far more presence <em>and</em> learned far more than the video group. Inside any one group, there was no reliable link between feeling present and learning.</p>
+                <div class="step" data-step="4" id="step-4">
+                    <div class="card-cap" aria-hidden="true"><span class="card-cap-hed">Within each condition, the link fades</span> <span class="card-cap-dek">Solid lines: trend inside each group (none significant). Dashed: all 108 pooled.</span></div>
+                    <p class="step-label"><span class="step-num">04 / 06</span> The Twist</p>
+                    <h2>Inside each group, the presence effect vanishes</h2>
+                    <div class="causal-fig" role="img" aria-label="2026 reanalysis: simulation condition drives both presence and learning, with no reliable direct link from presence to learning">
+                        <svg viewBox="0 0 360 72" width="360" height="72" focusable="false" aria-hidden="true">
+                            <rect class="cf-box cf-box--strong" x="1" y="20" width="98" height="32" rx="3"/>
+                            <text class="cf-txt cf-txt--strong" x="50" y="40" text-anchor="middle">Simulation</text>
+                            <path class="cf-arrow" d="M102,29 L164,17" fill="none"/>
+                            <path class="cf-head" d="M159,14 L166,17 L160,22"/>
+                            <path class="cf-arrow" d="M102,43 L164,55" fill="none"/>
+                            <path class="cf-head" d="M160,50 L166,55 L159,58"/>
+                            <rect class="cf-box" x="169" y="2" width="96" height="28" rx="3"/>
+                            <text class="cf-txt" x="217" y="20" text-anchor="middle">Presence</text>
+                            <rect class="cf-box cf-box--strong" x="169" y="42" width="96" height="28" rx="3"/>
+                            <text class="cf-txt cf-txt--strong" x="217" y="60" text-anchor="middle">Learning</text>
+                            <line class="cf-arrow--broken" x1="274" y1="16" x2="274" y2="56"/>
+                            <line class="cf-arrow--broken" x1="265" y1="16" x2="274" y2="16"/>
+                            <line class="cf-arrow--broken" x1="265" y1="56" x2="274" y2="56"/>
+                            <text class="cf-cross" x="283" y="40">✕ No link</text>
+                        </svg>
+                    </div>
+                    <p>A 2026 reanalysis exposed an <mark><em>ecological fallacy</em></mark>, a group-level pattern mistaken for an individual-level one. Color the dots by condition, and the steep diagonal fractures.</p>
+                    <p>Within each group, presence barely tracks learning (r&nbsp;=&nbsp;.16 for VR, &minus;.19 for desktop, and .12 for video; none statistically significant). Inside any condition, feeling present shows no reliable link to learning.</p>
                 </div>
 
-                <div class="step" data-step="5">
-                    <div class="card-cap" aria-hidden="true"><span class="card-cap-hed">VR felt hardest, but not significantly</span> <span class="card-cap-dek">Self-reported load, two NASA-TLX items. Lines show 95% confidence intervals.</span></div>
-                    <p class="step-label"><span class="step-num">05</span> — An Open Question</p>
-                    <h2>The Price of Novelty?</h2>
-                    <p>If presence wasn't the mechanism, why didn't VR pull ahead of desktop? One candidate is <em>cognitive load</em>. The VR group reported the highest average load (2.9, vs. 2.2 for desktop and 2.0 for video), which fits the idea that an unfamiliar headset costs attention.</p>
-                    <p>But the differences weren't statistically significant, and inside the VR group, people who reported more load didn't learn less (r = .14, not significant). Novelty cost is a hypothesis this study raises, not one it confirms.</p>
+                <div class="step" data-step="5" id="step-5">
+                    <div class="card-cap" aria-hidden="true"><span class="card-cap-hed">Three groups separated against the pooled diagonal</span> <span class="card-cap-dek">Same 108 learners in separate panels. Dashed line: pooled r = .51 illusion.</span></div>
+                    <p class="step-label"><span class="step-num">05 / 06</span> Why It Happened</p>
+                    <h2>Pull the groups apart, and the mirage collapses</h2>
+                    <p>Side by side, the three panels reveal what built the pooled diagonal. Asking video watchers whether they felt inside a virtual room broke the yardstick: 14 of 37 (38%) scored zero on presence, anchoring the bottom left; 58 of 71 simulation learners clustered at the top right.</p>
+                    <p>Inside each panel, the slope flattens &mdash; and desktop tilts negative. Participant #88 watched the video, scored 60/60 on presence, and lost a point.</p>
+                    <details class="method-note">
+                        <summary>Instrument validity</summary>
+                        <p>The Witmer &amp; Singer questionnaire (0&ndash;60) measured presence. Its items assume an interactive environment, so video watchers piled up at 0 (median 6, vs. 46 for VR and 43.5 for desktop).</p>
+                    </details>
+                </div>
+
+                <div class="step" data-step="6" id="step-6">
+                    <div class="card-cap" aria-hidden="true"><span class="card-cap-hed">Cognitive load across all 108 learners (0&ndash;12)</span> <span class="card-cap-dek">Two NASA-TLX items. Every group shared a median of 2; lines show means and 95% CIs.</span></div>
+                    <p class="step-label"><span class="step-num">06 / 06</span> An Open Question</p>
+                    <h2>Headset friction didn't explain the tie</h2>
+                    <p>One counterargument remained: an unfamiliar headset might have added cognitive load and held VR back. VR averaged higher load (2.9, vs. 2.2 for desktop and 2.0 for video), pulled up by four VR outliers at 7&ndash;12; every desktop and video learner stayed at 6 or below.</p>
+                    <p>Yet every group shared a median of 2, and the differences weren't statistically significant. Inside VR, learners with higher load didn't learn less (r&nbsp;=&nbsp;.14, not significant). Novelty cost is a hypothesis this study raises, not one it confirms.</p>
+                    <details class="method-note">
+                        <summary>Inside those four VR outliers</summary>
+                        <p>The four VR participants reporting cognitive load &ge;&nbsp;7 averaged a +4.3 gain (vs. +4.1 for VR overall), including participant #50, who hit 12/12 load and gained +4.</p>
+                    </details>
                 </div>
             </div>
         </div>
 
         <section id="coda" aria-labelledby="coda-heading">
-            <h2 id="coda-heading">What I Found</h2>
-            <p>Eight years later, I found a fallacy hiding in my own data. In 2018, I reported that presence predicted how well participants scored after training. The 2026 reanalysis showed that relationship lived between the groups, not within them: inside each condition, it vanishes. The dataset hadn't changed. My eyes had.</p>
-            <p>If you're designing learning technology, the takeaway is narrower than the theoretical implication. A strong group-level pattern can be seductive and false. Ask whether you're measuring the thing or the bucket. Ask whether the relationship survives at the individual level. Here, it didn't.</p>
-            <p>If you're specifically building VR for learning, one cheap precaution follows, even though this study couldn't prove the mechanism: train people on the interface before you measure what they learned with it. Attention spent on "where do I look, how do I move" is attention not spent on the content. Familiarity precedes flow.</p>
+            <h2 id="coda-heading">Measure the learner, not the bucket</h2>
+            <p class="coda-lead">Eight years later, I found a fallacy hiding in my own data. In 2018, I reported that presence predicted how well participants scored after training. The 2026 reanalysis showed that the link lived between conditions, not within them: inside each condition, it vanished. The dataset hadn't changed. My eyes had.</p>
+            <p class="coda-sub">Three lessons follow from what held up in the numbers:</p>
+
+            <div class="playbook">
+                <article class="playbook-card">
+                    <div class="playbook-kicker">01 &middot; Learning Buyers</div>
+                    <h3>Test the laptop before buying headsets</h3>
+                    <p>Desktop simulations delivered +3.8 vs. VR's +4.1 without headset overhead. Make immersion beat a solid desktop build before paying for headsets.</p>
+                </article>
+                <article class="playbook-card">
+                    <div class="playbook-kicker">02 &middot; Analysts &amp; Researchers</div>
+                    <h3>Plot inside each group before claiming a cause</h3>
+                    <p>A strong pooled correlation can deceive. Check within-group slopes and control-group floors before claiming a mediator works.</p>
+                </article>
+                <article class="playbook-card">
+                    <div class="playbook-kicker">03 &middot; VR Designers</div>
+                    <h3>Onboard the controls before measuring learning</h3>
+                    <p>Although this study couldn't prove novelty cost, one cheap precaution follows: teach movement and navigation first. Familiarity precedes flow.</p>
+                </article>
+            </div>
         </section>
 
         <section id="lab" aria-labelledby="lab-heading">
             <div class="lab-head">
                 <h2 id="lab-heading">Explore the Evidence</h2>
-                <p class="lab-intro">Same data, your hands on the controls. Toggle the view between overall and by-condition, switch the y-axis, show or hide the trendlines. The fallacy from step 4 is the easiest to spot — flip from <strong>Overall</strong> to <strong>By Condition</strong> and watch one steep line break into three nearly flat ones.</p>
+                <p class="lab-intro">Here are the same 108 participants. Switch between <strong>Overall</strong>, <strong>Overlay</strong>, and <strong>Split</strong>; swap axes to test whether cognitive load hurt VR learning; or jump to an anomaly below.</p>
+            </div>
+
+            <div class="lab-presets" role="group" aria-label="Guided investigations">
+                <button type="button" class="preset-btn" data-preset="fallacy">Replay the fallacy (r = .51 &rarr; n.s.)</button>
+                <button type="button" class="preset-btn" data-preset="load">Check VR's high-load outliers (r = .14)</button>
+                <button type="button" class="preset-btn" data-preset="p88">Inspect Participant #88 (60 presence, &minus;1 gain)</button>
             </div>
 
             <div class="lab-stage">
@@ -117,14 +229,16 @@
                         <span class="lab-control-label" id="lab-view-label">View</span>
                         <div class="seg" role="radiogroup" aria-labelledby="lab-view-label" data-control="view">
                             <button type="button" role="radio" aria-checked="true" tabindex="0" data-value="overall">Overall</button>
-                            <button type="button" role="radio" aria-checked="false" tabindex="-1" data-value="condition">By condition</button>
+                            <button type="button" role="radio" aria-checked="false" tabindex="-1" data-value="condition">Overlay</button>
+                            <button type="button" role="radio" aria-checked="false" tabindex="-1" data-value="split">Split</button>
                         </div>
                     </div>
                     <div class="lab-control">
-                        <span class="lab-control-label" id="lab-y-label">Y-axis</span>
-                        <div class="seg" role="radiogroup" aria-labelledby="lab-y-label" data-control="y">
-                            <button type="button" role="radio" aria-checked="true" tabindex="0" data-value="learning_gains">Learning gain</button>
-                            <button type="button" role="radio" aria-checked="false" tabindex="-1" data-value="cognitive_load">Cognitive load</button>
+                        <span class="lab-control-label" id="lab-axes-label">Relationship</span>
+                        <div class="seg" role="radiogroup" aria-labelledby="lab-axes-label" data-control="axes">
+                            <button type="button" role="radio" aria-checked="true" tabindex="0" data-value="learning_gains">Presence &rarr; Gain</button>
+                            <button type="button" role="radio" aria-checked="false" tabindex="-1" data-value="cognitive_load">Presence &rarr; Load</button>
+                            <button type="button" role="radio" aria-checked="false" tabindex="-1" data-value="load_vs_gain">Load &rarr; Gain</button>
                         </div>
                     </div>
                     <div class="lab-control">
@@ -139,29 +253,29 @@
             </div>
             <div class="lab-readout" aria-live="polite"></div>
             <p class="lab-summary"></p>
-            <div class="chart-fallback"><p>The Evidence Lab couldn't load. The narrative above conveys the same finding without it.</p></div>
-            <noscript><p class="chart-noscript">The Evidence Lab needs JavaScript. The narrative above conveys the same finding without it.</p></noscript>
+            <div class="chart-fallback"><p>The Evidence Lab couldn't load. The narrative above conveys the full finding.</p></div>
+            <noscript><p class="chart-noscript">The Evidence Lab needs JavaScript. The narrative above conveys the full finding.</p></noscript>
         </section>
     </main>
 
     <footer id="about">
         <div class="footer-inner">
             <div class="about-column">
-                <h2>How This Was Made</h2>
-                <p>This site was built entirely through conversation with Claude Code. The full process — from PDF to interactive scrollytelling — is documented in the write-up.</p>
-                <p><a href="https://github.com/savvides/dissertation/blob/main/HOW-IT-WAS-MADE.md">Read the write-up &rarr;</a></p>
-            </div>
-
-            <div class="about-column">
-                <h2>Philippos Savvides</h2>
-                <p><a href="https://www.linkedin.com/in/savvides/">LinkedIn &rarr;</a></p>
+                <h2>Philippos Savvides, PhD</h2>
+                <p>Arizona State University (2018). Committee: Brian Nelson (Chair), Mina Johnson-Glenberg, and Robert Atkinson.</p>
+                <p class="cite-text">Savvides, P. (2018). <em>Teaching Science Lab Safety: Are Virtual Simulations Effective?</em> (Doctoral dissertation, Arizona State University).</p>
+                <p class="footer-actions">
+                    <button type="button" class="cite-btn" id="copy-cite">Copy APA citation</button>
+                    <a href="https://www.linkedin.com/in/savvides/">LinkedIn &rarr;</a>
+                </p>
             </div>
 
             <div class="about-column">
                 <h2>The Data</h2>
-                <p>The de-identified study data (learning gains, presence, cognitive load) and the original dissertation are open. License: CC BY 4.0 — reuse with attribution.</p>
+                <p>The de-identified study data (learning gains, presence, and cognitive load) and the original dissertation are open. Licensed under CC BY 4.0: reuse with attribution.</p>
                 <p><a href="data.csv">Download data.csv &rarr;</a><br>
-                <a href="Savvides_asu_0010E_18427.pdf">Dissertation (PDF) &rarr;</a></p>
+                <a href="Savvides_asu_0010E_18427.pdf">Dissertation (PDF) &rarr;</a><br>
+                <a href="https://github.com/savvides/dissertation">Source &amp; 2019&ndash;2026 addendum &rarr;</a></p>
             </div>
         </div>
     </footer>

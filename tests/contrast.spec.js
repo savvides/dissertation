@@ -8,22 +8,23 @@ const path = require('path');
 
 const CSS = fs.readFileSync(path.join(__dirname, '..', 'style.css'), 'utf8');
 
-// Spec §4.5, verbatim. The stylesheet must ship exactly these values.
+// v4.0.0 Newsroom tokens, checked for WCAG luminance contrast and Machado CVD distances.
 const SPEC_TOKENS = {
   bg: '#FFFFFF',
+  surface: '#F7F6F2',
   ink: '#121212',
   text: '#262626',
-  muted: '#5E5E5E',
+  muted: '#595959',
   rule: '#121212',
-  axis: '#767676',
-  grid: '#E8E8E8',
-  track: '#F2F2F2',
+  axis: '#737373',
+  grid: '#E6E4DE',
+  track: '#F3F2EE',
   accent: '#FFDD33',
   high: '#D0450C',
   medium: '#2A6FDB',
   low: '#3A3A3A',
-  neutral: '#767676',
-  ghost: '#6B6B6B',
+  neutral: '#737373',
+  ghost: '#666666',
 };
 
 // ---------- colour math ----------
@@ -145,14 +146,18 @@ test.describe('contrast and colour vision', { tag: '@once' }, () => {
       ['ink', 'bg'],
       ['text', 'bg'],
       ['muted', 'bg'],
+      // Every text token on surface cards and footer.
+      ['ink', 'surface'],
+      ['text', 'surface'],
+      ['muted', 'surface'],
       // The condition colours as label text (hero strip names, chart direct labels).
       ['high', 'bg'],
       ['medium', 'bg'],
       ['low', 'bg'],
       // Text on the other fills the page uses.
-      ['bg', 'ink'], // selected segmented-control option
-      ['ink', 'accent'], // step number box, the highlighter <mark>
-      ['ink', 'track'], // Lab readout, fallback notes
+      ['bg', 'ink'], // selected segmented-control option & active step badge
+      ['ink', 'accent'], // the highlighter <mark>
+      ['ink', 'track'], // step number badge, Lab readout, fallback notes
     ];
     for (const [fg, bg] of pairs) {
       expect(contrast(T[fg], T[bg]), `--${fg} on --${bg}`).toBeGreaterThanOrEqual(4.5);

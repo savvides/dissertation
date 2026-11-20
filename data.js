@@ -118,57 +118,108 @@ window.STUDY = {
         "n": 35,
         "learning_gains": {
           "mean": 4.085714,
+          "median": 4,
           "sd": 1.462702,
           "ci": [
             3.583259,
             4.58817
-          ]
+          ],
+          "min": 0,
+          "max": 7
         },
         "cognitive_load": {
           "mean": 2.942857,
+          "median": 2,
           "sd": 2.817413,
           "ci": [
             1.975042,
             3.910672
-          ]
+          ],
+          "min": 0,
+          "max": 12
+        },
+        "presence": {
+          "mean": 44.314286,
+          "median": 46,
+          "sd": 10.343431,
+          "ci": [
+            40.761193,
+            47.867378
+          ],
+          "min": 0,
+          "max": 57
         }
       },
       "Medium": {
         "n": 36,
         "learning_gains": {
           "mean": 3.75,
+          "median": 4,
           "sd": 1.40153,
           "ci": [
             3.275791,
             4.224209
-          ]
+          ],
+          "min": 0,
+          "max": 6
         },
         "cognitive_load": {
           "mean": 2.166667,
+          "median": 2,
           "sd": 1.732051,
           "ci": [
             1.580625,
             2.752708
-          ]
+          ],
+          "min": 0,
+          "max": 6
+        },
+        "presence": {
+          "mean": 41.833333,
+          "median": 43.5,
+          "sd": 13.436624,
+          "ci": [
+            37.287034,
+            46.379633
+          ],
+          "min": 0,
+          "max": 60
         }
       },
       "Low": {
         "n": 37,
         "learning_gains": {
           "mean": 0.459459,
+          "median": 0,
           "sd": 1.32486,
           "ci": [
             0.017729,
             0.90119
-          ]
+          ],
+          "min": -2,
+          "max": 5
         },
         "cognitive_load": {
           "mean": 2.027027,
+          "median": 2,
           "sd": 1.802567,
           "ci": [
             1.426021,
             2.628033
-          ]
+          ],
+          "min": 0,
+          "max": 6
+        },
+        "presence": {
+          "mean": 16.648649,
+          "median": 6,
+          "sd": 20.173162,
+          "ci": [
+            9.922582,
+            23.374716
+          ],
+          "min": 0,
+          "max": 60
         }
       }
     },
@@ -248,7 +299,62 @@ window.STUDY = {
           "xmin": 0,
           "xmax": 60
         }
+      },
+      "load_vs_gain": {
+        "all": {
+          "r": 0.128667,
+          "p": 0.184471,
+          "n": 108,
+          "slope": 0.127146,
+          "intercept": 2.430099,
+          "xmin": 0,
+          "xmax": 12
+        },
+        "High": {
+          "r": 0.136826,
+          "p": 0.433173,
+          "n": 35,
+          "slope": 0.071035,
+          "intercept": 3.876667,
+          "xmin": 0,
+          "xmax": 12
+        },
+        "Medium": {
+          "r": -0.123583,
+          "p": 0.472703,
+          "n": 36,
+          "slope": -0.1,
+          "intercept": 3.966667,
+          "xmin": 0,
+          "xmax": 6
+        },
+        "Low": {
+          "r": 0.087708,
+          "p": 0.605721,
+          "n": 37,
+          "slope": 0.064464,
+          "intercept": 0.328789,
+          "xmin": 0,
+          "xmax": 6
+        }
       }
+    },
+    "summary": {
+      "n": 108,
+      "simMeanGain": 3.915493,
+      "simToLowRatio": 8.521955,
+      "vrVsDesktop": {
+        "diff": 0.335714,
+        "d": 0.234438,
+        "p": 0.326797
+      },
+      "lowNonPositiveGain": 21,
+      "lowNegativeGain": 8,
+      "lowZeroPresence": 14,
+      "simHighPresence": 58,
+      "vrHighLoadCount": 4,
+      "vrHighLoadMeanGain": 4.25,
+      "otherMaxLoad": 6
     }
   },
   labels: {"High":"VR headset","Medium":"Desktop sim","Low":"Video + text"},

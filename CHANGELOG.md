@@ -5,6 +5,31 @@ All notable changes to this project will be documented in this file.
 The format is based on [Keep a Changelog](https://keepachangelog.com/en/1.0.0/),
 and this project adheres to [Semantic Versioning](https://semver.org/spec/v2.0.0.html).
 
+## [4.0.0] - 2026-11-20
+
+Rebuilt narrative architecture, unified 108-dot visualization engine, and upgraded Evidence Lab around executive storytelling and data-visualization design principles while preserving scientific accuracy and `file://` portability.
+
+### Added
+- **Executive Hero Scorecard**: Three-card Pyramid Principle summary above the fold (`+4.1 vs. +3.8` VR vs. desktop tie, `8.5×` simulation gain over video, `r = .51 → n.s.` ecological fallacy) paired with the 108-mark participant strip.
+- **Unified 108-dot object permanence**: One persistent `<g class="frame" data-frame="story">` across all six narrative beats so all 108 participant marks morph smoothly from design cohorts (Step 1) → learning-gain beeswarm (Step 2) → pooled scatter (Step 3) → condition overlay (Step 4) → 3-panel small multiples (Step 5) → cognitive-load beeswarm (Step 6).
+- **Small multiples (Step 5 & Lab `Split` view)**: Side-by-side panels (`Video + text`, `Desktop sim`, `VR headset`) on wide screens and stacked panels on phones, showing each group's flat within-condition trend against the ghosted pooled diagonal.
+- **Causal schematic diagrams & expandable method notes**: Inline *slide:ology* causal chain vs. confounder fork diagrams in Steps 3 & 4 and optional `<details class="method-note">` disclosures for protocol, scale, instrument validity, and outlier context.
+- **Quick-jump story navigation**: Clickable `01`–`06` step buttons synced to scroll position on wide viewports.
+- **Load → Gain axis & guided Lab presets**: Extended `scripts/csv_to_js.js` (`data.js`) with group medians, min/max, presence stats, `summary` metrics, and `cor.load_vs_gain`, powering a third Lab axis (`Load → Gain`, `r = .14` in VR) and three one-click investigation presets (`Replay the fallacy`, `Check VR's high-load outliers`, `Inspect Participant #88`).
+- **Decision Playbook & APA citation copy**: Three-card takeaway playbook in `#coda` and a balanced three-column footer with an interactive "Copy APA citation" button.
+
+### Changed
+- **Narrative spine & copy**: Replaced teaser titles with claim-bearing assertion headlines across the hero and all six beats; replaced Step 1's redundant count bars with an experimental design cohort schematic and replaced Steps 2 & 5 summary bars with full 108-dot beeswarms overlaid with 95% CIs and means.
+- **Step 4 label hierarchy**: Moved the `Overall (r = .51)` callout directly onto the dashed pooled diagonal in empty canvas space on roomy displays so the right gutter stays uncrowded.
+- **Visual tokens**: Neutralized step-number badges to editorial stone/ink (`#F3F2EE` / `#121212`) so `#FFDD33` remains reserved exclusively for the `ecological fallacy` highlight and never competes with VR data marks.
+- **Tests**: Updated Playwright suite (`chart-helpers.js`, `narrative.spec.js`, `lab.spec.js`, `content.spec.js`, `contrast.spec.js`, `data.spec.js`, `a11y.spec.js`, `resilience.spec.js`, `repo.spec.js`) to cover 6-step persistence, all 18 Lab states, guided presets, and updated contrast/copy checks.
+
+### Removed
+- **Summary-only bar charts**: Replaced Steps 1, 2, and 5 mean/count bars so every step preserves all 108 individual observations.
+
+### Fixed
+- **Step 4 right-gutter crowding & cognitive-load ceiling blindspot**: De-crowded Step 4's direct labels, surfaced the shared cognitive-load median of `2` and the four VR outliers (`7–12`, avg `+4.3` gain), and verified zero text overlaps across all 6 steps and 18 Lab states at every viewport.
+
 ## [3.0.0] - 2026-10-24
 
 The story, its order and the corrected 2.1.1 copy are unchanged. The page is rebuilt around them.
@@ -97,6 +122,7 @@ The story, its order and the corrected 2.1.1 copy are unchanged. The page is reb
 - **Original Dissertation**: PhD Dissertation "Teaching Science Lab Safety: Are Virtual Simulations Effective?" (Savvides, 2018).
 - **Literature Review (2018)**: Citations and analysis covering VR in science education through 2018.
 
+[4.0.0]: https://github.com/savvides/dissertation/compare/v3.0.0...v4.0.0
 [3.0.0]: https://github.com/savvides/dissertation/compare/v2.1.1...v3.0.0
 [2.1.1]: https://github.com/savvides/dissertation/compare/v2.1.0...v2.1.1
 [2.1.0]: https://github.com/savvides/dissertation/compare/v2.0.0...v2.1.0

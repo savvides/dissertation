@@ -1,31 +1,32 @@
-/* Newsroom Explainer (v3.0.0). Light theme only.
-   Tiers (spec §4.1): phone is the default; "wide" and "short" override it below.
+/* Newsroom Data Story (v4.0.0). Light editorial theme.
+   Tiers: phone is the default; "wide" and "short" override it below.
    Never set overflow on an ancestor of #story-figure: iOS Safari stops honoring sticky. */
 
-/* ---------- Tokens (spec §4.5) ---------- */
+/* ---------- Tokens ---------- */
 :root {
     color-scheme: light;
     --bg: #FFFFFF;
+    --surface: #F7F6F2;
     --ink: #121212;
     --text: #262626;
-    --muted: #5E5E5E;
+    --muted: #595959;
     --rule: #121212;
-    --axis: #767676;
-    --grid: #E8E8E8;
-    --track: #F2F2F2;
+    --axis: #737373;
+    --grid: #E6E4DE;
+    --track: #F3F2EE;
     --accent: #FFDD33; /* fill only, never text */
     --high: #D0450C;
     --medium: #2A6FDB;
     --low: #3A3A3A;
-    --neutral: #767676;
-    --ghost: #6B6B6B;
+    --neutral: #737373;
+    --ghost: #666666;
 
     --font-ui: 'Libre Franklin', -apple-system, BlinkMacSystemFont, 'Segoe UI', Helvetica, Arial, sans-serif;
     --font-text: 'Newsreader', Georgia, 'Times New Roman', serif;
 
     --gutter: 16px;
     --band-h: max(47svh, 360px);
-    --readout-h: 46px; /* Lab readout box: one 16px/1.5 line plus its padding */
+    --readout-h: 46px;
 }
 
 /* ---------- Base ---------- */
@@ -46,7 +47,13 @@ body {
     -webkit-font-smoothing: antialiased;
 }
 
-h1, h2 { margin: 0; color: var(--ink); font-family: var(--font-ui); font-weight: 800; text-wrap: balance; }
+h1, h2, h3 {
+    margin: 0;
+    color: var(--ink);
+    font-family: var(--font-ui);
+    font-weight: 800;
+    text-wrap: balance;
+}
 p { margin: 0; }
 em { font-style: italic; }
 
@@ -58,7 +65,7 @@ a {
 }
 a:hover { text-decoration-thickness: 2px; }
 
-/* The one highlighter mark on the page (step 4's key term). */
+/* The one yellow highlighter mark on the page (Step 4's key term). */
 mark {
     color: var(--ink);
     padding: 0 2px;
@@ -68,7 +75,7 @@ mark {
     box-decoration-break: clone;
 }
 
-/* Focus ring: 3px ink outline outside a 2px white offset, on every interactive element. */
+/* Focus ring: 3px ink outline outside a 2px white offset on every interactive element. */
 :focus-visible {
     outline: 3px solid var(--ink);
     outline-offset: 2px;
@@ -82,20 +89,21 @@ mark {
     margin: -1px;
     padding: 0;
     border: 0;
-    overflow: hidden; /* WebKit otherwise counts long hidden text (chart descriptions) as page overflow */
+    overflow: hidden;
     clip: rect(0 0 0 0);
     clip-path: inset(50%);
     white-space: nowrap;
 }
 
-/* ---------- Hero (spec §4.2) ---------- */
+/* ---------- Hero ---------- */
 #hero {
     display: flex;
     flex-direction: column;
     justify-content: center;
     min-height: 100svh;
-    padding: 24px var(--gutter);
+    padding: 20px var(--gutter) 18px;
     border-top: 6px solid var(--rule);
+    border-bottom: 1px solid var(--grid);
 }
 
 .hero-inner,
@@ -106,37 +114,88 @@ mark {
 }
 
 .hero-title {
-    font-size: clamp(32px, 8.5vw, 52px);
-    line-height: 1.02;
+    max-width: 24ch;
+    font-size: clamp(28px, 7.2vw, 52px);
+    line-height: 1.04;
     letter-spacing: -0.028em;
 }
 
 .hero-kicker {
     display: block;
-    margin: 0 0 10px;
-    font-size: clamp(17px, 4.4vw, 22px);
+    margin: 0 0 8px;
+    font-size: clamp(13px, 3.4vw, 17px);
     font-weight: 600;
-    line-height: 1.2;
-    letter-spacing: -0.005em;
+    line-height: 1.25;
+    letter-spacing: 0.04em;
+    text-transform: uppercase;
+    color: var(--muted);
 }
 
 .hero-hed { display: block; }
 
 .hook {
-    max-width: 52ch;
-    margin-top: 12px;
-    font-size: clamp(19px, 5vw, 26px);
+    max-width: 56ch;
+    margin-top: 10px;
+    font-size: clamp(18px, 4.3vw, 24px);
     font-style: italic;
-    line-height: 1.3;
+    line-height: 1.32;
+    color: var(--text);
 }
 
-/* Participant strip: one mark per participant, in the condition colors and shapes. */
+/* Executive 3-card scorecard (Pyramid Principle summary). */
+.hero-stats {
+    display: grid;
+    grid-template-columns: minmax(0, 1fr);
+    gap: 8px 24px;
+    margin: 16px 0 0;
+    padding: 0;
+    list-style: none;
+}
+
+.stat-card {
+    padding: 10px 14px;
+    background: var(--surface);
+    border-top: 2px solid var(--rule);
+}
+
+.stat-num {
+    display: block;
+    font-family: var(--font-ui);
+    font-size: clamp(20px, 4.5vw, 28px);
+    font-weight: 800;
+    line-height: 1.1;
+    letter-spacing: -0.02em;
+    font-variant-numeric: tabular-nums;
+    color: var(--ink);
+}
+
+.stat-label {
+    display: block;
+    margin-top: 3px;
+    font-family: var(--font-ui);
+    font-size: 14px;
+    font-weight: 600;
+    line-height: 1.25;
+    color: var(--ink);
+}
+
+.stat-sub {
+    display: block;
+    margin-top: 2px;
+    font-family: var(--font-ui);
+    font-size: 13px;
+    line-height: 1.3;
+    color: var(--muted);
+}
+
+/* Participant strip: 108 individual marks in the condition colors and shapes. */
 .hero-strip {
     display: grid;
     grid-template-columns: minmax(0, 1fr);
-    gap: 10px clamp(16px, 2.6vw, 32px);
-    margin: 20px 0 0;
-    padding: 0;
+    gap: 8px clamp(16px, 2.6vw, 32px);
+    margin: 14px 0 0;
+    padding: 12px 0 0;
+    border-top: 1px solid var(--grid);
     list-style: none;
 }
 
@@ -181,17 +240,16 @@ mark {
 .scroll-cue {
     display: flex;
     align-items: center;
-    gap: 6px;
-    margin-top: 28px;
+    gap: 8px;
+    margin-top: 16px;
     font-family: var(--font-ui);
     font-size: 13px;
     font-weight: 600;
-    letter-spacing: 0.09em;
+    letter-spacing: 0.08em;
     text-transform: uppercase;
     color: var(--muted);
 }
 
-/* One gentle bounce, and only when motion is welcome (C18, C27). */
 @media (prefers-reduced-motion: no-preference) {
     .scroll-cue { animation: cue-bounce 1.4s ease-in-out 1.2s 1 both; }
 }
@@ -205,7 +263,6 @@ mark {
 /* ---------- Narrative: phone tier (default) ---------- */
 #story { position: relative; }
 
-/* The sticky chart band. */
 #story-figure {
     position: sticky;
     top: 0;
@@ -223,14 +280,23 @@ figure.chart {
     padding: 10px var(--gutter) 8px;
 }
 
-figure.chart figcaption { flex: none; margin: 0 0 6px; }
+figure.chart figcaption {
+    flex: none;
+    display: flex;
+    align-items: flex-start;
+    justify-content: space-between;
+    gap: 16px;
+    margin: 0 0 6px;
+}
+
+.chart-meta { min-width: 0; }
 
 .chart-hed,
 .card-cap-hed {
     display: block;
     margin: 0 0 2px;
     font-family: var(--font-ui);
-    font-size: 17px;
+    font-size: 16px;
     font-weight: 800;
     line-height: 1.25;
     letter-spacing: -0.01em;
@@ -247,17 +313,50 @@ figure.chart figcaption { flex: none; margin: 0 0 6px; }
     color: var(--muted);
 }
 
-/* Charts are drawn into these at their measured content-box size. */
+.story-nav {
+    display: none;
+    flex: none;
+    gap: 4px;
+    align-items: center;
+}
+
+.story-nav button {
+    min-width: 34px;
+    min-height: 34px;
+    padding: 0 8px;
+    border: 1px solid var(--grid);
+    border-radius: 0;
+    background: var(--bg);
+    color: var(--muted);
+    font-family: var(--font-ui);
+    font-size: 12px;
+    font-weight: 600;
+    font-variant-numeric: tabular-nums;
+    cursor: pointer;
+    -webkit-appearance: none;
+    appearance: none;
+}
+
+.story-nav button:hover {
+    border-color: var(--ink);
+    color: var(--ink);
+}
+
+.story-nav button[aria-pressed="true"] {
+    background: var(--ink);
+    border-color: var(--ink);
+    color: var(--bg);
+}
+
 .chart-svg-wrap {
     position: relative;
     flex: 1 1 0;
     min-height: 0;
 }
 
-/* ---------- Chart SVG (spec §5.2). Paint that D3 animates (fills, line colors) is set as attributes,
-   so these rules only cover type and static strokes. Text sizes are true CSS pixels. ---------- */
+/* ---------- Chart SVG ---------- */
 .chart-svg {
-    position: absolute; /* never feeds back into the container size it is drawn at */
+    position: absolute;
     top: 0;
     left: 0;
     display: block;
@@ -269,14 +368,18 @@ figure.chart figcaption { flex: none; margin: 0 0 6px; }
 .chart-svg .t-name { font-size: 14px; font-weight: 800; letter-spacing: -0.005em; }
 .chart-svg .t-r { font-size: 13px; font-weight: 400; fill: var(--text); font-variant-numeric: tabular-nums; }
 .chart-svg .t-cat { font-size: 14px; font-weight: 800; letter-spacing: -0.005em; }
-.chart-svg .t-value { font-size: 13px; font-weight: 600; fill: var(--ink); font-variant-numeric: tabular-nums; }
+.chart-svg .t-sub { font-size: 12.5px; font-weight: 400; fill: var(--muted); font-variant-numeric: tabular-nums; }
+.chart-svg .t-value { font-size: 13.5px; font-weight: 800; fill: var(--ink); font-variant-numeric: tabular-nums; }
+.chart-svg .t-annot { font-size: 12.5px; font-weight: 600; fill: var(--muted); }
+.chart-svg .t-panel { font-size: 14px; font-weight: 800; letter-spacing: -0.005em; }
+.chart-svg .t-panel-r { font-size: 13px; font-weight: 400; fill: var(--text); font-variant-numeric: tabular-nums; }
 
-/* White halo behind text that can sit over grid lines or whiskers. */
 .chart-svg .t-cat,
-.chart-svg .t-value {
+.chart-svg .t-value,
+.chart-svg .t-annot {
     paint-order: stroke;
     stroke: var(--bg);
-    stroke-width: 4px;
+    stroke-width: 5px;
     stroke-linejoin: round;
 }
 
@@ -284,15 +387,21 @@ figure.chart figcaption { flex: none; margin: 0 0 6px; }
 .chart-svg .tick-line,
 .chart-svg .domain { stroke: var(--axis); stroke-width: 1; }
 .chart-svg .zero { stroke: var(--ink); stroke-width: 1.25; }
+.chart-svg .ref-line { stroke: var(--axis); stroke-width: 1.25; stroke-dasharray: 4 3; }
+.chart-svg .panel-bg { fill: var(--surface); fill-opacity: 0.45; stroke: var(--grid); stroke-width: 1; }
+.chart-svg .panel-rule { stroke: var(--grid); stroke-width: 1; }
+.chart-svg .bracket { fill: none; stroke: var(--axis); stroke-width: 1.25; }
 .chart-svg .ci,
-.chart-svg .ci-cap { stroke: var(--ink); stroke-width: 1.5; }
-.chart-svg .ci-halo { stroke: var(--bg); stroke-width: 3.5; stroke-linecap: round; }
+.chart-svg .ci-cap { stroke: var(--ink); stroke-width: 1.75; }
+.chart-svg .ci-halo { stroke: var(--bg); stroke-width: 4.5; stroke-linecap: round; }
+.chart-svg .mean-mk { stroke: var(--bg); stroke-width: 2; }
 .chart-svg .trend,
 .chart-svg .trend-halo { fill: none; stroke-linecap: round; }
 .chart-svg .leader { stroke-width: 1; }
 .chart-svg .emph-ring { fill: none; stroke: var(--ink); stroke-width: 2; pointer-events: none; }
 .chart-svg .emph-halo { fill: none; stroke: var(--bg); stroke-width: 6; pointer-events: none; }
 
+/* ---------- Steps ---------- */
 .steps {
     padding: 0 0 calc((100svh - var(--band-h)) * 0.6);
     background: var(--track);
@@ -300,68 +409,163 @@ figure.chart figcaption { flex: none; margin: 0 0 6px; }
 
 .step {
     position: relative;
-    margin: 0 0 34svh;
+    margin: 0 0 32svh;
     padding: 22px var(--gutter) 26px;
     background: var(--bg);
 }
 
 .step:last-child { margin-bottom: 0; }
 
-/* Active step: a 4px ink rule on the leading edge and full ink. Inactive steps are never dimmed (C23). */
+/* Active step: a 4px ink rule on the leading edge and full ink. Inactive steps are never dimmed. */
 .step[aria-current="step"] { box-shadow: inset 4px 0 0 var(--ink); }
 .step[aria-current="step"] p:not(.step-label) { color: var(--ink); }
 
 .step-label {
     display: flex;
     align-items: center;
-    gap: 8px;
-    margin-bottom: 14px;
+    gap: 10px;
+    margin-bottom: 12px;
     font-family: var(--font-ui);
-    font-size: 13px;
+    font-size: 12.5px;
     font-weight: 800;
     line-height: 1;
-    letter-spacing: 0.09em;
+    letter-spacing: 0.08em;
     text-transform: uppercase;
-    color: var(--ink);
+    color: var(--muted);
 }
 
 .step-num {
-    padding: 5px 6px 4px;
-    background: var(--accent);
-    letter-spacing: 0.02em;
+    padding: 5px 7px 4px;
+    background: var(--track);
+    color: var(--ink);
+    letter-spacing: 0.04em;
     font-variant-numeric: tabular-nums;
+}
+
+.step[aria-current="step"] .step-num {
+    background: var(--ink);
+    color: var(--bg);
 }
 
 .step h2 {
     margin-bottom: 14px;
-    font-size: clamp(28px, 7.4vw, 40px);
-    line-height: 1.04;
+    font-size: clamp(26px, 6.8vw, 34px);
+    line-height: 1.08;
     letter-spacing: -0.025em;
 }
 
 .step p:not(.step-label) {
     max-width: 60ch;
-    font-size: clamp(18px, 1.6vw, 20px);
+    font-size: clamp(18px, 1.55vw, 19px);
     line-height: 1.55;
     color: var(--text);
 }
 
 .step p:not(.step-label) + p { margin-top: 0.8em; }
 
-/* Short tier only: the active chart's caption sits at the top of its step card. */
+/* Inline causal schematic (slide:ology) in Steps 3 & 4. */
+.causal-fig {
+    margin: 0 0 14px;
+    padding: 10px 12px;
+    max-width: 384px;
+    background: var(--bg);
+    border: 1px solid var(--grid);
+    border-left: 3px solid var(--ink);
+}
+
+.causal-fig svg {
+    display: block;
+    width: 100%;
+    max-width: 360px;
+    height: auto;
+}
+
+.cf-box {
+    fill: var(--surface);
+    stroke: var(--axis);
+    stroke-width: 1.25;
+}
+
+.cf-box--strong {
+    fill: var(--ink);
+    stroke: var(--ink);
+}
+
+.cf-txt {
+    font-family: var(--font-ui);
+    font-size: 12px;
+    font-weight: 600;
+    fill: var(--ink);
+}
+
+.cf-txt--strong {
+    fill: var(--bg);
+    font-weight: 800;
+}
+
+.cf-arrow {
+    stroke: var(--ink);
+    stroke-width: 1.75;
+}
+
+.cf-arrow--broken {
+    stroke: var(--axis);
+    stroke-width: 1.25;
+    stroke-dasharray: 3 3;
+}
+
+.cf-head {
+    fill: none;
+    stroke: var(--ink);
+    stroke-width: 1.75;
+    stroke-linecap: round;
+    stroke-linejoin: round;
+}
+
+.cf-cross {
+    font-family: var(--font-ui);
+    font-size: 11px;
+    font-weight: 800;
+    fill: var(--high);
+}
+
+/* Optional methodological disclosure inside steps. */
+.method-note {
+    margin-top: 14px;
+    max-width: 60ch;
+    border-top: 1px solid var(--grid);
+    padding-top: 10px;
+}
+
+.method-note summary {
+    font-family: var(--font-ui);
+    font-size: 14px;
+    font-weight: 600;
+    color: var(--ink);
+    cursor: pointer;
+    list-style-position: inside;
+}
+
+.method-note p {
+    margin-top: 8px;
+    font-size: 16px;
+    line-height: 1.5;
+    color: var(--text);
+}
+
 .card-cap { display: none; }
 
-/* ---------- Coda, Evidence Lab, footer (spec §4.4) ----------
-   Same 1200px container as the hero, story and footer, so every section shares one left edge;
-   prose stays at 64ch and the Lab chart at 960px inside it. */
+/* ---------- Coda & Decision Playbook ---------- */
 #coda,
 #lab {
     max-width: calc(1200px + 2 * var(--gutter));
     margin: 0 auto;
-    padding: clamp(56px, 10vw, 112px) var(--gutter) 0;
+    padding: clamp(56px, 9vw, 104px) var(--gutter) 0;
 }
 
-#coda > *,
+#coda > .coda-lead,
+#coda > .coda-sub,
+#coda > h2,
 .lab-head > * { max-width: 64ch; }
 
 #coda h2,
@@ -373,20 +577,89 @@ figure.chart figcaption { flex: none; margin: 0 0 6px; }
 }
 
 #coda p { font-size: clamp(18px, 1.6vw, 20px); }
-#coda p + p { margin-top: 0.9em; }
+.coda-sub { margin-top: 0.9em; color: var(--muted); }
 
+.playbook {
+    display: grid;
+    grid-template-columns: minmax(0, 1fr);
+    gap: 18px;
+    margin-top: 28px;
+}
+
+.playbook-card {
+    padding: 20px 20px 22px;
+    background: var(--surface);
+    border-top: 3px solid var(--rule);
+}
+
+.playbook-kicker {
+    margin-bottom: 8px;
+    font-family: var(--font-ui);
+    font-size: 12.5px;
+    font-weight: 800;
+    letter-spacing: 0.08em;
+    text-transform: uppercase;
+    color: var(--muted);
+}
+
+.playbook-card h3 {
+    margin-bottom: 10px;
+    font-size: 20px;
+    line-height: 1.2;
+    letter-spacing: -0.015em;
+}
+
+#coda .playbook-card p {
+    font-size: 17px;
+    line-height: 1.5;
+    color: var(--text);
+}
+
+/* ---------- Evidence Lab ---------- */
 .lab-intro { font-size: clamp(18px, 1.6vw, 20px); }
 .lab-intro strong { font-family: var(--font-ui); font-size: 0.9em; font-weight: 600; color: var(--ink); }
+
+.lab-presets {
+    display: flex;
+    flex-wrap: wrap;
+    gap: 8px 10px;
+    margin-top: 22px;
+    max-width: 960px;
+}
+
+.preset-btn {
+    min-height: 44px;
+    padding: 8px 14px;
+    border: 1px solid var(--axis);
+    border-radius: 0;
+    background: var(--surface);
+    color: var(--ink);
+    font-family: var(--font-ui);
+    font-size: 14px;
+    font-weight: 600;
+    line-height: 1.25;
+    text-align: left;
+    cursor: pointer;
+    -webkit-appearance: none;
+    appearance: none;
+}
+
+.preset-btn:hover,
+.preset-btn[aria-pressed="true"] {
+    background: var(--ink);
+    border-color: var(--ink);
+    color: var(--bg);
+}
 
 .lab-stage,
 .lab-readout { max-width: 960px; }
 
-.lab-stage { margin-top: 28px; }
+.lab-stage { margin-top: 18px; }
 
 .lab-controls {
     display: flex;
     flex-wrap: wrap;
-    gap: 14px 28px;
+    gap: 14px 24px;
     padding-top: 14px;
     border-top: 2px solid var(--rule);
 }
@@ -403,7 +676,6 @@ figure.chart figcaption { flex: none; margin: 0 0 6px; }
     color: var(--muted);
 }
 
-/* Segmented control: selected = ink with white text; unselected = white with ink text, 1px ink border. */
 .seg {
     display: flex;
     border: 1px solid var(--ink);
@@ -414,15 +686,15 @@ figure.chart figcaption { flex: none; margin: 0 0 6px; }
     flex: 1 1 0;
     min-height: 44px;
     margin: 0;
-    padding: 0 16px;
+    padding: 0 12px;
     border: 0;
     border-radius: 0;
     background: var(--bg);
     color: var(--ink);
     font-family: var(--font-ui);
-    font-size: 15px;
+    font-size: 14.5px;
     font-weight: 600;
-    line-height: 1.1;
+    line-height: 1.15;
     cursor: pointer;
     -webkit-appearance: none;
     appearance: none;
@@ -434,7 +706,7 @@ figure.chart figcaption { flex: none; margin: 0 0 6px; }
 
 .lab-svg-wrap {
     position: relative;
-    height: clamp(300px, 70svh, 440px);
+    height: clamp(320px, 70svh, 460px);
     margin-top: 16px;
 }
 
@@ -451,7 +723,6 @@ figure.chart figcaption { flex: none; margin: 0 0 6px; }
     font-variant-numeric: tabular-nums;
 }
 
-/* Keep the readout's space reserved (no layout shift) but show no empty panel. */
 .lab-readout:empty { border-left-color: transparent; background: none; }
 
 .lab-summary {
@@ -462,9 +733,11 @@ figure.chart figcaption { flex: none; margin: 0 0 6px; }
     color: var(--text);
 }
 
+/* ---------- Footer ---------- */
 footer#about {
-    margin-top: clamp(72px, 12vw, 128px);
+    margin-top: clamp(72px, 11vw, 120px);
     border-top: 6px solid var(--rule);
+    background: var(--surface);
 }
 
 .footer-inner {
@@ -473,21 +746,56 @@ footer#about {
     gap: 32px;
     max-width: calc(1200px + 2 * var(--gutter));
     margin: 0 auto;
-    padding: 32px var(--gutter) 56px;
+    padding: 36px var(--gutter) 56px;
 }
 
 .about-column h2 {
-    margin-bottom: 8px;
+    margin-bottom: 10px;
     font-size: 16px;
     line-height: 1.3;
     letter-spacing: 0;
 }
 
 .about-column p { max-width: 64ch; font-size: 16px; line-height: 1.55; }
-.about-column p + p { margin-top: 0.6em; }
+.about-column p + p { margin-top: 0.7em; }
 .about-column a { font-family: var(--font-ui); font-weight: 600; line-height: 2; }
 
-/* ---------- Fallbacks: d3 failed to load (C04). No-JS uses the <noscript> style in index.html. ---------- */
+.cite-text {
+    padding: 10px 12px;
+    border-left: 3px solid var(--axis);
+    background: var(--bg);
+    font-size: 16px;
+    line-height: 1.45;
+}
+
+.footer-actions {
+    display: flex;
+    flex-wrap: wrap;
+    align-items: center;
+    gap: 12px 18px;
+}
+
+.cite-btn {
+    min-height: 44px;
+    padding: 8px 14px;
+    border: 1px solid var(--ink);
+    border-radius: 0;
+    background: var(--bg);
+    color: var(--ink);
+    font-family: var(--font-ui);
+    font-size: 14px;
+    font-weight: 600;
+    cursor: pointer;
+    -webkit-appearance: none;
+    appearance: none;
+}
+
+.cite-btn:hover {
+    background: var(--ink);
+    color: var(--bg);
+}
+
+/* ---------- Fallbacks: d3 failed to load ---------- */
 .chart-fallback { display: none; }
 
 .chart-fallback p,
@@ -509,24 +817,25 @@ html.js:not(.has-d3) #story-figure { position: static; height: auto; }
 html.js:not(.has-d3) #story-figure figcaption,
 html.js:not(.has-d3) .chart-svg-wrap,
 html.js:not(.has-d3) .card-cap,
+html.js:not(.has-d3) .lab-presets,
 html.js:not(.has-d3) .lab-stage,
 html.js:not(.has-d3) .lab-readout,
 html.js:not(.has-d3) .lab-summary { display: none; }
 
-/* ---------- Participant strip and footer columns on roomy screens ---------- */
+/* ---------- Breakpoints ---------- */
+@media (min-width: 700px) and (min-height: 501px) {
+    .hero-stats { grid-template-columns: repeat(3, minmax(0, 1fr)); gap: 16px 20px; }
+    .lab-control { flex: 0 1 auto; }
+    .seg button { flex: 0 0 auto; padding: 0 15px; }
+}
+
 @media (min-width: 900px), (max-height: 500px) and (orientation: landscape) {
     .hero-strip { grid-template-columns: repeat(3, minmax(0, 1fr)); }
 }
 
 @media (min-width: 900px) {
-    .footer-inner { grid-template-columns: repeat(3, minmax(0, 1fr)); gap: clamp(24px, 4vw, 56px); }
-}
-
-/* The three Lab controls fit on one row from 700px, leaving the chart and readout more height.
-   (The short tier lays them out as three equal columns instead.) */
-@media (min-width: 700px) and (min-height: 501px) {
-    .lab-control { flex: 0 1 auto; }
-    .seg button { flex: 0 0 auto; padding: 0 18px; }
+    .playbook { grid-template-columns: repeat(3, minmax(0, 1fr)); gap: 22px; }
+    .footer-inner { grid-template-columns: repeat(2, minmax(0, 1fr)); gap: clamp(24px, 4vw, 56px); }
 }
 
 /* ---------- Wide tier: (min-width: 900px) and not short ---------- */
@@ -535,29 +844,30 @@ html.js:not(.has-d3) .lab-summary { display: none; }
 
     #hero {
         min-height: 0;
-        padding-top: clamp(32px, 4vw, 56px);
-        padding-bottom: 28px;
-        border-bottom: 1px solid var(--grid);
+        padding-top: clamp(36px, 4.5vw, 64px);
+        padding-bottom: 32px;
     }
 
-    .hero-title { font-size: clamp(40px, 4.75vw, 60px); }
-    .hero-kicker { margin-bottom: 12px; font-size: clamp(17px, 1.75vw, 22px); }
-    .hook { margin-top: 16px; font-size: clamp(19px, 2.05vw, 26px); }
+    .hero-title { font-size: clamp(36px, 4.1vw, 52px); }
+    .hook { margin-top: 14px; font-size: clamp(19px, 1.9vw, 24px); }
+    .hero-stats { margin-top: 24px; }
+    .stat-card { padding: 14px 16px; }
+    .hero-strip { margin-top: 22px; padding-top: 16px; gap: 10px clamp(16px, 2.6vw, 32px); }
+    .scroll-cue { margin-top: 24px; }
 
     #story {
         display: grid;
-        grid-template-columns: minmax(300px, 38%) minmax(0, 1fr);
+        grid-template-columns: minmax(320px, 39%) minmax(0, 1fr);
         column-gap: clamp(24px, 3.6vw, 52px);
         max-width: calc(1200px + 2 * var(--gutter));
         margin: 0 auto;
         padding: 0 var(--gutter);
     }
 
-    /* Text on the left, the sticky chart column on the right. */
     .steps {
         grid-column: 1;
         grid-row: 1;
-        padding: 30svh 0 50svh;
+        padding: 28svh 0 48svh;
         background: none;
     }
 
@@ -577,37 +887,44 @@ html.js:not(.has-d3) .lab-summary { display: none; }
         padding: 0;
     }
 
-    figure.chart figcaption { margin-bottom: 10px; }
-    .chart-hed { font-size: clamp(17px, 1.6vw, 20px); }
+    figure.chart figcaption {
+        align-items: flex-end;
+        margin-bottom: 12px;
+        padding-top: 10px;
+        border-top: 2px solid var(--rule);
+    }
+
+    .chart-hed { font-size: clamp(17px, 1.55vw, 20px); }
+    .story-nav { display: flex; }
 
     .chart-svg-wrap {
         flex: none;
-        height: clamp(280px, 68svh, 620px);
+        height: clamp(300px, 68svh, 600px);
     }
 
     .step {
-        margin: 0 0 70svh -20px; /* the active-step rule sits in the gutter; text aligns with the hero */
+        margin: 0 0 64svh -20px;
         padding: 6px 0 6px 20px;
     }
 
-
-    .lab-svg-wrap { height: clamp(320px, 60svh, 520px); }
+    .lab-svg-wrap { height: clamp(340px, 60svh, 520px); }
 }
 
-/* ---------- Short tier: landscape phones (spec §4.1). Comes last so it wins ties. ---------- */
+/* ---------- Short tier: landscape phones. Comes last so it wins ties. ---------- */
 @media (max-height: 500px) and (orientation: landscape) {
     #hero { padding-top: 16px; padding-bottom: 16px; }
-    .hero-title { font-size: 36px; }
-    .hero-kicker { font-size: 17px; }
-    .hook { font-size: 19px; }
-    .scroll-cue { margin-top: 16px; }
+    .hero-title { font-size: 30px; }
+    .hero-kicker { font-size: 13px; }
+    .hook { font-size: 18px; }
+    .hero-stats { grid-template-columns: repeat(3, minmax(0, 1fr)); margin-top: 16px; }
+    .stat-card { padding: 10px 12px; }
+    .scroll-cue { margin-top: 14px; }
 
     #story {
         display: grid;
         grid-template-columns: 58% minmax(0, 1fr);
     }
 
-    /* Chart pinned on the left at full height; its caption moves into the step cards. */
     #story-figure {
         grid-column: 1;
         grid-row: 1;
@@ -641,19 +958,17 @@ html.js:not(.has-d3) .lab-summary { display: none; }
         padding: 18px var(--gutter) 22px 18px;
     }
 
-    .step h2 { font-size: 28px; }
+    .step h2 { font-size: 24px; }
 
     .card-cap {
         display: block;
-        margin: 0 0 16px;
+        margin: 0 0 14px;
         padding-top: 8px;
         border-top: 3px solid var(--rule);
     }
 
     .card-cap-hed { font-size: 16px; }
 
-    /* The Lab chart fills the screen minus the controls, and minus one line of readout so the
-       inspected point's details stay on screen while tapping (the readout's reserved box). */
     .lab-stage {
         display: flex;
         flex-direction: column;
@@ -662,10 +977,9 @@ html.js:not(.has-d3) .lab-summary { display: none; }
     }
 
     .lab-readout { margin-top: 8px; }
-
     .lab-controls { flex: none; }
     .lab-control { flex: 1 1 0; min-width: 0; }
-    .seg button { padding: 0 8px; }
+    .seg button { padding: 0 6px; font-size: 13px; }
 
     .lab-svg-wrap {
         flex: 1 1 0;
@@ -674,13 +988,11 @@ html.js:not(.has-d3) .lab-summary { display: none; }
     }
 }
 
-/* ---------- Evidence Lab chart: point inspection (spec §6.3) ---------- */
+/* ---------- Evidence Lab chart: point inspection ---------- */
 .lab-svg .dot { cursor: pointer; }
 
-/* The SVG ring drawn around the inspected or focused dot is its focus indicator: WebKit paints no
-   outline on SVG children, and an outline would trace the dot's box rather than the dot. */
 .lab-svg .dot:focus,
 .lab-svg .dot:focus-visible { outline: none; box-shadow: none; }
 
 .lab-svg .emph-ring { stroke-width: 3; }
-.lab-svg .emph-halo { stroke-width: 7; } /* 2px white each side of the 3px ink ring */
+.lab-svg .emph-halo { stroke-width: 7; }

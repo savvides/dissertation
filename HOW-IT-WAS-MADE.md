@@ -34,7 +34,7 @@ The whole site was built through iterative conversation with Claude Code. No han
 
 7. **A personal coda and footer.** A first-person reflection closes the narrative ("Eight years later, I found a fallacy hiding in my own data."), and a three-column footer points to this write-up, my LinkedIn, and the open dataset.
 
-8. **Iteration.** Many rounds of conversation, refining the narrative, polishing the charts, adjusting the pacing. The AI handled the code. I handled the taste. That included a full review of the first version, a round of corrections to claims the data didn't support, and then the Newsroom redesign described above.
+8. **Iteration.** Many rounds of conversation, refining the narrative, polishing the charts, adjusting the pacing. The AI handled the code. I handled the taste. That included a full review of the first version, a round of corrections to claims the data didn't support, the Newsroom redesign, and a v4.0.0 narrative & data-visualization overhaul unifying all 108 participants across six beats, small multiples, an executive scorecard, and guided Evidence Lab presets.
 
 The entire thing is static HTML. No build tools, no server, no database. It's four static files plus a charting library, and it deploys on GitHub Pages for free.
 
