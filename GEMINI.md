@@ -18,8 +18,8 @@ Project instructions for Antigravity/Gemini sessions on `savvides/dissertation`.
 
 ## Non-Obvious Gotchas
 - SVG text overlap gate (`overlaps()` across 6 viewports): adding `stroke-width: 4px` halos expands `<text>` bounding boxes and makes tightly stacked labels (`.t-name`/`.t-r` at 15–16px) fail overlap tests — keep paint halos off multi-line scatter labels or space baselines `≥ 19px`.
-- Typography & inactive-step rules (`tests/layout.spec.js`): every `<p>` in `.step:not(.step-label)`, `#coda`, `#lab`, and `footer` must compute `≥ 16px`, and inactive `.step p` must stay `opacity: 1` / `rgb(38, 38, 38)`. Use `<div>` (not `<p>`) for compact eyebrow kickers inside `#coda`.
-- Collapsed `<details>` inside `.step`: hidden `<p>` children fail broad visibility checks — scope visible-prose selectors to `> p:not(.step-label)`.
+- Typography & inactive-step rules (`tests/layout.spec.js`): `.step p:not(.step-label)`, `#coda p`, `#lab .lab-intro`, `#lab .lab-summary`, `#lab .lab-readout`, and `footer p` must compute `≥ 16px`, and inactive `.step p:not(.step-label)` must stay `opacity: 1` / `rgb(38, 38, 38)`. Use `<div>` (not `<p>`) for compact eyebrow kickers inside `#coda`.
+- Collapsed `<details>` inside `.step` (`tests/resilience.spec.js`): hidden `<p>` children fail broad visibility checks — scope visible-prose selectors to `> p:not(.step-label)`.
 - Contrast & HTML5/ARIA: keep `--high` (`#D0450C`) and `--medium` (`#2A6FDB`) text on `#FFFFFF` (`--bg`), not `--surface` (`#F7F6F2`), to stay `≥ 4.5:1`; never use `--accent` (`#FFDD33`) as text color; use `<div role="img" aria-label="...">` rather than `<figure role="img">` for inline SVG diagrams so `vnu-jar` passes cleanly.
 - Scientific-claim guardrails (`tests/content.spec.js`): keep all `ABSENT` v2.1.1 phrases out of copy and keep quoted prose figures synced with `window.STUDY`.
 - Public-page attribution & footer: keep AI tooling (Claude Code, Antigravity) and any "How This Was Made" section off `index.html`; `footer#about` is a 2-column grid (`Philippos Savvides, PhD` + `The Data`). Keep `HOW-IT-WAS-MADE.md` in the repo (`tests/repo.spec.js` pins it).

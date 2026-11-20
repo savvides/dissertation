@@ -7,7 +7,7 @@ and this project adheres to [Semantic Versioning](https://semver.org/spec/v2.0.0
 
 ## [4.0.0] - 2026-11-20
 
-Rebuilt narrative architecture, unified 108-dot visualization engine, and upgraded Evidence Lab around executive storytelling and data-visualization design principles while preserving scientific accuracy and `file://` portability.
+Rebuilt narrative architecture, unified 108-dot visualization engine, and upgraded Evidence Lab around executive storytelling and data-visualization design principles; preserves scientific accuracy and `file://` portability.
 
 ### Added
 - **Executive Hero Scorecard**: Three-card Pyramid Principle summary above the fold (`+4.1 vs. +3.8` VR vs. desktop tie, `8.5×` simulation gain over video, `r = .51 → n.s.` ecological fallacy) paired with the 108-mark participant strip.
@@ -16,7 +16,7 @@ Rebuilt narrative architecture, unified 108-dot visualization engine, and upgrad
 - **Causal schematic diagrams & expandable method notes**: Inline *slide:ology* causal chain vs. confounder fork diagrams in Steps 3 & 4 and optional `<details class="method-note">` disclosures for protocol, scale, instrument validity, and outlier context.
 - **Quick-jump story navigation**: Clickable `01`–`06` step buttons synced to scroll position on wide viewports.
 - **Load → Gain axis & guided Lab presets**: Extended `scripts/csv_to_js.js` (`data.js`) with group medians, min/max, presence stats, `summary` metrics, and `cor.load_vs_gain`, powering a third Lab axis (`Load → Gain`, `r = .14` in VR) and three one-click investigation presets (`Replay the fallacy`, `Check VR's high-load outliers`, `Inspect Participant #88`).
-- **Decision Playbook & APA citation copy**: Three-card takeaway playbook in `#coda` and a balanced three-column footer with an interactive "Copy APA citation" button.
+- **Decision Playbook & APA citation copy**: Three-card takeaway playbook in `#coda` and a balanced two-column footer (`Philippos Savvides, PhD` and `The Data`) with an interactive "Copy APA citation" button.
 
 ### Changed
 - **Narrative spine & copy**: Replaced teaser titles with claim-bearing assertion headlines across the hero and all six beats; replaced Step 1's redundant count bars with an experimental design cohort schematic and replaced Steps 2 & 5 summary bars with full 108-dot beeswarms overlaid with 95% CIs and means.
@@ -26,9 +26,10 @@ Rebuilt narrative architecture, unified 108-dot visualization engine, and upgrad
 
 ### Removed
 - **Summary-only bar charts**: Replaced Steps 1, 2, and 5 mean/count bars so every step preserves all 108 individual observations.
+- **Footer "How This Was Made" column**: Removed AI-tooling and process attribution from the public page footer, switching `#about` from three columns to two.
 
 ### Fixed
-- **Step 4 right-gutter crowding & cognitive-load ceiling blindspot**: De-crowded Step 4's direct labels, surfaced the shared cognitive-load median of `2` and the four VR outliers (`7–12`, avg `+4.3` gain), and verified zero text overlaps across all 6 steps and 18 Lab states at every viewport.
+- **Step 4 right-gutter crowding & cognitive-load ceiling blindspot**: De-crowded Step 4's direct labels, surfaced the shared cognitive-load median of `2` and the four VR outliers (`7–12`, mean `+4.3` gain), and verified zero text overlaps across all 6 steps and 18 Lab states at every viewport.
 
 ## [3.0.0] - 2026-10-24
 

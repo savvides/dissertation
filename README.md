@@ -7,7 +7,7 @@
 
 An interactive data story exploring VR, learning, and a surprising statistical fallacy.
 
-![Step 4, "Split by condition, the presence effect vanishes": dots colored and shaped by condition, each group with its own weak, non-significant trend line, and a dashed line for all 108 pooled that climbs far more steeply](docs/screenshot.png)
+![Step 4, "Inside each group, the presence effect vanishes": dots colored and shaped by condition, each group with its own weak, non-significant trend line, and a dashed line for all 108 pooled that climbs far more steeply](docs/screenshot.png)
 
 The 2018 PhD study (n=108) asked whether VR headsets improve learning. VR did not significantly beat a desktop version of the same simulation (Cohen's d = 0.23, p = .33; the study was too small to detect a difference that size). Both simulation groups far outperformed a video-and-handout control (d > 2.4), though that comparison also changed the content and the session length. A 2026 reanalysis added something the original paper missed: the presence-learning correlation is an ecological fallacy — real at the group level, gone within each condition.
 
@@ -17,12 +17,12 @@ The 2018 PhD study (n=108) asked whether VR headsets improve learning. VR did no
 
 The page opens with an **executive scorecard** and a **hero strip** (108 marks grouped by condition: 35 VR headset, 36 desktop, 37 video and text). From there, a unified 108-dot figure morphs across six scroll-driven beats, followed by a three-card **decision playbook** and an upgraded **Evidence Lab**:
 
-1. **The Experiment** — Two groups got an interactive lab; one got a video (showing the cohort layout and built-in confound)
-2. **The Outcome** — All 108 learning gains as a beeswarm with means and 95% CIs: simulations beat video 8.5×, but VR didn't beat a laptop
+1. **The Experiment** — Two groups used an interactive lab; one watched a video (showing the cohort layout and built-in confound)
+2. **The Outcome** — All 108 learning gains as a beeswarm with means and 95% CIs: simulations beat video 8.5×, but VR didn't beat desktop
 3. **The 2018 Theory** — Causal chain diagram and pooled scatter plot where "being there" looked like the mechanism (`r = .51, p < .001`)
 4. **The Twist** — Confounder diagram and colored overlay exposing the ecological fallacy as the pooled line fractures within groups
 5. **Why It Happened** — Three small-multiple panels pulling the groups apart so readers see the zero-presence control floor (`14 of 37`) and upper-right simulation cluster (`58 of 71`) against the pooled diagonal
-6. **An Open Question** — Cognitive load beeswarm (`0–12`) showing every group shared a median of `2`, while VR's four high-load outliers (`7–12`) still averaged `+4.3` gain. Novelty cost is a hypothesis the study raises, not one it confirms
+6. **An Open Question** — Cognitive load beeswarm (`0–12`) showing every group shared a median of `2`; VR's four high-load outliers (`7–12`) still averaged `+4.3` gain. Novelty cost is a hypothesis the study raises, not one it confirms
 7. **Decision Playbook & Evidence Lab** — Takeaways for learning buyers, analysts, and VR designers, plus a `3 × 3 × 2` interactive scatter Lab (`Overall` / `Overlay` / `Split` × `Presence → Gain` / `Presence → Load` / `Load → Gain` × `Trendlines`) with guided investigation presets and a live readout/summary
 
 The charts, their text descriptions and the Lab's readout and summary take every number from `data.js`, which `scripts/csv_to_js.js` generates from `data.csv`; the browser never calculates a statistic. The statistics quoted in the text (hero scorecard metrics, strip counts, step 4's within-group r values, step 5's cluster counts, and step 6's cognitive-load figures) are verified against `data.js` by the test suite.
@@ -36,7 +36,7 @@ The study data is included so the 2026 reanalysis can be reproduced:
 
 ## How It Was Made
 
-This entire site was built through conversation with [Claude Code](https://claude.ai/code). Read the full story: **[How It Was Made](HOW-IT-WAS-MADE.md)**
+This entire site was built through conversation with AI coding agents. Read the full story: **[How It Was Made](HOW-IT-WAS-MADE.md)**
 
 ## Built With
 
