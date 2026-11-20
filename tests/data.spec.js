@@ -68,22 +68,27 @@ test.describe('data.js', { tag: '@once' }, () => {
     });
   });
 
-  test('stats shape: groups, cor and group n', () => {
+  test('stats shape: groups, cor, summary and group n', () => {
     const { stats } = loadStudy();
     for (const g of ['High', 'Medium', 'Low']) {
-      for (const y of ['learning_gains', 'cognitive_load']) {
-        expect(Object.keys(stats.groups[g][y])).toEqual(['mean', 'sd', 'ci']);
+      for (const y of ['learning_gains', 'cognitive_load', 'presence']) {
+        expect(Object.keys(stats.groups[g][y])).toEqual(['mean', 'median', 'sd', 'ci', 'min', 'max']);
         expect(stats.groups[g][y].ci).toHaveLength(2);
       }
-      expect(Object.keys(stats.groups[g])).toEqual(['n', 'learning_gains', 'cognitive_load']);
+      expect(Object.keys(stats.groups[g])).toEqual(['n', 'learning_gains', 'cognitive_load', 'presence']);
     }
     expect([stats.groups.High.n, stats.groups.Medium.n, stats.groups.Low.n]).toEqual([35, 36, 37]);
-    for (const y of ['learning_gains', 'cognitive_load']) {
+    for (const y of ['learning_gains', 'cognitive_load', 'load_vs_gain']) {
       for (const g of ['all', 'High', 'Medium', 'Low']) {
         expect(Object.keys(stats.cor[y][g])).toEqual(['r', 'p', 'n', 'slope', 'intercept', 'xmin', 'xmax']);
       }
       expect(stats.cor[y].all.n).toBe(108);
     }
+    expect(Object.keys(stats.summary)).toEqual([
+      'n', 'simMeanGain', 'simToLowRatio', 'vrVsDesktop',
+      'lowNonPositiveGain', 'lowNegativeGain', 'lowZeroPresence',
+      'simHighPresence', 'vrHighLoadCount', 'vrHighLoadMeanGain', 'otherMaxLoad',
+    ]);
   });
 
   test('learning gains vs presence correlations', () => {
@@ -100,7 +105,7 @@ test.describe('data.js', { tag: '@once' }, () => {
     expect(round(lg.Low.p, 3)).toBe(0.497);
   });
 
-  test('cognitive load vs presence correlations', () => {
+  test('cognitive load vs presence and load vs gain correlations', () => {
     const { cor } = loadStudy().stats;
     const cl = cor.cognitive_load;
     expect(round(cl.all.r, 3)).toBe(0.118);
@@ -109,15 +114,25 @@ test.describe('data.js', { tag: '@once' }, () => {
     expect(round(cl.Medium.r, 3)).toBe(-0.043);
     expect(round(cl.Low.r, 3)).toBe(0.288);
     expect(round(cl.Low.p, 3)).toBe(0.084);
+
+    const lvg = cor.load_vs_gain;
+    expect(round(lvg.all.r, 3)).toBe(0.129);
+    expect(round(lvg.High.r, 3)).toBe(0.137);
+    expect(round(lvg.Medium.r, 3)).toBe(-0.124);
+    expect(round(lvg.Low.r, 3)).toBe(0.088);
+    expect(lvg.High.p).toBeGreaterThanOrEqual(0.05);
   });
 
-  test('regression lines span the observed presence range', () => {
+  test('regression lines span the observed x range', () => {
     const { points, stats } = loadStudy();
     for (const g of ['all', 'High', 'Medium', 'Low']) {
       const xs = points.filter((p) => g === 'all' || p.condition === g).map((p) => p.presence);
+      const cls = points.filter((p) => g === 'all' || p.condition === g).map((p) => p.cognitive_load);
       expect(stats.cor.learning_gains[g].xmin).toBe(Math.min(...xs));
       expect(stats.cor.learning_gains[g].xmax).toBe(Math.max(...xs));
       expect(stats.cor.cognitive_load[g].xmin).toBe(Math.min(...xs));
+      expect(stats.cor.load_vs_gain[g].xmin).toBe(Math.min(...cls));
+      expect(stats.cor.load_vs_gain[g].xmax).toBe(Math.max(...cls));
     }
     // OLS identity: slope = r * sd(y) / sd(x); the line passes through the means.
     const ys = loadStudy().points.map((p) => p.learning_gains);
@@ -127,9 +142,10 @@ test.describe('data.js', { tag: '@once' }, () => {
     expect(intercept + slope * mean(xs)).toBeCloseTo(mean(ys), 5);
   });
 
-  test('group means and confidence intervals', () => {
-    const { groups } = loadStudy().stats;
+  test('group means, medians, confidence intervals and summary metrics', () => {
+    const { groups, summary } = loadStudy().stats;
     expect(['High', 'Medium', 'Low'].map((g) => round(groups[g].cognitive_load.mean, 3))).toEqual([2.943, 2.167, 2.027]);
+    expect(['High', 'Medium', 'Low'].map((g) => groups[g].cognitive_load.median)).toEqual([2, 2, 2]);
     const ci = (g, y) => groups[g][y].ci.map((v) => round(v, 2));
     expect(ci('High', 'learning_gains')).toEqual([3.58, 4.59]);
     expect(ci('Medium', 'learning_gains')).toEqual([3.28, 4.22]);
@@ -137,6 +153,16 @@ test.describe('data.js', { tag: '@once' }, () => {
     expect(ci('High', 'cognitive_load')).toEqual([1.98, 3.91]);
     expect(ci('Medium', 'cognitive_load')).toEqual([1.58, 2.75]);
     expect(ci('Low', 'cognitive_load')).toEqual([1.43, 2.63]);
+    expect(round(summary.simToLowRatio, 1)).toBe(8.5);
+    expect(round(summary.vrVsDesktop.d, 2)).toBe(0.23);
+    expect(round(summary.vrVsDesktop.p, 2)).toBe(0.33);
+    expect(summary.lowNonPositiveGain).toBe(21);
+    expect(summary.lowNegativeGain).toBe(8);
+    expect(summary.lowZeroPresence).toBe(14);
+    expect(summary.simHighPresence).toBe(58);
+    expect(summary.vrHighLoadCount).toBe(4);
+    expect(summary.vrHighLoadMeanGain).toBe(4.25);
+    expect(summary.otherMaxLoad).toBe(6);
   });
 
   test('jitter is bounded and not degenerate', () => {

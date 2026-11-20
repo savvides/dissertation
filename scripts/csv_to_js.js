@@ -20,6 +20,7 @@ const SEED = 2018;
 const CONDITIONS = ['High', 'Medium', 'Low'];
 const LABELS = { High: 'VR headset', Medium: 'Desktop sim', Low: 'Video + text' };
 const OUTCOMES = ['learning_gains', 'cognitive_load'];
+const GROUP_VARS = [...OUTCOMES, 'presence'];
 const JX_MAX = 0.9; // jitter half-widths, in data units (presence points / outcome points)
 const JY_MAX = 0.28;
 
@@ -128,6 +129,11 @@ function tCritical(df, confidence = 0.95) {
 // ---------- descriptive stats ----------
 
 const mean = (a) => a.reduce((s, v) => s + v, 0) / a.length;
+const median = (a) => {
+  const s = [...a].sort((x, y) => x - y);
+  const mid = s.length >> 1;
+  return s.length % 2 ? s[mid] : (s[mid - 1] + s[mid]) / 2;
+};
 const sd = (a) => {
   const m = mean(a);
   return Math.sqrt(a.reduce((s, v) => s + (v - m) ** 2, 0) / (a.length - 1));
@@ -137,7 +143,28 @@ function describe(values) {
   const m = mean(values);
   const s = sd(values);
   const half = tCritical(values.length - 1) * (s / Math.sqrt(values.length));
-  return { mean: m, sd: s, ci: [m - half, m + half] };
+  return {
+    mean: m,
+    median: median(values),
+    sd: s,
+    ci: [m - half, m + half],
+    min: Math.min(...values),
+    max: Math.max(...values),
+  };
+}
+
+// Student's equal-variance two-sample t-test and Cohen's d.
+function twoSampleT(a, b) {
+  const ma = mean(a);
+  const mb = mean(b);
+  const sa = sd(a);
+  const sb = sd(b);
+  const df = a.length + b.length - 2;
+  const pooledSd = Math.sqrt(((a.length - 1) * sa ** 2 + (b.length - 1) * sb ** 2) / df);
+  const diff = ma - mb;
+  const d = diff / pooledSd;
+  const t = diff / (pooledSd * Math.sqrt(1 / a.length + 1 / b.length));
+  return { diff, d, p: tTwoSidedP(Math.abs(t), df) };
 }
 
 // Pearson r (two-sided t test, df = n - 2) and OLS of y on x.
@@ -179,20 +206,45 @@ function build(csvBuffer) {
   for (const g of CONDITIONS) {
     const pts = inGroup(g);
     groups[g] = { n: pts.length };
-    for (const y of OUTCOMES) groups[g][y] = describe(pts.map((p) => p[y]));
+    for (const v of GROUP_VARS) groups[g][v] = describe(pts.map((p) => p[v]));
   }
+  const corSpecs = [
+    ['learning_gains', 'presence', 'learning_gains'],
+    ['cognitive_load', 'presence', 'cognitive_load'],
+    ['load_vs_gain', 'cognitive_load', 'learning_gains'],
+  ];
   const cor = {};
-  for (const y of OUTCOMES) {
-    cor[y] = {};
+  for (const [key, xVar, yVar] of corSpecs) {
+    cor[key] = {};
     for (const g of ['all', ...CONDITIONS]) {
       const pts = inGroup(g);
-      cor[y][g] = correlate(pts.map((p) => p.presence), pts.map((p) => p[y]));
+      cor[key][g] = correlate(pts.map((p) => p[xVar]), pts.map((p) => p[yVar]));
     }
   }
 
+  const hi = inGroup('High');
+  const med = inGroup('Medium');
+  const low = inGroup('Low');
+  const sim = [...hi, ...med];
+  const simMeanGain = mean(sim.map((p) => p.learning_gains));
+  const vrHighLoad = hi.filter((p) => p.cognitive_load >= 7);
+  const summary = {
+    n: points.length,
+    simMeanGain,
+    simToLowRatio: simMeanGain / groups.Low.learning_gains.mean,
+    vrVsDesktop: twoSampleT(hi.map((p) => p.learning_gains), med.map((p) => p.learning_gains)),
+    lowNonPositiveGain: low.filter((p) => p.learning_gains <= 0).length,
+    lowNegativeGain: low.filter((p) => p.learning_gains < 0).length,
+    lowZeroPresence: low.filter((p) => p.presence === 0).length,
+    simHighPresence: sim.filter((p) => p.presence >= 40).length,
+    vrHighLoadCount: vrHighLoad.length,
+    vrHighLoadMeanGain: mean(vrHighLoad.map((p) => p.learning_gains)),
+    otherMaxLoad: Math.max(...[...med, ...low].map((p) => p.cognitive_load)),
+  };
+
   return {
     points,
-    stats: { groups, cor },
+    stats: { groups, cor, summary },
     labels: LABELS,
     generatedFrom: CSV_NAME,
     sha256: crypto.createHash('sha256').update(csvBuffer).digest('hex'),
