@@ -20,14 +20,14 @@ const PRESENT = [
   'On a 10-question lab-safety knowledge test',
   "more immersion didn't produce a detectably larger learning gain",
   'a group-level pattern mistaken for an individual-level one',
-  'presence barely tracks learning (r = .16 for VR, −.19 for desktop and .12 for video; none statistically significant)',
-  'there was no reliable link between feeling present and learning',
+  'presence barely tracks learning (r = .16 for VR, −.19 for desktop, and .12 for video; none statistically significant)',
+  'feeling present shows no reliable link to learning',
   "didn't learn less (r = .14, not significant)",
   '06 / 06 An Open Question',
   'Novelty cost is a hypothesis this study raises, not one it confirms.',
   'In 2018, I reported that presence predicted how well participants scored after training.',
   'one cheap precaution follows',
-  'The de-identified study data (learning gains, presence, cognitive load)',
+  'The de-identified study data (learning gains, presence, and cognitive load)',
 ];
 
 const fmtR = (r) => {
@@ -132,7 +132,7 @@ test.describe('page copy and structure', { tag: '@once' }, () => {
     // Step 4: within-condition r values.
     const lg = cor.learning_gains;
     expect(text).toContain(
-      `r = ${fmtR(lg.High.r)} for VR, ${fmtR(lg.Medium.r)} for desktop and ${fmtR(lg.Low.r)} for video`
+      `r = ${fmtR(lg.High.r)} for VR, ${fmtR(lg.Medium.r)} for desktop, and ${fmtR(lg.Low.r)} for video`
     );
     for (const g of ['High', 'Medium', 'Low']) expect(lg[g].p).toBeGreaterThanOrEqual(0.05);
 

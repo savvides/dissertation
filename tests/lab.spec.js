@@ -5,19 +5,19 @@ const { openPage, pageErrorsOf, expectTruePixelText, ringsOf, svgFits } = requir
 
 const SUMMARIES = {
   'condition learning_gains':
-    'Within each condition: r = .16 for VR, −.19 for desktop, .12 for video — none statistically significant.',
+    'Within each condition: r = .16 for VR, −.19 for desktop, and .12 for video — none statistically significant.',
   'split learning_gains':
-    'Within each condition: r = .16 for VR, −.19 for desktop, .12 for video — none statistically significant.',
+    'Within each condition: r = .16 for VR, −.19 for desktop, and .12 for video — none statistically significant.',
   'overall learning_gains': 'Pooled across all 108 participants: r = .51 (p < .001).',
   'condition cognitive_load':
-    'Within each condition: r = −.17 for VR, −.04 for desktop, .29 for video — none statistically significant.',
+    'Within each condition: r = −.17 for VR, −.04 for desktop, and .29 for video — none statistically significant.',
   'split cognitive_load':
-    'Within each condition: r = −.17 for VR, −.04 for desktop, .29 for video — none statistically significant.',
+    'Within each condition: r = −.17 for VR, −.04 for desktop, and .29 for video — none statistically significant.',
   'overall cognitive_load': 'Pooled across all 108 participants: r = .12 (p = .22, not statistically significant).',
   'condition load_vs_gain':
-    'Within each condition: r = .14 for VR, −.12 for desktop, .09 for video — none statistically significant.',
+    'Within each condition: r = .14 for VR, −.12 for desktop, and .09 for video — none statistically significant.',
   'split load_vs_gain':
-    'Within each condition: r = .14 for VR, −.12 for desktop, .09 for video — none statistically significant.',
+    'Within each condition: r = .14 for VR, −.12 for desktop, and .09 for video — none statistically significant.',
   'overall load_vs_gain': 'Pooled across all 108 participants: r = .13 (p = .18, not statistically significant).',
 };
 

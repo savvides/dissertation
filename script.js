@@ -56,7 +56,9 @@
       return 'p\u00a0=\u00a0' + p.toFixed(d).replace(/^0/, '') + (p < 0.05 ? '' : ', not statistically significant');
     },
     list: function (items) {
-      return items.length < 2 ? items.join('') : items.slice(0, -1).join(', ') + ' and ' + items[items.length - 1];
+      if (items.length < 2) return items.join('');
+      if (items.length === 2) return items[0] + ' and ' + items[1];
+      return items.slice(0, -1).join(', ') + ', and ' + items[items.length - 1];
     },
   };
 
@@ -598,7 +600,7 @@
         annots.push({ id: 'median-top', x: x(cfg.medianRef) + 6, y: -10, anchor: 'start', text: plotW >= 340 ? 'All groups share median = 2' : 'Median = 2' });
       }
       if (cfg.metric === 'cognitive_load' && plotW >= 360 && laneH >= 78) {
-        annots.push({ id: 'vr-outliers', x: x(9.5), y: band.High.y0 + 13, anchor: 'middle', text: '4 VR outliers (7–12); avg gain +4.3' });
+        annots.push({ id: 'vr-outliers', x: x(9.5), y: band.High.y0 + 13, anchor: 'middle', text: '4 VR outliers (7–12); mean gain +4.3' });
       }
       if (cfg.metric === 'learning_gains' && plotW >= 360 && laneH >= 78) {
         annots.push({ id: 'vr-desk-tie', x: x(0.22), y: (band.High.mid + band.Medium.mid) / 2 + 4, anchor: 'start', text: 'VR vs. Desktop: d = 0.23, p = .33 (n.s.)' });
@@ -1220,12 +1222,12 @@
       {
         state: 'design',
         desc: 'Dot matrix of 108 participants across three conditions: ' + G.map(function (g) { return L[g] + ' ' + S.groups[g].n; }).join(', ') +
-          '. VR headset and desktop saw identical Labster content; video + text used different material.',
+          '. VR headset and desktop used identical Labster content; video + text used different material.',
       },
       {
         state: 'gains',
         desc: 'Beeswarm distribution of all 108 learning gains with means and 95% confidence intervals: ' + withCi('learning_gains') +
-          '. VR vs. desktop difference is not statistically significant.',
+          '. The difference between VR and desktop is not statistically significant.',
       },
       {
         state: 'scatterPooled',
@@ -1415,7 +1417,8 @@
         return 'Pooled across all ' + cor.all.n + ' participants: r = ' + Format.r(cor.all.r) + ' (' + Format.p(cor.all.p) + ').';
       }
       var sig = G.filter(function (g) { return cor[g].p < 0.05; }).map(function (g) { return SHORT[g]; });
-      return 'Within each condition: r = ' + G.map(function (g) { return Format.r(cor[g].r) + ' for ' + SHORT[g]; }).join(', ') +
+      var items = G.map(function (g) { return Format.r(cor[g].r) + ' for ' + SHORT[g]; });
+      return 'Within each condition: r = ' + Format.list(items) +
         ' — ' + (sig.length ? Format.list(sig) : 'none') + ' statistically significant.';
     }
 
