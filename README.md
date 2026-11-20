@@ -1,13 +1,13 @@
 ![CI](https://github.com/savvides/dissertation/actions/workflows/ci.yml/badge.svg)
 ![Deploy](https://github.com/savvides/dissertation/actions/workflows/deploy.yml/badge.svg)
 ![License: CC BY 4.0](https://img.shields.io/badge/License-CC_BY_4.0-lightgrey.svg)
-![Version](https://img.shields.io/badge/version-3.0.0-blue.svg)
+![Version](https://img.shields.io/badge/version-4.0.0-blue.svg)
 
 # Teaching Science Lab Safety: Are Virtual Simulations Effective?
 
 An interactive data story exploring VR, learning, and a surprising statistical fallacy.
 
-![Step 4, "Look Closer": dots colored and shaped by condition, each group with its own weak, non-significant trend line, and a dashed line for all 108 pooled that climbs far more steeply](docs/screenshot.png)
+![Step 4, "Split by condition, the presence effect vanishes": dots colored and shaped by condition, each group with its own weak, non-significant trend line, and a dashed line for all 108 pooled that climbs far more steeply](docs/screenshot.png)
 
 The 2018 PhD study (n=108) asked whether VR headsets improve learning. VR did not significantly beat a desktop version of the same simulation (Cohen's d = 0.23, p = .33; the study was too small to detect a difference that size). Both simulation groups far outperformed a video-and-handout control (d > 2.4), though that comparison also changed the content and the session length. A 2026 reanalysis added something the original paper missed: the presence-learning correlation is an ecological fallacy — real at the group level, gone within each condition.
 
@@ -15,16 +15,17 @@ The 2018 PhD study (n=108) asked whether VR headsets improve learning. VR did no
 
 ## What You'll See
 
-The page opens on a **hero strip**: 108 marks grouped by condition (35 VR headset, 36 desktop, 37 video and text), one mark per participant. From there, a sticky chart redraws as you scroll through five steps, then hands over to an interactive Lab.
+The page opens with an **executive scorecard** and a **hero strip** (108 marks grouped by condition: 35 VR headset, 36 desktop, 37 video and text). From there, a unified 108-dot figure morphs across six scroll-driven beats, followed by a three-card **decision playbook** and an upgraded **Evidence Lab**:
 
-1. **The Experiment** — 108 participants randomly assigned to VR, desktop simulation, or video/text control
-2. **The Promise** — Simulations work, but VR doesn't significantly beat desktop
-3. **The Deeper Question** — Presence as the theorized mechanism, with a convincing overall correlation
-4. **The Twist** — The ecological fallacy reveal: color the dots by condition and the correlation disappears
-5. **An Open Question** — The price of novelty? VR's cognitive load ran highest, but not significantly. The page frames novelty cost as a hypothesis the study raises, not one it confirms.
-6. **The Evidence Lab** — An interactive scatter plot you can drive yourself: toggle overall vs. by-condition views, swap the y-axis between learning gains and cognitive load, and show or hide the trend lines to replay the fallacy on demand. Hover, tap or focus any dot (or arrow through them with the keyboard) and a readout shows that participant's values; a summary sentence under the chart restates the current view from the computed statistics.
+1. **The Experiment** — Two groups got an interactive lab; one got a video (showing the cohort layout and built-in confound)
+2. **The Outcome** — All 108 learning gains as a beeswarm with means and 95% CIs: simulations beat video 8.5×, but VR didn't beat a laptop
+3. **The 2018 Theory** — Causal chain diagram and pooled scatter plot where "being there" looked like the mechanism (`r = .51, p < .001`)
+4. **The Twist** — Confounder diagram and colored overlay exposing the ecological fallacy as the pooled line fractures within groups
+5. **Why It Happened** — Three small-multiple panels pulling the groups apart so readers see the zero-presence control floor (`14 of 37`) and upper-right simulation cluster (`58 of 71`) against the pooled diagonal
+6. **An Open Question** — Cognitive load beeswarm (`0–12`) showing every group shared a median of `2`, while VR's four high-load outliers (`7–12`) still averaged `+4.3` gain. Novelty cost is a hypothesis the study raises, not one it confirms
+7. **Decision Playbook & Evidence Lab** — Takeaways for learning buyers, analysts, and VR designers, plus a `3 × 3 × 2` interactive scatter Lab (`Overall` / `Overlay` / `Split` × `Presence → Gain` / `Presence → Load` / `Load → Gain` × `Trendlines`) with guided investigation presets and a live readout/summary
 
-The charts, their text descriptions and the Lab's readout and summary take every number from `data.js`, which `scripts/csv_to_js.js` generates from `data.csv`; the browser never calculates a statistic. The statistics quoted in the text (the hero strip's counts, step 4's within-group r values and step 5's cognitive-load figures) are written by hand, and the test suite checks them against `data.js`.
+The charts, their text descriptions and the Lab's readout and summary take every number from `data.js`, which `scripts/csv_to_js.js` generates from `data.csv`; the browser never calculates a statistic. The statistics quoted in the text (hero scorecard metrics, strip counts, step 4's within-group r values, step 5's cluster counts, and step 6's cognitive-load figures) are verified against `data.js` by the test suite.
 
 ## The Data
 

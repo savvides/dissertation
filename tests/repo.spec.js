@@ -1,4 +1,4 @@
-// Release hygiene for v3.0.0 (spec §9, §8.2). Pure Node, no browser; tagged @once so the suite
+// Release hygiene for v4.0.0. Pure Node, no browser; tagged @once so the suite
 // runs it in a single project. Covers the regenerated images, the CI test job, the docs, the
 // dead-code sweep (CSS selectors and script.js functions) and the "no local planning files" rule.
 const { test, expect } = require('@playwright/test');
@@ -48,10 +48,10 @@ test.describe('release hygiene', { tag: '@once' }, () => {
     expect(ciJob('check-links')).toMatch(/--exclude-path node_modules/);
   });
 
-  test('README describes the 3.0.0 page, build and development workflow', () => {
+  test('README describes the 4.0.0 page, build and development workflow', () => {
     const readme = read('README.md');
-    expect(readme).toMatch(/badge\/version-3\.0\.0-blue/);
-    expect(readme).not.toMatch(/version-2\.1\.1/);
+    expect(readme).toMatch(/badge\/version-4\.0\.0-blue/);
+    expect(readme).not.toMatch(/version-3\.0\.0/);
     expect(readme).toMatch(/!\[[^\]]+\]\(docs\/screenshot\.png\)/);
     expect(readme).toMatch(/^## What You'll See$/m);
     expect(readme).toMatch(/hero strip/i);
@@ -84,13 +84,13 @@ test.describe('release hygiene', { tag: '@once' }, () => {
     expect(doc).not.toMatch(/inlined at the top of `script\.js`/);
   });
 
-  test('CHANGELOG has a complete 3.0.0 entry and compare link', () => {
+  test('CHANGELOG has a complete 4.0.0 entry and compare link', () => {
     const log = read('CHANGELOG.md');
-    const entry = log.match(/^## \[3\.0\.0\][^\n]*\n([\s\S]*?)(?=^## \[)/m);
-    expect(entry, '3.0.0 section').not.toBeNull();
+    const entry = log.match(/^## \[4\.0\.0\][^\n]*\n([\s\S]*?)(?=^## \[)/m);
+    expect(entry, '4.0.0 section').not.toBeNull();
     for (const h of ['Added', 'Changed', 'Removed', 'Fixed']) expect(entry[1]).toMatch(new RegExp(`^### ${h}$`, 'm'));
-    expect(log).toContain('[3.0.0]: https://github.com/savvides/dissertation/compare/v2.1.1...v3.0.0');
-    expect(log.indexOf('## [3.0.0]')).toBeLessThan(log.indexOf('## [2.1.1]'));
+    expect(log).toContain('[4.0.0]: https://github.com/savvides/dissertation/compare/v3.0.0...v4.0.0');
+    expect(log.indexOf('## [4.0.0]')).toBeLessThan(log.indexOf('## [3.0.0]'));
   });
 
   test('no local planning files are tracked', () => {

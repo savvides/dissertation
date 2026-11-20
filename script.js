@@ -423,7 +423,7 @@
 
       var titleLines = wrapLines(svg, 't-axis', cfg.title, W - 2);
       var showTopRef = cfg.medianRef !== undefined && H >= 220;
-      var top = showTopRef ? 24 : 4;
+      var top = showTopRef ? 26 : 4;
       var bottom = 7 + 13 + 8 + titleLines.length * 16 + 4;
       var labelH = compact ? 20 : 0;
       var stepH = compact ? Math.min((H - top - bottom) / 3, 94) : (H - top - bottom) / 3;
@@ -595,13 +595,13 @@
       // Step-specific quiet Knaflic callout annotations (gated on ample whitespace).
       var annots = [];
       if (showTopRef) {
-        annots.push({ id: 'median-top', x: x(cfg.medianRef) + 5, y: -9, anchor: 'start', text: plotW >= 340 ? 'All groups share median = 2' : 'Median = 2' });
+        annots.push({ id: 'median-top', x: x(cfg.medianRef) + 6, y: -10, anchor: 'start', text: plotW >= 340 ? 'All groups share median = 2' : 'Median = 2' });
       }
       if (cfg.metric === 'cognitive_load' && plotW >= 360 && laneH >= 78) {
         annots.push({ id: 'vr-outliers', x: x(9.5), y: band.High.y0 + 13, anchor: 'middle', text: '4 VR outliers (7–12); avg gain +4.3' });
       }
       if (cfg.metric === 'learning_gains' && plotW >= 360 && laneH >= 78) {
-        annots.push({ id: 'vr-desk-tie', x: x(-1.25), y: (band.High.mid + band.Medium.mid) / 2 + 4, anchor: 'middle', text: 'VR vs. Desktop: d = 0.23, p = .33 (n.s.)' });
+        annots.push({ id: 'vr-desk-tie', x: x(0.22), y: (band.High.mid + band.Medium.mid) / 2 + 4, anchor: 'start', text: 'VR vs. Desktop: d = 0.23, p = .33 (n.s.)' });
       }
 
       exitFade(f.layer('annotations').selectAll('g.design-br, g.inplot-lbl'), m);

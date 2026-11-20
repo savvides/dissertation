@@ -101,7 +101,7 @@ mark {
     flex-direction: column;
     justify-content: center;
     min-height: 100svh;
-    padding: 28px var(--gutter) 24px;
+    padding: 20px var(--gutter) 18px;
     border-top: 6px solid var(--rule);
     border-bottom: 1px solid var(--grid);
 }
@@ -115,15 +115,15 @@ mark {
 
 .hero-title {
     max-width: 24ch;
-    font-size: clamp(30px, 7.6vw, 52px);
+    font-size: clamp(28px, 7.2vw, 52px);
     line-height: 1.04;
     letter-spacing: -0.028em;
 }
 
 .hero-kicker {
     display: block;
-    margin: 0 0 12px;
-    font-size: clamp(14px, 3.6vw, 17px);
+    margin: 0 0 8px;
+    font-size: clamp(13px, 3.4vw, 17px);
     font-weight: 600;
     line-height: 1.25;
     letter-spacing: 0.04em;
@@ -135,10 +135,10 @@ mark {
 
 .hook {
     max-width: 56ch;
-    margin-top: 14px;
-    font-size: clamp(19px, 4.4vw, 24px);
+    margin-top: 10px;
+    font-size: clamp(18px, 4.3vw, 24px);
     font-style: italic;
-    line-height: 1.35;
+    line-height: 1.32;
     color: var(--text);
 }
 
@@ -146,14 +146,14 @@ mark {
 .hero-stats {
     display: grid;
     grid-template-columns: minmax(0, 1fr);
-    gap: 12px 24px;
-    margin: 24px 0 0;
+    gap: 8px 24px;
+    margin: 16px 0 0;
     padding: 0;
     list-style: none;
 }
 
 .stat-card {
-    padding: 14px 16px;
+    padding: 10px 14px;
     background: var(--surface);
     border-top: 2px solid var(--rule);
 }
@@ -161,7 +161,7 @@ mark {
 .stat-num {
     display: block;
     font-family: var(--font-ui);
-    font-size: clamp(22px, 4.5vw, 28px);
+    font-size: clamp(20px, 4.5vw, 28px);
     font-weight: 800;
     line-height: 1.1;
     letter-spacing: -0.02em;
@@ -171,20 +171,20 @@ mark {
 
 .stat-label {
     display: block;
-    margin-top: 5px;
+    margin-top: 3px;
     font-family: var(--font-ui);
     font-size: 14px;
     font-weight: 600;
-    line-height: 1.3;
+    line-height: 1.25;
     color: var(--ink);
 }
 
 .stat-sub {
     display: block;
-    margin-top: 3px;
+    margin-top: 2px;
     font-family: var(--font-ui);
     font-size: 13px;
-    line-height: 1.35;
+    line-height: 1.3;
     color: var(--muted);
 }
 
@@ -192,9 +192,9 @@ mark {
 .hero-strip {
     display: grid;
     grid-template-columns: minmax(0, 1fr);
-    gap: 10px clamp(16px, 2.6vw, 32px);
-    margin: 22px 0 0;
-    padding: 16px 0 0;
+    gap: 8px clamp(16px, 2.6vw, 32px);
+    margin: 14px 0 0;
+    padding: 12px 0 0;
     border-top: 1px solid var(--grid);
     list-style: none;
 }
@@ -241,7 +241,7 @@ mark {
     display: flex;
     align-items: center;
     gap: 8px;
-    margin-top: 24px;
+    margin-top: 16px;
     font-family: var(--font-ui);
     font-size: 13px;
     font-weight: 600;
@@ -379,7 +379,7 @@ figure.chart figcaption {
 .chart-svg .t-annot {
     paint-order: stroke;
     stroke: var(--bg);
-    stroke-width: 4px;
+    stroke-width: 5px;
     stroke-linejoin: round;
 }
 
@@ -850,6 +850,10 @@ html.js:not(.has-d3) .lab-summary { display: none; }
 
     .hero-title { font-size: clamp(36px, 4.1vw, 52px); }
     .hook { margin-top: 14px; font-size: clamp(19px, 1.9vw, 24px); }
+    .hero-stats { margin-top: 24px; }
+    .stat-card { padding: 14px 16px; }
+    .hero-strip { margin-top: 22px; padding-top: 16px; gap: 10px clamp(16px, 2.6vw, 32px); }
+    .scroll-cue { margin-top: 24px; }
 
     #story {
         display: grid;
