@@ -44,15 +44,29 @@ test.describe('release hygiene', { tag: '@once' }, () => {
     expect(job).toMatch(/if: failure\(\)/);
     expect(job).toMatch(/path: playwright-report/);
     expect(ciJob('validate-html')).toMatch(/vnu\.jar --errors-only index\.html/);
-    expect(ciJob('check-links')).toMatch(/lychee/);
-    expect(ciJob('check-links')).toMatch(/--exclude-path node_modules/);
+    const links = ciJob('check-links');
+    expect(links).toMatch(/lychee/);
+    expect(links).toMatch(/--exclude-path node_modules/);
+    expect(links).toMatch(/--exclude validator\.w3\.org\/nu\//);
+    for (const f of ['index.html', 'README.md', 'CHANGELOG.md', 'HOW-IT-WAS-MADE.md', 'CLAUDE.md', 'GEMINI.md']) {
+      expect(links).toContain(f);
+    }
   });
 
   test('README describes the 4.0.0 page, build and development workflow', () => {
     const readme = read('README.md');
+    const html = read('index.html');
     expect(readme).toMatch(/badge\/version-4\.0\.0-blue/);
     expect(readme).not.toMatch(/version-3\.0\.0/);
     expect(readme).toMatch(/!\[[^\]]+\]\(docs\/screenshot\.png\)/);
+    const step4Match = html.match(/<div class="step" data-step="4"[\s\S]*?<h2>([\s\S]*?)<\/h2>/);
+    expect(step4Match, 'Step 4 heading in index.html').not.toBeNull();
+    const step4Heading = step4Match[1].replace(/<[^>]+>/g, '').trim();
+    const shotAlt = readme.match(/!\[([^\]]+)\]\(docs\/screenshot\.png\)/);
+    expect(shotAlt[1]).toContain(step4Heading);
+    expect(readme).not.toMatch(/\b(Claude Code|Antigravity|Gemini)\b/i);
+    expect(readme).not.toMatch(/claude\.ai\/code/i);
+    expect(readme).not.toContain('Split by condition, the presence effect vanishes');
     expect(readme).toMatch(/^## What You'll See$/m);
     expect(readme).toMatch(/hero strip/i);
     expect(readme).toMatch(/An Open Question[^\n]*(not significantly|raises, not one it confirms|hypothesis)/i);
@@ -71,17 +85,37 @@ test.describe('release hygiene', { tag: '@once' }, () => {
   test('HOW-IT-WAS-MADE names the Newsroom direction and the review → corrections → redesign sequence', () => {
     const how = read('HOW-IT-WAS-MADE.md');
     expect(how).not.toMatch(/warm tones/i);
+    expect(how).not.toMatch(/\b(Claude Code|Antigravity|Gemini)\b/i);
+    expect(how).not.toMatch(/claude\.ai\/code/i);
+    expect(how).not.toMatch(/bar charts?/i);
+    expect(how).not.toMatch(/three-column|3-column/i);
+    expect(how).not.toMatch(/setup,\s*promise,\s*question,\s*twist,\s*open question/i);
     expect(how).toMatch(/\*\*Visual design\.\*\*[^\n]*Newsroom/);
     expect(how).toMatch(/review[^\n]*correction[^\n]*redesign/i);
+    expect(how).toMatch(/\b(?:six|6)\b[^\n]*(?:beats|steps)/i);
+    for (const term of ['108', 'Split', 'Load', /presets?/i, 'readout', 'playbook', /two-column/i]) {
+      expect(how).toMatch(term);
+    }
   });
 
-  test('CLAUDE.md maps the new files and states the data.js rule', () => {
+  test('CLAUDE.md and GEMINI.md map the files, tooling versions and test conventions', () => {
     const doc = read('CLAUDE.md');
-    for (const f of ['`data.js`', '`vendor/', '`tests/', '`package.json`', '`playwright.config.js`']) expect(doc).toContain(f);
+    for (const f of ['`data.js`', '`vendor/', '`tests/', '`package.json`', '`playwright.config.js`', '`GEMINI.md`']) {
+      expect(doc).toContain(f);
+    }
+    expect(doc).toContain('tests/chart-helpers.js');
+    const pwVersion = JSON.parse(read('package.json')).devDependencies['@playwright/test'].replace(/^[\^~]/, '');
+    expect(doc).toContain(pwVersion);
     expect(doc).toMatch(/npx playwright test/);
     expect(doc).toMatch(/npm ci/);
     expect(doc).toMatch(/never hand-edit[^\n]*`data\.js`|`data\.js`[^\n]*never hand-edit/i);
     expect(doc).not.toMatch(/inlined at the top of `script\.js`/);
+
+    const gemini = read('GEMINI.md');
+    expect(gemini).toContain('.step p:not(.step-label)');
+    expect(gemini).not.toContain('.step:not(.step-label)');
+    expect(gemini).toContain('tests/resilience.spec.js');
+    expect(gemini).toContain('2-column');
   });
 
   test('CHANGELOG has a complete 4.0.0 entry and compare link', () => {
@@ -89,8 +123,72 @@ test.describe('release hygiene', { tag: '@once' }, () => {
     const entry = log.match(/^## \[4\.0\.0\][^\n]*\n([\s\S]*?)(?=^## \[)/m);
     expect(entry, '4.0.0 section').not.toBeNull();
     for (const h of ['Added', 'Changed', 'Removed', 'Fixed']) expect(entry[1]).toMatch(new RegExp(`^### ${h}$`, 'm'));
+    expect(entry[1]).toMatch(/two-column|2-column/i);
+    expect(entry[1]).not.toMatch(/three-column|3-column/i);
     expect(log).toContain('[4.0.0]: https://github.com/savvides/dissertation/compare/v3.0.0...v4.0.0');
     expect(log.indexOf('## [4.0.0]')).toBeLessThan(log.indexOf('## [3.0.0]'));
+  });
+
+  test('footer column count in index.html agrees with all project docs', () => {
+    const html = read('index.html');
+    const footer = html.match(/<footer[\s\S]*?<\/footer>/);
+    expect(footer, 'footer element in index.html').not.toBeNull();
+    const cols = footer[0].match(/class="about-column"/g) || [];
+    expect(cols).toHaveLength(2);
+
+    const log4 = read('CHANGELOG.md').match(/^## \[4\.0\.0\][^\n]*\n([\s\S]*?)(?=^## \[)/m)[1];
+    for (const [name, text] of [
+      ['HOW-IT-WAS-MADE.md', read('HOW-IT-WAS-MADE.md')],
+      ['CHANGELOG.md [4.0.0]', log4],
+      ['CLAUDE.md', read('CLAUDE.md')],
+      ['GEMINI.md', read('GEMINI.md')],
+    ]) {
+      expect(text, `${name} should describe a 2-column/two-column footer`).toMatch(/two-column|2-column/i);
+    }
+  });
+
+  test('all relative file and heading-anchor links in project docs resolve', () => {
+    const docs = ['README.md', 'HOW-IT-WAS-MADE.md', 'CHANGELOG.md', 'CLAUDE.md', 'GEMINI.md'];
+    const headingSlugs = (mdText) => {
+      const counts = new Map();
+      const slugs = new Set();
+      let inFence = false;
+      for (const line of mdText.split(/\r?\n/)) {
+        if (/^\s*```/.test(line)) {
+          inFence = !inFence;
+          continue;
+        }
+        if (inFence) continue;
+        const m = line.match(/^#{1,6}\s+(.+?)\s*#*$/);
+        if (!m) continue;
+        const plain = m[1].replace(/\[([^\]]+)\]\([^)]+\)/g, '$1').replace(/[`*_~]/g, '');
+        const base = plain
+          .toLowerCase()
+          .trim()
+          .replace(/[^\p{L}\p{N}\s-]/gu, '')
+          .replace(/\s+/g, '-');
+        const n = counts.get(base) || 0;
+        counts.set(base, n + 1);
+        slugs.add(n === 0 ? base : `${base}-${n}`);
+      }
+      return slugs;
+    };
+
+    for (const doc of docs) {
+      const text = read(doc);
+      for (const m of text.matchAll(/!?\[[^\]]*\]\(([^)]+)\)/g)) {
+        const rawTarget = m[1].trim().split(/\s+/)[0];
+        if (/^(https?:|mailto:|data:)/i.test(rawTarget)) continue;
+        const [filePart, anchor] = rawTarget.split('#');
+        const targetPath = filePart ? path.resolve(ROOT, path.dirname(doc), filePart) : path.join(ROOT, doc);
+        expect(fs.existsSync(targetPath), `${doc} link target "${rawTarget}" missing`).toBe(true);
+        if (anchor) {
+          const targetContent = fs.readFileSync(targetPath, 'utf8');
+          const slugs = headingSlugs(targetContent);
+          expect(slugs.has(anchor), `${doc} anchor "#${anchor}" not found in ${filePart || doc}`).toBe(true);
+        }
+      }
+    }
   });
 
   test('no local planning files are tracked', () => {

@@ -13,9 +13,10 @@ This repository contains Philippos Savvides's 2018 PhD dissertation from Arizona
 - `data.csv` — De-identified study data (n=108): learning gains, condition, presence, cognitive load
 - `litreview.csv` — Consensus search export (249 rows; 219 unique papers published 2021–2025)
 - `README.md` — Project overview, study summary, literature review addendum summary, and methodological retrospective
-- `HOW-IT-WAS-MADE.md` — Process write-up explaining how the interactive site was built with Claude Code
+- `HOW-IT-WAS-MADE.md` — Process write-up explaining how the interactive site was built through conversation with AI coding agents
 - `CHANGELOG.md` — Versioned release notes for the interactive site (Keep a Changelog format, SemVer)
-- `index.html` / `style.css` / `script.js` — Single-page interactive scrollytelling site in the v4.0.0 "Newsroom" design (D3.js v7, vanilla CSS, classic scripts, no build tools). Sections: hero with executive scorecard and 108-mark participant strip (`#hero`), scroll-driven 6-step narrative with a unified 108-dot sticky chart and quick-jump nav (`#story`), personal coda and 3-card decision playbook (`#coda`), interactive 3×3×2 Evidence Lab with guided presets (`#lab`), and balanced portfolio footer with APA citation copy (`#about`). `script.js` must not throw when `window.d3` is missing, and every number it shows comes from `window.STUDY`.
+- `GEMINI.md` — Concise project instructions and invariants for Antigravity/Gemini sessions
+- `index.html` / `style.css` / `script.js` — Single-page interactive scrollytelling site in the v4.0.0 "Newsroom" design (D3.js v7, vanilla CSS, classic scripts, no build tools). Sections: hero with executive scorecard and 108-mark participant strip (`#hero`), scroll-driven 6-step narrative with a unified 108-dot sticky chart and quick-jump nav (`#story`), personal coda and 3-card decision playbook (`#coda`), interactive 3×3×2 Evidence Lab with guided presets (`#lab`), and balanced two-column footer with APA citation copy (`#about`). `script.js` must not throw when `window.d3` is missing, and every number it shows comes from `window.STUDY`.
 - `data.js` — Generated from `data.csv`: `window.STUDY` with the points, labels and precomputed statistics. **Never hand-edit it.** Change `data.csv` or `scripts/csv_to_js.js`, then run `node scripts/csv_to_js.js` (or `npm run data`); a test fails if `data.js` is stale.
 - `vendor/` — `d3.v7.9.0.min.js` (self-hosted, byte-identical to jsDelivr's `d3@7.9.0/dist/d3.min.js`) and its ISC license
 - `scripts/csv_to_js.js` — The generator for `data.js`
@@ -39,13 +40,13 @@ This repository contains Philippos Savvides's 2018 PhD dissertation from Arizona
 ## Key Context
 
 - Never hand-edit `data.js`; it is generated from `data.csv` (see Commands). The page shows only numbers that come from `window.STUDY`
-- Test tags (see `playwright.config.js`): tag pure-Node tests `@once` so they run in one project, not 12; `@file` tests run only in `file-chromium`
+- Test tags (see `playwright.config.js`): tag viewport-independent tests (data, content, contrast, repo) `@once` so they run in one project, not 12; `@file` tests run only in `file-chromium`
 - `tests/repo.spec.js` runs a dead-code sweep: every CSS selector must appear in `index.html` or `script.js`, and every `script.js` function must be referenced. Remove markup, CSS and JS together
 - `tests/repo.spec.js` also pins docs content: the README version badge, the CHANGELOG entry and compare link, and required strings in this file. A version bump means updating that test too
 - Unified 108-dot frame (`script.js`): keep single-scatter (`g.trend-g`, `axis-x[data-id="main"]`) and split-panel (`g.trend-split`, `axis-x[data-id="Low"|"Medium"|"High"]`) namespaces separate so exit transitions never look up split keys in `stats.cor`
 - SVG overlap & layout traps: avoid `stroke-width` halos on tightly stacked `<text>` labels (expands `overlaps()` bboxes), use `<div>` for sub-16px kickers inside `#coda`, keep `--high`/`--medium` text on `#FFFFFF` (not `--surface`), and use `<div role="img">` rather than `<figure role="img">` for inline diagrams so `vnu-jar` passes
 - HTML validation without local JRE: validate `index.html` via `curl -sS -H "Content-Type: text/html; charset=utf-8" -H "User-Agent: dissertation-ci-check" --data-binary @index.html "https://validator.w3.org/nu/?out=json"`
-- Public-page editorial rules: never mention AI tools (Claude Code, Antigravity) or add a "How This Was Made" section on `index.html` (2-column footer: author + data); follow Strunk's *Elements of Style* (active voice, Oxford commas, no dangling modifiers, `mean` over `avg`); sync `tests/content.spec.js` / `tests/lab.spec.js` and rerun `node scripts/screenshots.js` after Step 4 copy edits
+- Public-page editorial rules: never mention AI tools (Claude Code, Antigravity) or add a "How This Was Made" section on `index.html` (2-column footer: author + data); follow Strunk's *Elements of Style* (active voice, Oxford commas, no dangling modifiers, `mean` over `avg`); sync `tests/content.spec.js`, `tests/lab.spec.js`, and `tests/chart-helpers.js` (`HEADLINES`) and rerun `node scripts/screenshots.js` after Step 4 copy edits
 - The original dissertation was published December 2018; all original citations are pre-2019
 - The markdown version preserves the original text verbatim; new content goes only in the addendum section
 - A 2026 reanalysis found the presence-learning correlation is an ecological fallacy (significant overall, non-significant within conditions) — the README retrospective documents this
