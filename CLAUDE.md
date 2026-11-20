@@ -42,6 +42,9 @@ This repository contains Philippos Savvides's 2018 PhD dissertation from Arizona
 - Test tags (see `playwright.config.js`): tag pure-Node tests `@once` so they run in one project, not 12; `@file` tests run only in `file-chromium`
 - `tests/repo.spec.js` runs a dead-code sweep: every CSS selector must appear in `index.html` or `script.js`, and every `script.js` function must be referenced. Remove markup, CSS and JS together
 - `tests/repo.spec.js` also pins docs content: the README version badge, the CHANGELOG entry and compare link, and required strings in this file. A version bump means updating that test too
+- Unified 108-dot frame (`script.js`): keep single-scatter (`g.trend-g`, `axis-x[data-id="main"]`) and split-panel (`g.trend-split`, `axis-x[data-id="Low"|"Medium"|"High"]`) namespaces separate so exit transitions never look up split keys in `stats.cor`
+- SVG overlap & layout traps: avoid `stroke-width` halos on tightly stacked `<text>` labels (expands `overlaps()` bboxes), use `<div>` for sub-16px kickers inside `#coda`, keep `--high`/`--medium` text on `#FFFFFF` (not `--surface`), and use `<div role="img">` rather than `<figure role="img">` for inline diagrams so `vnu-jar` passes
+- HTML validation without local JRE: validate `index.html` via `curl -sS -H "Content-Type: text/html; charset=utf-8" -H "User-Agent: dissertation-ci-check" --data-binary @index.html "https://validator.w3.org/nu/?out=json"`
 - The original dissertation was published December 2018; all original citations are pre-2019
 - The markdown version preserves the original text verbatim; new content goes only in the addendum section
 - A 2026 reanalysis found the presence-learning correlation is an ecological fallacy (significant overall, non-significant within conditions) — the README retrospective documents this
