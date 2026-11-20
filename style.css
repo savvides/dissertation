@@ -835,7 +835,7 @@ html.js:not(.has-d3) .lab-summary { display: none; }
 
 @media (min-width: 900px) {
     .playbook { grid-template-columns: repeat(3, minmax(0, 1fr)); gap: 22px; }
-    .footer-inner { grid-template-columns: repeat(3, minmax(0, 1fr)); gap: clamp(24px, 4vw, 56px); }
+    .footer-inner { grid-template-columns: repeat(2, minmax(0, 1fr)); gap: clamp(24px, 4vw, 56px); }
 }
 
 /* ---------- Wide tier: (min-width: 900px) and not short ---------- */
