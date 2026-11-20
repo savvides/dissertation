@@ -1,6 +1,4 @@
-// Content regression for the page copy, ported from the v2.1.1 check_content.py "page" group,
-// plus landmark/heading structure and a check that numbers in the copy match window.STUDY.
-// Copy is compared on textContent (never innerText, which applies CSS text-transform).
+// Content regression for v4.0.0 page copy, scientific accuracy, and dynamic data matching.
 const { test, expect } = require('@playwright/test');
 const fs = require('fs');
 const path = require('path');
@@ -8,7 +6,7 @@ const path = require('path');
 const ROOT = path.resolve(__dirname, '..');
 const read = (f) => fs.readFileSync(path.join(ROOT, f), 'utf8');
 
-// Phrases removed in v2.1.1 that must never come back.
+// Phrases removed in v2.1.1 that must never return.
 const ABSENT = [
   'procedural knowledge', 'knowledge transfer', 'same lab safety curriculum', 'likely culprit',
   'usually doesn', 'watch the slope flatten', 'The full dataset', 'instead of a classroom',
@@ -16,24 +14,22 @@ const ABSENT = [
   'gained slightly more', "didn't go with learning more",
 ];
 
-// Corrected v2.1.1 copy that must stay verbatim.
+// Core verified claims that must stay present verbatim.
 const PRESENT = [
   'a Labster lab-safety simulation in a VR headset',
   'On a 10-question lab-safety knowledge test',
-  "More immersion didn't produce a detectably larger learning gain",
+  "more immersion didn't produce a detectably larger learning gain",
   'a group-level pattern mistaken for an individual-level one',
   'presence barely tracks learning (r = .16 for VR, −.19 for desktop and .12 for video; none statistically significant)',
   'there was no reliable link between feeling present and learning',
   "didn't learn less (r = .14, not significant)",
-  '05 — An Open Question', 'The Price of Novelty?',
+  '06 / 06 An Open Question',
   'Novelty cost is a hypothesis this study raises, not one it confirms.',
   'In 2018, I reported that presence predicted how well participants scored after training.',
-  "Here, it didn't.", 'one cheap precaution follows',
-  'watch one steep line break into three nearly flat ones',
+  'one cheap precaution follows',
   'The de-identified study data (learning gains, presence, cognitive load)',
 ];
 
-/** "r" formatting used in the copy: two decimals, no leading zero, typographic minus. */
 const fmtR = (r) => {
   const s = Math.abs(r).toFixed(2).replace(/^0/, '');
   return (r < 0 ? '−' : '') + s;
@@ -53,7 +49,7 @@ test.describe('page copy and structure', { tag: '@once' }, () => {
     }
   });
 
-  test('corrected copy is present verbatim', async ({ page }) => {
+  test('verified copy is present verbatim', async ({ page }) => {
     await page.goto('/');
     const text = await pageText(page);
     for (const p of PRESENT) expect(text, `page text missing ${JSON.stringify(p)}`).toContain(p);
@@ -64,17 +60,12 @@ test.describe('page copy and structure', { tag: '@once' }, () => {
     expect(read('index.html')).toContain('rel="icon"');
   });
 
-  test('title, description and social tags are unchanged', async ({ page }) => {
+  test('title, description and social tags match v4.0.0 metadata', async ({ page }) => {
     await page.goto('/');
-    await expect(page).toHaveTitle('Are Virtual Simulations Effective? — Dissertation Results');
+    await expect(page).toHaveTitle('Are Virtual Simulations Effective? — Dissertation Reanalysis');
     const meta = (sel) => page.locator(sel).getAttribute('content');
-    expect(await meta('meta[name="description"]')).toBe(
-      'An interactive scrolltelling presentation of the 2018 VR Learning Dissertation results and 2026 retrospective on presence and cognitive load.'
-    );
-    expect(await meta('meta[property="og:title"]')).toBe('Are Virtual Simulations Effective?');
-    expect(await meta('meta[property="og:description"]')).toBe(
-      'An interactive data story exploring VR, learning, and a surprising statistical fallacy — built from a 2018 PhD study (n=108).'
-    );
+    expect(await meta('meta[name="description"]')).toContain('n=108');
+    expect(await meta('meta[property="og:title"]')).toContain("VR Didn't Beat Desktop");
     expect(await meta('meta[property="og:type"]')).toBe('website');
     expect(await meta('meta[name="twitter:card"]')).toBe('summary_large_image');
     expect(await meta('meta[property="og:image"]')).toBe(
@@ -120,7 +111,7 @@ test.describe('page copy and structure', { tag: '@once' }, () => {
   test('numbers in the copy match window.STUDY', async ({ page }) => {
     await page.goto('/');
     const study = await page.evaluate(() => window.STUDY);
-    const { groups, cor } = study.stats;
+    const { groups, cor, summary } = study.stats;
     const text = await pageText(page);
 
     // Hero strip: labels and mark counts per condition.
@@ -131,7 +122,12 @@ test.describe('page copy and structure', { tag: '@once' }, () => {
       expect(itemText).toBe(`${label} ${groups[g].n}`);
       await expect(item.locator('svg .mk')).toHaveCount(groups[g].n);
     }
-    expect(text).toContain(`${study.points.length} university students`);
+    expect(text).toContain(`${summary.n} university students`);
+
+    // Hero & Step 2: ratio, VR vs desktop t-test, video non-positive count.
+    expect(text).toContain(`${summary.simToLowRatio.toFixed(1)}×`);
+    expect(text).toContain(`d = ${summary.vrVsDesktop.d.toFixed(2)}, p = ${fmtR(summary.vrVsDesktop.p)}`);
+    expect(text).toContain(`${summary.lowNonPositiveGain} of ${groups.Low.n}`);
 
     // Step 4: within-condition r values.
     const lg = cor.learning_gains;
@@ -140,21 +136,14 @@ test.describe('page copy and structure', { tag: '@once' }, () => {
     );
     for (const g of ['High', 'Medium', 'Low']) expect(lg[g].p).toBeGreaterThanOrEqual(0.05);
 
-    // Step 5: cognitive load means.
+    // Step 5: instrument floor & upper-right simulation cluster counts.
+    expect(text).toContain(`${summary.lowZeroPresence} of ${groups.Low.n}`);
+    expect(text).toContain(`${summary.simHighPresence} of ${groups.High.n + groups.Medium.n}`);
+
+    // Step 6: cognitive load means, shared median, and within-VR load-vs-gain r.
     const m = (g) => groups[g].cognitive_load.mean.toFixed(1);
     expect(text).toContain(`(${m('High')}, vs. ${m('Medium')} for desktop and ${m('Low')} for video)`);
-
-    // Step 5: within-VR load vs learning gain is not in stats (it isn't presence-based), so derive it
-    // from the points to confirm the copy's "r = .14".
-    const vr = study.points.filter((p) => p.condition === 'High');
-    const mean = (xs) => xs.reduce((a, b) => a + b, 0) / xs.length;
-    const xs = vr.map((p) => p.cognitive_load);
-    const ys = vr.map((p) => p.learning_gains);
-    const mx = mean(xs);
-    const my = mean(ys);
-    const sxy = xs.reduce((a, x, k) => a + (x - mx) * (ys[k] - my), 0);
-    const sxx = xs.reduce((a, x) => a + (x - mx) ** 2, 0);
-    const syy = ys.reduce((a, y) => a + (y - my) ** 2, 0);
-    expect(text).toContain(`(r = ${fmtR(sxy / Math.sqrt(sxx * syy))}, not significant)`);
+    expect(text).toContain(`median of ${groups.High.cognitive_load.median}`);
+    expect(text).toContain(`(r = ${fmtR(cor.load_vs_gain.High.r)}, not significant)`);
   });
 });

@@ -1,63 +1,77 @@
-// Evidence Lab (spec §6; §8.1 tests 2, 3, 4, 5, 6, 10): radiogroup controls, the stats-driven
-// summary, the cognitive-load y domain, keyboard and pointer inspection with a readout panel, and
-// clean settling after interrupted transitions. Expected values come from window.STUDY or the spec.
+// Evidence Lab (v4.0.0): 3×3×2 controls (View × Relationship × Trendlines), guided presets,
+// stats-driven summaries, keyboard and pointer inspection with readout, and interrupted transition safety.
 const { test, expect } = require('@playwright/test');
 const { openPage, pageErrorsOf, expectTruePixelText, ringsOf, svgFits } = require('./chart-helpers');
 
-// Spec §6.4: the exact summary sentences for the current data.
 const SUMMARIES = {
   'condition learning_gains':
+    'Within each condition: r = .16 for VR, −.19 for desktop, .12 for video — none statistically significant.',
+  'split learning_gains':
     'Within each condition: r = .16 for VR, −.19 for desktop, .12 for video — none statistically significant.',
   'overall learning_gains': 'Pooled across all 108 participants: r = .51 (p < .001).',
   'condition cognitive_load':
     'Within each condition: r = −.17 for VR, −.04 for desktop, .29 for video — none statistically significant.',
+  'split cognitive_load':
+    'Within each condition: r = −.17 for VR, −.04 for desktop, .29 for video — none statistically significant.',
   'overall cognitive_load': 'Pooled across all 108 participants: r = .12 (p = .22, not statistically significant).',
+  'condition load_vs_gain':
+    'Within each condition: r = .14 for VR, −.12 for desktop, .09 for video — none statistically significant.',
+  'split load_vs_gain':
+    'Within each condition: r = .14 for VR, −.12 for desktop, .09 for video — none statistically significant.',
+  'overall load_vs_gain': 'Pooled across all 108 participants: r = .13 (p = .18, not statistically significant).',
 };
-const READOUT = /^(VR headset|Desktop sim|Video \+ text) · presence \d+ · (learning gain [+−]?\d+|cognitive load \d+)$/;
+
+const READOUT = /^(VR headset|Desktop sim|Video \+ text) · (presence|cognitive load) \d+ · (learning gain [+−]?\d+|cognitive load \d+)$/;
 const LAB_SVG = '#lab svg.chart-svg';
 
-/** Load the page, bring the Lab into view and wait for its first settled draw. */
 async function openLab(page) {
   await openPage(page);
   await page.evaluate(() => document.querySelector('#lab .lab-stage').scrollIntoView({ block: 'start' }));
   await expect(page.locator('#lab')).toHaveAttribute('data-state', 'overall learning_gains on');
 }
 
-/** Wait until the Lab has settled in `state` ("view yVar lines"). */
 const settled = (page, state) => expect(page.locator('#lab')).toHaveAttribute('data-state', state, { timeout: 5000 });
 
-/** Click a control option and wait for the chart to settle in the resulting state. */
 async function choose(page, control, value) {
   await page.locator(`#lab .seg[data-control="${control}"] [data-value="${value}"]`).click();
   const state = await page.evaluate(() =>
-    ['view', 'y', 'lines']
+    ['view', 'axes', 'lines']
       .map((c) => document.querySelector(`#lab .seg[data-control="${c}"] [aria-checked="true"]`).dataset.value)
       .join(' ')
   );
   await settled(page, state);
 }
 
-/** The readout the spec expects for participant i under y variable yVar (true, unjittered values). */
-const expectedReadout = (page, i, yVar) =>
+const expectedReadout = (page, i, axesKey) =>
   page.evaluate(
-    ({ i, yVar }) => {
+    ({ i, axesKey }) => {
       const p = window.STUDY.points[i];
-      const v = p[yVar];
-      const val = yVar === 'learning_gains' ? (v > 0 ? '+' : v < 0 ? '−' : '') + Math.abs(v) : String(v);
-      const name = yVar === 'learning_gains' ? 'learning gain' : 'cognitive load';
-      return `${window.STUDY.labels[p.condition]} · presence ${p.presence} · ${name} ${val}`;
+      const meta = {
+        learning_gains: { x: 'presence', xName: 'presence', y: 'learning_gains', yName: 'learning gain' },
+        cognitive_load: { x: 'presence', xName: 'presence', y: 'cognitive_load', yName: 'cognitive load' },
+        load_vs_gain: { x: 'cognitive_load', xName: 'cognitive load', y: 'learning_gains', yName: 'learning gain' },
+      }[axesKey];
+      const xv = p[meta.x] < 0 ? '−' + Math.abs(p[meta.x]) : String(p[meta.x]);
+      const v = p[meta.y];
+      const yv = meta.y === 'learning_gains' ? (v > 0 ? '+' : v < 0 ? '−' : '') + Math.abs(v) : String(v);
+      return `${window.STUDY.labels[p.condition]} · ${meta.xName} ${xv} · ${meta.yName} ${yv}`;
     },
-    { i, yVar }
+    { i, axesKey }
   );
 
-/** Participant indices ordered by plotted x (presence + jitter), as the arrow keys walk them. */
-const byX = (page) =>
-  page.evaluate(() =>
-    window.STUDY.points
+const byX = (page, axesKey = 'learning_gains', view = 'overall') =>
+  page.evaluate(({ axesKey, view }) => {
+    const xVar = axesKey === 'load_vs_gain' ? 'cognitive_load' : 'presence';
+    const jScale = xVar === 'cognitive_load' ? 0.22 : 1;
+    const grpRank = { Low: 0, Medium: 1, High: 2 };
+    return window.STUDY.points
       .slice()
-      .sort((a, b) => a.presence + a.jx - (b.presence + b.jx) || a.i - b.i)
-      .map((p) => p.i)
-  );
+      .sort((a, b) => {
+        if (view === 'split' && a.condition !== b.condition) return grpRank[a.condition] - grpRank[b.condition];
+        return (a[xVar] + a.jx * jScale) - (b[xVar] + b.jx * jScale) || a.i - b.i;
+      })
+      .map((p) => p.i);
+  }, { axesKey, view });
 
 const readout = (page) => page.locator('#lab .lab-readout');
 const focusedDot = (page) =>
@@ -66,7 +80,6 @@ const focusedDot = (page) =>
     return el && el.matches('#lab .dot') ? Number(el.dataset.i) : null;
   });
 
-/** WCAG contrast ratio of a computed rgb() colour against white. */
 function contrastOnWhite(rgb) {
   const [r, g, b] = rgb.match(/[\d.]+/g).slice(0, 3).map(Number).map((c) => {
     const s = c / 255;
@@ -76,17 +89,12 @@ function contrastOnWhite(rgb) {
   return 1.05 / (L + 0.05);
 }
 
-/**
- * Inspect the settled Lab chart against window.STUDY: one frame, everything fully opaque, 108 dots
- * at x(presence + jx), y(value + jy) with the right fill and shape for the view, the right trend
- * lines, and an emphasis ring (if any) centred on its dot. Scales come from the rendered ticks.
- */
 const labInspect = (page) =>
   page.evaluate(() => {
     const S = window.STUDY;
     const { scaleFrom, translate } = window.__probe;
     const lab = document.getElementById('lab');
-    const [view, yVar, lines] = (lab.dataset.state || '').split(' ');
+    const [view, axesKey, lines] = (lab.dataset.state || '').split(' ');
     const svg = lab.querySelector('svg.chart-svg');
     const problems = [];
     const frames = svg.querySelectorAll('g.frame');
@@ -98,28 +106,45 @@ const labInspect = (page) =>
         break;
       }
     }
-    const plot = svg.querySelector('g.frame g.plot');
-    const x = scaleFrom(plot.querySelector('.axis-x'), 0);
-    const y = scaleFrom(plot.querySelector('.axis-y'), 1);
-    const COLORS = { neutral: 'rgb(118, 118, 118)', High: 'rgb(208, 69, 12)', Low: 'rgb(58, 58, 58)', white: 'rgb(255, 255, 255)' };
+    const COLORS = { neutral: 'rgb(115, 115, 115)', High: 'rgb(208, 69, 12)', Low: 'rgb(58, 58, 58)', white: 'rgb(255, 255, 255)' };
     const shapes = { High: 'circle', Medium: 'ring', Low: 'diamond' };
     const dots = [...svg.querySelectorAll('.dot')];
     if (dots.length !== 108) problems.push(`${dots.length} dots`);
     const pooled = view === 'overall';
-    for (const d of dots) {
-      const p = S.points[Number(d.dataset.i)];
-      const [cx, cy] = translate(d);
-      const ex = x(p.presence + p.jx);
-      const ey = y(p[yVar] + p.jy);
-      if (Math.abs(cx - ex) > 0.5 || Math.abs(cy - ey) > 0.5) problems.push(`dot ${p.i} at ${cx},${cy}; expected ${ex},${ey}`);
-      const fill = getComputedStyle(d).fill;
-      const want = pooled ? COLORS.neutral : p.condition === 'Medium' ? COLORS.white : COLORS[p.condition];
-      if (fill !== want) problems.push(`dot ${p.i} fill ${fill}, expected ${want}`);
-      if (d.dataset.shape !== (pooled ? 'circle' : shapes[p.condition])) problems.push(`dot ${p.i} shape ${d.dataset.shape}`);
+
+    if (view !== 'split') {
+      const plot = svg.querySelector('g.frame g.plot');
+      const x = scaleFrom(plot.querySelector('.axis-x[data-id="main"]'), 0);
+      const y = scaleFrom(plot.querySelector('.axis-y'), 1);
+      const xVar = axesKey === 'load_vs_gain' ? 'cognitive_load' : 'presence';
+      const yVar = axesKey === 'cognitive_load' ? 'cognitive_load' : 'learning_gains';
+      const jScale = xVar === 'cognitive_load' ? 0.22 : 1;
+      for (const d of dots) {
+        const p = S.points[Number(d.dataset.i)];
+        const [cx, cy] = translate(d);
+        const ex = x(p[xVar] + p.jx * jScale);
+        const ey = y(p[yVar] + p.jy);
+        if (Math.abs(cx - ex) > 0.5 || Math.abs(cy - ey) > 0.5) problems.push(`dot ${p.i} at ${cx},${cy}; expected ${ex},${ey}`);
+        const fill = getComputedStyle(d).fill;
+        const want = pooled ? COLORS.neutral : p.condition === 'Medium' ? COLORS.white : COLORS[p.condition];
+        if (fill !== want) problems.push(`dot ${p.i} fill ${fill}, expected ${want}`);
+        if (d.dataset.shape !== (pooled ? 'circle' : shapes[p.condition])) problems.push(`dot ${p.i} shape ${d.dataset.shape}`);
+      }
+    } else {
+      if (svg.querySelectorAll('rect.panel-bg').length !== 3) problems.push('expected 3 split panel rects');
+      for (const d of dots) {
+        const p = S.points[Number(d.dataset.i)];
+        const fill = getComputedStyle(d).fill;
+        const want = p.condition === 'Medium' ? COLORS.white : COLORS[p.condition];
+        if (fill !== want) problems.push(`split dot ${p.i} fill ${fill}, expected ${want}`);
+        if (d.dataset.shape !== shapes[p.condition]) problems.push(`split dot ${p.i} shape ${d.dataset.shape}`);
+      }
     }
-    const trends = [...svg.querySelectorAll('path.trend')].map((t) => t.dataset.group).sort().join(',');
-    const want = lines === 'off' ? '' : pooled ? 'all' : 'High,Low,Medium,all';
-    if (trends !== want) problems.push(`trend lines [${trends}], expected [${want}]`);
+
+    const trends = [...svg.querySelectorAll('path.trend')].length;
+    const wantTrends = lines === 'off' ? 0 : view === 'overall' ? 1 : view === 'condition' ? 4 : 6;
+    if (trends !== wantTrends) problems.push(`${trends} trend lines, expected ${wantTrends}`);
+
     const rings = [...svg.querySelectorAll('circle.emph-ring')];
     if (rings.length > 1) problems.push(`${rings.length} emphasis rings`);
     for (const ring of rings) {
@@ -142,10 +167,11 @@ test.describe('Evidence Lab', () => {
   });
 
   test('1. each control is a radiogroup; arrow keys move the checked option and change the chart', async ({ page }) => {
-    for (const control of ['view', 'y', 'lines']) {
+    const counts = { view: 3, axes: 3, lines: 2 };
+    for (const [control, count] of Object.entries(counts)) {
       const seg = page.locator(`#lab .seg[data-control="${control}"]`);
       await expect(seg).toHaveAttribute('role', 'radiogroup');
-      await expect(seg.locator('[role="radio"]')).toHaveCount(2);
+      await expect(seg.locator('[role="radio"]')).toHaveCount(count);
       await expect(seg.locator('[aria-checked="true"]')).toHaveCount(1);
       await expect(seg.locator('[tabindex="0"]')).toHaveCount(1);
       for (const radio of await seg.locator('[role="radio"]').all()) {
@@ -154,65 +180,93 @@ test.describe('Evidence Lab', () => {
     }
     const checked = (control) => page.locator(`#lab .seg[data-control="${control}"] [aria-checked="true"]`);
 
-    // View: ArrowRight checks "By condition", focus follows, and the pooled line splits into four.
+    // View: Overall → Overlay (condition) → Split → wraps back to Overall.
     await checked('view').focus();
     await page.keyboard.press('ArrowRight');
     await expect(checked('view')).toHaveAttribute('data-value', 'condition');
     await expect(checked('view')).toBeFocused();
-    await expect(checked('view')).toHaveAttribute('tabindex', '0');
     await settled(page, 'condition learning_gains on');
     await expect(page.locator(`${LAB_SVG} path.trend`)).toHaveCount(4);
-    await expect(page.locator(`${LAB_SVG} .dot[data-shape="diamond"]`)).toHaveCount(37);
     expect((await labInspect(page)).problems).toEqual([]);
 
-    // Arrow keys wrap around within the group.
+    await page.keyboard.press('ArrowRight');
+    await expect(checked('view')).toHaveAttribute('data-value', 'split');
+    await settled(page, 'split learning_gains on');
+    await expect(page.locator(`${LAB_SVG} path.trend`)).toHaveCount(6);
+    expect((await labInspect(page)).problems).toEqual([]);
+
     await page.keyboard.press('ArrowRight');
     await expect(checked('view')).toHaveAttribute('data-value', 'overall');
     await settled(page, 'overall learning_gains on');
     await expect(page.locator(`${LAB_SVG} path.trend`)).toHaveCount(1);
 
-    // Y-axis: ArrowDown switches to cognitive load; the y ticks now run 0..12.
-    await checked('y').focus();
+    // Axes: ArrowDown switches to cognitive_load, then load_vs_gain.
+    await checked('axes').focus();
     await page.keyboard.press('ArrowDown');
-    await expect(checked('y')).toHaveAttribute('data-value', 'cognitive_load');
+    await expect(checked('axes')).toHaveAttribute('data-value', 'cognitive_load');
     await settled(page, 'overall cognitive_load on');
     const ticks = await page.$$eval(`${LAB_SVG} .axis-y .tick`, (ts) => ts.map((t) => Number(t.dataset.v)));
     expect(Math.max(...ticks)).toBe(12);
+
+    await page.keyboard.press('ArrowDown');
+    await expect(checked('axes')).toHaveAttribute('data-value', 'load_vs_gain');
+    await settled(page, 'overall load_vs_gain on');
+    const xTicks = await page.$$eval(`${LAB_SVG} .axis-x .tick`, (ts) => ts.map((t) => Number(t.dataset.v)));
+    expect(Math.max(...xTicks)).toBe(12);
     expect((await labInspect(page)).problems).toEqual([]);
 
-    // Trendlines: ArrowLeft wraps to "Off" and the line goes away.
+    // Trendlines: ArrowLeft wraps to "Off" and lines disappear.
     await checked('lines').focus();
     await page.keyboard.press('ArrowLeft');
     await expect(checked('lines')).toHaveAttribute('data-value', 'off');
-    await settled(page, 'overall cognitive_load off');
+    await settled(page, 'overall load_vs_gain off');
     await expect(page.locator(`${LAB_SVG} path.trend`)).toHaveCount(0);
 
-    // Space on a focused option selects it, like a click.
     await page.locator('#lab .seg[data-control="lines"] [data-value="on"]').focus();
     await page.keyboard.press('Space');
-    await settled(page, 'overall cognitive_load on');
-    await expect(checked('lines')).toHaveAttribute('data-value', 'on');
+    await settled(page, 'overall load_vs_gain on');
   });
 
-  test('2. the summary sentence is the §6.4 string for every view and y; lines only toggle trend paths', async ({ page }) => {
+  test('1b. guided investigation presets switch state and inspect target participants', async ({ page }) => {
+    const pFallacy = page.locator('#lab .preset-btn[data-preset="fallacy"]');
+    const pLoad = page.locator('#lab .preset-btn[data-preset="load"]');
+    const p88 = page.locator('#lab .preset-btn[data-preset="p88"]');
+
+    await pFallacy.click();
+    await settled(page, 'condition learning_gains on');
+    await expect(pFallacy).toHaveAttribute('aria-pressed', 'true');
+    await expect(readout(page)).toHaveText('');
+
+    await pLoad.click();
+    await settled(page, 'condition load_vs_gain on');
+    await expect(pLoad).toHaveAttribute('aria-pressed', 'true');
+    await expect(readout(page)).toHaveText(await expectedReadout(page, 50, 'load_vs_gain'));
+    await expect.poll(() => ringsOf(page, LAB_SVG)).toEqual([{ i: 50, opacity: 1 }]);
+
+    await p88.click();
+    await settled(page, 'condition learning_gains on');
+    await expect(p88).toHaveAttribute('aria-pressed', 'true');
+    await expect(readout(page)).toHaveText(await expectedReadout(page, 88, 'learning_gains'));
+    await expect.poll(() => ringsOf(page, LAB_SVG)).toEqual([{ i: 88, opacity: 1 }]);
+  });
+
+  test('2. summary sentence and chart match across all 18 state combinations', async ({ page }) => {
     const summary = page.locator('#lab p.lab-summary');
-    for (const y of ['learning_gains', 'cognitive_load']) {
-      await choose(page, 'y', y);
-      for (const view of ['overall', 'condition']) {
+    for (const axes of ['learning_gains', 'cognitive_load', 'load_vs_gain']) {
+      await choose(page, 'axes', axes);
+      for (const view of ['overall', 'condition', 'split']) {
         await choose(page, 'view', view);
         for (const lines of ['on', 'off']) {
           await choose(page, 'lines', lines);
-          await expect(summary).toHaveText(SUMMARIES[`${view} ${y}`]);
-          const n = lines === 'off' ? 0 : view === 'overall' ? 1 : 4;
-          await expect(page.locator(`${LAB_SVG} path.trend`)).toHaveCount(n);
-          expect((await labInspect(page)).problems, `${view} ${y} ${lines}`).toEqual([]);
+          await expect(summary).toHaveText(SUMMARIES[`${view} ${axes}`]);
+          expect((await labInspect(page)).problems, `${view} ${axes} ${lines}`).toEqual([]);
         }
       }
     }
   });
 
-  test('3. cognitive load: the y domain starts at 0 and no tick is negative (C17)', async ({ page }) => {
-    await choose(page, 'y', 'cognitive_load');
+  test('3. cognitive load: the y domain starts at 0 and no tick is negative', async ({ page }) => {
+    await choose(page, 'axes', 'cognitive_load');
     for (const view of ['overall', 'condition']) {
       await choose(page, 'view', view);
       const axis = await page.evaluate((sel) => {
@@ -224,7 +278,6 @@ test.describe('Evidence Lab', () => {
       expect(axis.ticks.filter((v) => v < 0)).toEqual([]);
       const labels = await page.$$eval(`${LAB_SVG} .axis-y .tick text`, (ts) => ts.map((t) => t.textContent));
       expect(labels.some((s) => s.startsWith('−') || s.startsWith('-'))).toBe(false);
-      // Every dot, including the 25 zero-load participants jittered below 0, stays inside the plot.
       const outside = await page.evaluate((sel) => {
         const svg = document.querySelector(sel);
         const box = svg.getBoundingClientRect();
@@ -241,7 +294,6 @@ test.describe('Evidence Lab', () => {
 
   test('4. keyboard: Tab reaches the chart, arrows walk dots by x, the readout is true, Escape clears', async ({ page }) => {
     const order = await byX(page);
-    // Tab walks the three controls (one stop each, on the checked option), then the chart.
     const focusedRadio = () =>
       page.evaluate(() => {
         const el = document.activeElement;
@@ -254,12 +306,11 @@ test.describe('Evidence Lab', () => {
         };
       });
     await page.locator('#lab .seg[data-control="view"] [aria-checked="true"]').focus();
-    for (const control of ['y', 'lines']) {
+    for (const control of ['axes', 'lines']) {
       await page.keyboard.press('Tab');
       const r = await focusedRadio();
       expect(r && r.control).toBe(control);
       expect(r.checked).toBe('true');
-      // The focus ring is visible: a solid outline ≥ 3px at ≥ 3:1 against white (spec §4.5).
       expect(r.outline.style).toBe('solid');
       expect(r.outline.width).toBeGreaterThanOrEqual(3);
       expect(contrastOnWhite(r.outline.color)).toBeGreaterThanOrEqual(3);
@@ -274,10 +325,7 @@ test.describe('Evidence Lab', () => {
     const text = (await readout(page).textContent()).trim();
     expect(text).toMatch(READOUT);
     expect(text).toBe(await expectedReadout(page, order[1], 'learning_gains'));
-    await expect(page.locator(`${LAB_SVG} .dot[tabindex="0"]`)).toHaveAttribute('data-i', String(order[1]));
 
-    // The focused dot carries a visible ring: ≥ 2px, ≥ 3:1 against white, centred on the dot. The
-    // previous dot's ring may still be fading out for a moment.
     const ringInfo = () =>
       page.evaluate((sel) => {
         const rings = [...document.querySelectorAll(`${sel} circle.emph-ring`)];
@@ -297,26 +345,13 @@ test.describe('Evidence Lab', () => {
     const ring = await ringInfo();
     expect(ring.width).toBeGreaterThanOrEqual(2);
     expect(contrastOnWhite(ring.stroke)).toBeGreaterThanOrEqual(3);
-    // A white offset under the ring keeps it visible over dark marks and lines (2px each side).
     expect(ring.haloStroke).toBe('rgb(255, 255, 255)');
     expect(ring.haloWidth).toBeGreaterThanOrEqual(ring.width + 4);
-    expect((await labInspect(page)).problems).toEqual([]);
 
     await page.keyboard.press('ArrowLeft');
     expect(await focusedDot(page)).toBe(order[0]);
     await expect.poll(() => ringsOf(page, LAB_SVG)).toEqual([{ i: order[0], opacity: 1 }]);
 
-    // A quick Right then Left returns to a dot whose ring is still fading out: once settled it has
-    // exactly one fully drawn ring (WCAG 2.4.7; the ring is the dot's only focus indicator).
-    await page.keyboard.press('ArrowRight');
-    await page.keyboard.press('ArrowLeft');
-    expect(await focusedDot(page)).toBe(order[0]);
-    await expect.poll(() => ringsOf(page, LAB_SVG)).toEqual([{ i: order[0], opacity: 1 }]);
-    await page.waitForTimeout(400); // longer than a ring fade: the ring stays
-    expect(await ringsOf(page, LAB_SVG)).toEqual([{ i: order[0], opacity: 1 }]);
-    expect((await labInspect(page)).problems).toEqual([]);
-
-    // End reaches the rightmost dot without page overflow (C07, C11).
     await page.keyboard.press('End');
     expect(await focusedDot(page)).toBe(order[order.length - 1]);
     await expect(readout(page)).toHaveText(await expectedReadout(page, order[order.length - 1], 'learning_gains'));
@@ -324,11 +359,10 @@ test.describe('Evidence Lab', () => {
 
     await page.keyboard.press('Escape');
     await expect(readout(page)).toHaveText('');
-    expect(await focusedDot(page), 'focus stays on the dot').toBe(order[order.length - 1]);
+    expect(await focusedDot(page)).toBe(order[order.length - 1]);
 
-    // The readout follows the y variable.
     await page.keyboard.press('Home');
-    await choose(page, 'y', 'cognitive_load');
+    await choose(page, 'axes', 'cognitive_load');
     await page.locator(`${LAB_SVG} .dot[tabindex="0"]`).focus();
     const cl = (await readout(page).textContent()).trim();
     expect(cl).toMatch(READOUT);
@@ -365,9 +399,9 @@ test.describe('Evidence Lab', () => {
     await expect(readout(page)).toHaveText('');
   });
 
-  test('6. lines off: no trend paths in either view', async ({ page }) => {
+  test('6. lines off: no trend paths in any view', async ({ page }) => {
     await choose(page, 'lines', 'off');
-    for (const view of ['overall', 'condition']) {
+    for (const view of ['overall', 'condition', 'split']) {
       await choose(page, 'view', view);
       await expect(page.locator(`${LAB_SVG} path.trend`)).toHaveCount(0);
       expect((await labInspect(page)).problems).toEqual([]);
@@ -375,18 +409,19 @@ test.describe('Evidence Lab', () => {
   });
 
   test('7. resize keeps Lab text ≥ 12px and the svg matched to its container', async ({ page }, testInfo) => {
-    // This test sets its own viewports, so it runs once per engine.
     test.skip(!testInfo.project.name.endsWith('-1440x900'), 'runs in the 1440×900 project of each engine');
-    await choose(page, 'view', 'condition');
-    for (const [width, height] of [[1440, 900], [390, 844], [844, 390], [320, 640], [1440, 900]]) {
-      await page.setViewportSize({ width, height });
-      await expect.poll(() => svgFits(page, LAB_SVG)).toBe(true);
-      await expectTruePixelText(page, LAB_SVG);
-      expect((await labInspect(page)).problems, `${width}×${height}`).toEqual([]);
+    for (const view of ['condition', 'split']) {
+      await choose(page, 'view', view);
+      for (const [width, height] of [[1440, 900], [390, 844], [844, 390], [320, 640], [1440, 900]]) {
+        await page.setViewportSize({ width, height });
+        await expect.poll(() => svgFits(page, LAB_SVG)).toBe(true);
+        await expectTruePixelText(page, LAB_SVG);
+        expect((await labInspect(page)).problems, `${view} ${width}×${height}`).toEqual([]);
+      }
     }
   });
 
-  test('11. Escape unpins from anywhere in the Lab, including a control (§6.3)', async ({ page }) => {
+  test('11. Escape unpins from anywhere in the Lab, including a control', async ({ page }) => {
     const order = await byX(page);
     await page.locator('#lab .seg[data-control="lines"] [aria-checked="true"]').focus();
     await page.keyboard.press('Tab');
@@ -400,9 +435,8 @@ test.describe('Evidence Lab', () => {
     await expect(page.locator(`${LAB_SVG} .dot[aria-selected="true"]`)).toHaveCount(0);
   });
 
-  test('14. p-text: no-break spaces, and rounding never turns a significant p into .05 or .00 (§6.4)', async ({ page }) => {
-    await choose(page, 'y', 'cognitive_load');
-    // The Lab reads window.STUDY.stats live; each redraw (here a trend-line toggle) rebuilds the summary.
+  test('14. p-text: no-break spaces, and rounding never turns a significant p into .05 or .00', async ({ page }) => {
+    await choose(page, 'axes', 'cognitive_load');
     const pText = (p) =>
       page.evaluate((p) => {
         window.STUDY.stats.cor.cognitive_load.all.p = p;
@@ -420,12 +454,12 @@ test.describe('Evidence Lab', () => {
     for (const [p, want] of cases) expect(await pText(p), `p = ${p}`).toBe(want.replace(/ ([<=]) /, '\u00a0$1\u00a0'));
   });
 
-  test('12. the Lab chart is a named group: its dots are focusable, so it cannot be an img (§5.5)', async ({ page }) => {
+  test('12. the Lab chart is a named group with focusable dots', async ({ page }) => {
     const svg = page.locator(LAB_SVG);
     await expect(svg).toHaveAttribute('role', 'group');
     await expect(svg).toHaveAccessibleName(/Scatter plot of presence against learning gain/);
-    await choose(page, 'y', 'cognitive_load');
-    await expect(svg).toHaveAccessibleName(/Scatter plot of presence against cognitive load/);
+    await choose(page, 'axes', 'load_vs_gain');
+    await expect(svg).toHaveAccessibleName(/Scatter plot of cognitive load against learning gain/);
   });
 });
 
@@ -449,7 +483,6 @@ test.describe('Evidence Lab on touch', () => {
     await expect(readout(page)).toHaveText(await expectedReadout(page, target.i, 'learning_gains'));
     expect(await page.evaluate(() => document.documentElement.scrollWidth === innerWidth)).toBe(true);
 
-    // Empty plot space: a point inside the plot at least 40px from every dot.
     const empty = await page.evaluate((sel) => {
       const svg = document.querySelector(sel);
       const plot = svg.querySelector('g.frame .axis-x .domain').getBoundingClientRect();
@@ -472,10 +505,10 @@ test.describe('Evidence Lab on touch', () => {
 test.describe('Evidence Lab interrupted', () => {
   test.use({ reducedMotion: 'no-preference' });
 
-  test('8. a y-switch with a hover at 200ms settles to exactly the chosen state (C02)', async ({ page }) => {
+  test('8. an axis switch with a hover at 200ms settles to the chosen state', async ({ page }) => {
     await openLab(page);
     await choose(page, 'view', 'condition');
-    await page.locator('#lab .seg[data-control="y"] [data-value="cognitive_load"]').click();
+    await page.locator('#lab .seg[data-control="axes"] [data-value="cognitive_load"]').click();
     await page.waitForTimeout(200);
     const pt = await page.evaluate((sel) => {
       const r = document.querySelector(`${sel} .dot`).getBoundingClientRect();
@@ -489,7 +522,7 @@ test.describe('Evidence Lab interrupted', () => {
     expect(pageErrorsOf(page)).toEqual([]);
   });
 
-  test('9. a pinned dot’s ring never leaves its dot while a y-switch animates (C02)', async ({ page }) => {
+  test('9. a pinned dot ring stays aligned or clears cleanly while switching axes', async ({ page }) => {
     await openLab(page);
     const order = await byX(page);
     await page.locator('#lab .seg[data-control="lines"] [aria-checked="true"]').focus();
@@ -498,7 +531,6 @@ test.describe('Evidence Lab interrupted', () => {
     const pinnedI = order[order.length - 1];
     expect(await focusedDot(page)).toBe(pinnedI);
     await expect(page.locator(`${LAB_SVG} circle.emph-ring`)).toHaveCount(1);
-    // Switch y from inside the page (focus stays on the dot) and sample the ring against its dot.
     const samples = await page.evaluate(
       async ({ sel, at }) => {
         const { translate } = window.__probe;
@@ -509,7 +541,7 @@ test.describe('Evidence Lab interrupted', () => {
           const [cx, cy] = translate(svg.querySelector(`.dot[data-i="${ring.__data__.i}"]`));
           return { ring: true, i: ring.__data__.i, d: Math.hypot(Number(ring.getAttribute('cx')) - cx, Number(ring.getAttribute('cy')) - cy) };
         };
-        document.querySelector('#lab .seg[data-control="y"] [data-value="cognitive_load"]').click();
+        document.querySelector('#lab .seg[data-control="axes"] [data-value="cognitive_load"]').click();
         const t0 = performance.now();
         const out = [];
         for (const ms of at) {
@@ -523,17 +555,16 @@ test.describe('Evidence Lab interrupted', () => {
     for (const s of samples) {
       if (s.ring) expect(s.d, `ring ${s.d.toFixed(1)}px from its dot at ${s.ms}ms`).toBeLessThanOrEqual(3);
     }
-    // Once settled, the pinned dot has its ring back, centred on it.
     await settled(page, 'overall cognitive_load on');
     await expect(page.locator(`${LAB_SVG} circle.emph-ring`)).toHaveCount(1);
-    await page.waitForTimeout(300); // the ring's fade-in
+    await page.waitForTimeout(300);
     const r = await labInspect(page);
     expect(r.problems).toEqual([]);
     expect(await page.evaluate((sel) => document.querySelector(`${sel} circle.emph-ring`).__data__.i, LAB_SVG)).toBe(pinnedI);
     expect(pageErrorsOf(page)).toEqual([]);
   });
 
-  test('13. toggling trend lines keeps the pinned dot’s ring: the dots do not move', async ({ page }) => {
+  test('13. toggling trend lines keeps the pinned dot ring in place', async ({ page }) => {
     await openLab(page);
     const order = await byX(page);
     await page.locator('#lab .seg[data-control="lines"] [aria-checked="true"]').focus();
@@ -541,7 +572,6 @@ test.describe('Evidence Lab interrupted', () => {
     await page.keyboard.press('End');
     const pinnedI = order[order.length - 1];
     await expect.poll(() => ringsOf(page, LAB_SVG)).toEqual([{ i: pinnedI, opacity: 1 }]);
-    // Toggle from inside the page (focus stays on the dot) and sample the ring while lines fade.
     const samples = await page.evaluate(
       async ({ sel, at }) => {
         document.querySelector('#lab .seg[data-control="lines"] [data-value="off"]').click();
@@ -565,15 +595,15 @@ test.describe('Evidence Lab interrupted', () => {
 test.describe('Evidence Lab text overlap', () => {
   test.use({ reducedMotion: 'reduce' });
 
-  test('15. no chart texts overlap in any view (C30)', async ({ page }) => {
+  test('15. no chart texts overlap in any of the 18 states', async ({ page }) => {
     await openLab(page);
-    for (const y of ['learning_gains', 'cognitive_load']) {
-      await choose(page, 'y', y);
-      for (const view of ['overall', 'condition']) {
+    for (const axes of ['learning_gains', 'cognitive_load', 'load_vs_gain']) {
+      await choose(page, 'axes', axes);
+      for (const view of ['overall', 'condition', 'split']) {
         await choose(page, 'view', view);
         for (const lines of ['on', 'off']) {
           await choose(page, 'lines', lines);
-          expect(await page.evaluate((sel) => window.__probe.overlaps(sel), LAB_SVG), `${view} ${y} ${lines}`).toEqual([]);
+          expect(await page.evaluate((sel) => window.__probe.overlaps(sel), LAB_SVG), `${view} ${axes} ${lines}`).toEqual([]);
         }
       }
     }

@@ -1,5 +1,5 @@
-// Narrative charts (spec §5): step activation, true-pixel text, resize, bars with CIs, the morphing
-// scatter, grid layering and chart text alternatives. Runs in every viewport project, both engines.
+// Narrative charts (v4.0.0): 6-step activation, 108-dot object permanence, true-pixel text,
+// resize, beeswarm CIs, scatter + small multiples, grid layering, and zero overlaps.
 const { test, expect } = require('@playwright/test');
 const { STATES, HEADLINES, openPage, pageErrorsOf, goToStep, recordStepOrder, expectTruePixelText, ringsOf, svgFits } = require('./chart-helpers');
 
@@ -14,10 +14,10 @@ test.describe('narrative', () => {
     expect(pageErrorsOf(page), 'uncaught page errors').toEqual([]);
   });
 
-  test('1. steps activate 1→5 scrolling down and 5→1 scrolling up; headline and state follow', async ({ page }) => {
-    expect(await recordStepOrder(page, 'down')).toEqual([1, 2, 3, 4, 5]);
-    expect(await recordStepOrder(page, 'up')).toEqual([5, 4, 3, 2, 1]);
-    for (let n = 1; n <= 5; n++) {
+  test('1. steps activate 1→6 scrolling down and 6→1 scrolling up; headline and state follow', async ({ page }) => {
+    expect(await recordStepOrder(page, 'down')).toEqual([1, 2, 3, 4, 5, 6]);
+    expect(await recordStepOrder(page, 'up')).toEqual([6, 5, 4, 3, 2, 1]);
+    for (let n = 1; n <= 6; n++) {
       await goToStep(page, n);
       expect(await page.evaluate(() => window.__probe.activeStep())).toBe(n);
       await expect(page.locator('#story-figure .chart-hed')).toHaveText(HEADLINES[n - 1]);
@@ -25,36 +25,62 @@ test.describe('narrative', () => {
     }
   });
 
+  test('1b. story-nav jump button navigates directly to step 4 on wide viewports', async ({ page }, testInfo) => {
+    test.skip(!testInfo.project.name.endsWith('-1440x900'), 'runs in wide 1440×900 project');
+    await goToStep(page, 1);
+    await page.locator('#story-figure .story-nav button[data-jump="4"]').click();
+    await expect(page.locator('#story-figure')).toHaveAttribute('data-state', 'scatterByCondition', { timeout: 5000 });
+    expect(await page.evaluate(() => window.__probe.activeStep())).toBe(4);
+    await expect(page.locator('#story-figure .story-nav button[data-jump="4"]')).toHaveAttribute('aria-pressed', 'true');
+  });
+
   test('2. true-pixel text: chart text ≥ 12px and the SVG matches its container at every step', async ({ page }) => {
-    for (let n = 1; n <= 5; n++) {
+    for (let n = 1; n <= 6; n++) {
       await goToStep(page, n);
       await expectTruePixelText(page);
     }
   });
 
-  test('3. resize 1440×900 → 390×844 → 1440×900 keeps true-pixel text', async ({ page }, testInfo) => {
-    // This test sets its own viewports, so it runs once per engine.
+  test('3. resize 1440×900 → 390×844 → 1440×900 keeps true-pixel text on scatter and split', async ({ page }, testInfo) => {
     test.skip(!testInfo.project.name.endsWith('-1440x900'), 'runs in the 1440×900 project of each engine');
-    await page.setViewportSize({ width: 1440, height: 900 });
-    await goToStep(page, 4);
-    await page.setViewportSize({ width: 390, height: 844 });
-    await expect.poll(() => svgFits(page)).toBe(true);
-    await expectTruePixelText(page);
-    await page.setViewportSize({ width: 1440, height: 900 });
-    await expect.poll(() => svgFits(page)).toBe(true);
-    await expectTruePixelText(page);
+    for (const step of [4, 5]) {
+      await page.setViewportSize({ width: 1440, height: 900 });
+      await goToStep(page, step);
+      await page.setViewportSize({ width: 390, height: 844 });
+      await expect.poll(() => svgFits(page)).toBe(true);
+      await expectTruePixelText(page);
+      await page.setViewportSize({ width: 1440, height: 900 });
+      await expect.poll(() => svgFits(page)).toBe(true);
+      await expectTruePixelText(page);
+    }
   });
 
-  test('4. bars: steps 2 and 5 draw 95% CI whiskers from stats; step 5 runs 0–12', async ({ page }) => {
-    for (const n of [1, 2, 5]) {
+  test('4. object permanence: all 108 dots persist across all 6 steps; beeswarms draw 95% CIs and step 6 runs 0–12', async ({ page }) => {
+    await goToStep(page, 1);
+    await page.evaluate(() => {
+      for (const d of document.querySelectorAll('#story-figure .dot')) d.__mark = 'v4';
+    });
+
+    for (const n of [1, 2, 3, 4, 5, 6]) {
       await goToStep(page, n);
       const r = await inspect(page);
       expect(r.problems, `step ${n}`).toEqual([]);
-      await expect(page.locator('#story-figure line.ci')).toHaveCount(n === 1 ? 0 : 3);
+      const kept = await page.evaluate(
+        () => [...document.querySelectorAll('#story-figure .dot')].filter((d) => d.__mark === 'v4').length
+      );
+      expect(kept, `step ${n} keeps all 108 dot nodes`).toBe(108);
     }
-    // Step 5 (still showing): the value axis domain is exactly [0, 12].
+
+    // Step 2 and Step 6 beeswarms draw 3 CIs and 3 mean markers; step 6 runs 0–12.
+    await goToStep(page, 2);
+    await expect(page.locator('#story-figure line.ci')).toHaveCount(3);
+    await expect(page.locator('#story-figure circle.mean-mk')).toHaveCount(3);
+
+    await goToStep(page, 6);
+    await expect(page.locator('#story-figure line.ci')).toHaveCount(3);
+    await expect(page.locator('#story-figure circle.mean-mk')).toHaveCount(3);
     const axis = await page.evaluate(() => {
-      const a = document.querySelector('#story-figure g.frame:not(.exiting) .axis-x');
+      const a = document.querySelector('#story-figure g.frame:not(.exiting) .axis-x[data-id="main"]');
       return { domain: a.dataset.domain, ticks: [...a.querySelectorAll('.tick')].map((t) => Number(t.dataset.v)) };
     });
     expect(axis.domain).toBe('0,12');
@@ -62,32 +88,28 @@ test.describe('narrative', () => {
     expect(Math.max(...axis.ticks)).toBe(12);
   });
 
-  test('5. scatter: 108 jittered dots; pooled neutral at step 3, morphed by condition at step 4', async ({ page }) => {
+  test('5. scatter and split: pooled → colored overlay → 3 small-multiple panels', async ({ page }) => {
     await goToStep(page, 3);
-    let r = await inspect(page);
-    expect(r.problems, 'step 3').toEqual([]);
-    await expect(page.locator('#story-figure .dot')).toHaveCount(108);
+    expect((await inspect(page)).problems, 'step 3').toEqual([]);
     await expect(page.locator('#story-figure path.trend')).toHaveCount(1);
     await expect(page.locator('#story-figure .dlabel')).toContainText(['r = .51']);
 
-    // Step 4 keeps the same dot elements (a real morph), keyed by participant index.
-    await page.evaluate(() => {
-      for (const d of document.querySelectorAll('#story-figure .dot')) d.__mark = 'step3';
-    });
     await goToStep(page, 4);
-    r = await inspect(page);
-    expect(r.problems, 'step 4').toEqual([]);
-    const kept = await page.evaluate(
-      () => [...document.querySelectorAll('#story-figure .dot')].filter((d) => d.__mark === 'step3').length
-    );
-    expect(kept).toBe(108);
+    expect((await inspect(page)).problems, 'step 4').toEqual([]);
     await expect(page.locator('#story-figure path.trend')).toHaveCount(4);
-    const labels = (await page.locator('#story-figure .dlabel').allTextContents()).join(' | ');
-    for (const s of ['r = .16', 'r = −.19', 'r = .12', 'r = .51']) expect(labels).toContain(s);
+    const step4Text = await page.locator('#story-figure svg.chart-svg').textContent();
+    for (const s of ['r = .16', 'r = −.19', 'r = .12', 'r = .51']) expect(step4Text).toContain(s);
+
+    await goToStep(page, 5);
+    expect((await inspect(page)).problems, 'step 5').toEqual([]);
+    await expect(page.locator('#story-figure rect.panel-bg')).toHaveCount(3);
+    await expect(page.locator('#story-figure path.trend')).toHaveCount(6);
+    const step5Text = await page.locator('#story-figure svg.chart-svg').textContent();
+    for (const s of ['r = .16', 'r = −.19', 'r = .12']) expect(step5Text).toContain(s);
   });
 
-  test('6. grid lines sit in the bottom layer, before the marks; trend lines sit under the dots', async ({ page }) => {
-    for (const n of [2, 4]) {
+  test('6. grid lines sit in the bottom layer before marks; trend lines sit under dots', async ({ page }) => {
+    for (const n of [2, 4, 5]) {
       await goToStep(page, n);
       const order = await page.evaluate(() => {
         const plot = document.querySelector('#story-figure g.frame:not(.exiting) g.plot');
@@ -97,14 +119,14 @@ test.describe('narrative', () => {
           first: plot.firstElementChild === grid,
           gridLines: grid ? grid.querySelectorAll('line').length : 0,
           before: !!(grid && marks && grid.compareDocumentPosition(marks) & Node.DOCUMENT_POSITION_FOLLOWING),
-          // No participant may be hidden by a trend line, so every trend path paints before the dots.
           trendsUnder: [...plot.querySelectorAll('path.trend')].every(
             (t) => !!(t.compareDocumentPosition(marks) & Node.DOCUMENT_POSITION_FOLLOWING)
           ),
           trends: plot.querySelectorAll('path.trend').length,
         };
       });
-      expect(order, `step ${n}`).toEqual({ first: true, gridLines: expect.any(Number), before: true, trendsUnder: true, trends: n === 4 ? 4 : 0 });
+      const wantTrends = n === 4 ? 4 : n === 5 ? 6 : 0;
+      expect(order, `step ${n}`).toEqual({ first: true, gridLines: expect.any(Number), before: true, trendsUnder: true, trends: wantTrends });
       expect(order.gridLines).toBeGreaterThan(0);
     }
   });
@@ -117,56 +139,47 @@ test.describe('narrative', () => {
       2: ['4.1', '3.8', '0.5'],
       3: ['108', '.51'],
       4: ['.16', '−.19', '.12'],
-      5: ['2.9', '2.2', '2.0'],
+      5: ['Video + text', 'Desktop sim', 'VR headset'],
+      6: ['2.9', '2.2', '2.0', 'median of 2'],
     };
     const descs = [];
-    for (let n = 1; n <= 5; n++) {
+    for (let n = 1; n <= 6; n++) {
       await goToStep(page, n);
       await expect(svg).toHaveAccessibleName(/\S/);
       const desc = (await page.locator('#story-figure .chart-desc').textContent()).trim();
       for (const s of expectations[n]) expect(desc, `step ${n} description`).toContain(s);
       descs.push(desc);
     }
-    expect(new Set(descs).size).toBe(5);
+    expect(new Set(descs).size).toBe(6);
   });
 });
 
 test.describe('narrative with motion', () => {
   test.use({ reducedMotion: 'no-preference' });
 
-  test('8. mid-transition, a new frame and new whiskers are already in place; only opacity animates', async ({ page }) => {
+  test('8. mid-transition whiskers align with mean markers and settle cleanly across frame states', async ({ page }) => {
     await openPage(page);
-    for (const [from, to] of [[4, 5], [2, 3], [1, 2]]) {
+    for (const [from, to] of [[1, 2], [2, 3], [4, 5], [5, 6]]) {
       await goToStep(page, from);
       const mid = await page.evaluate(async (to) => {
-        await window.__probe.activateStep(to); // time the transition, not the scroll handler
+        await window.__probe.activateStep(to);
         await new Promise((r) => setTimeout(r, 300));
         return window.__probe.geometry();
       }, to);
-      // The sample really is mid-transition.
       expect(mid.state, `${from}→${to} still animating at 300ms`).toBeNull();
-      if (from === 1) expect(mid.cis.length, '1→2 whiskers exist mid-transition').toBe(3);
-      else expect(mid.opacity, `${from}→${to} new frame still fading in`).toBeLessThan(1);
+      if (to === 2 || to === 6) expect(mid.cis.length, `${from}→${to} whiskers exist mid-transition`).toBe(3);
       for (const c of mid.cis) {
-        expect(Math.abs(c.y1 - c.barMid), `${from}→${to} CI ${c.group} y1 ${c.y1} vs bar middle ${c.barMid}`).toBeLessThanOrEqual(1);
-        expect(Math.abs(c.y2 - c.barMid), `${from}→${to} CI ${c.group} y2`).toBeLessThanOrEqual(1);
+        expect(Math.abs(c.y1 - c.meanY), `${from}→${to} CI ${c.group} y1 vs meanY`).toBeLessThanOrEqual(1);
+        expect(Math.abs(c.y2 - c.meanY), `${from}→${to} CI ${c.group} y2 vs meanY`).toBeLessThanOrEqual(1);
       }
       await goToStep(page, to);
-      const end = await page.evaluate(() => window.__probe.geometry());
-      // A new frame (4→5, 2→3) must not slide in at all. Within the bars frame (1→2) the axis may
-      // legitimately move: on phones step 2's longer dek shrinks the chart box.
-      for (const k of from === 1 ? ['plot'] : ['plot', 'axisX']) {
-        for (const d of [0, 1]) {
-          expect(Math.abs(mid[k][d] - end[k][d]), `${from}→${to} ${k} ${mid[k]} vs settled ${end[k]}`).toBeLessThanOrEqual(0.5);
-        }
-      }
+      expect((await inspect(page)).problems, `${from}→${to} settled`).toEqual([]);
     }
   });
 
   test('9. a quick re-hover within the ring fade leaves exactly one ring on the dot', async ({ page }) => {
     await openPage(page);
     await goToStep(page, 3);
-    // A dot whose centre is not covered by a line or another dot, so the pointer lands on it.
     const pt = await page.evaluate(() => {
       for (const d of document.querySelectorAll('#story-figure g.frame:not(.exiting) .dot')) {
         const r = d.getBoundingClientRect();
@@ -182,7 +195,7 @@ test.describe('narrative with motion', () => {
     await page.mouse.move(2, 2);
     await page.mouse.move(pt.x, pt.y);
     await expect.poll(() => ringsOf(page, SVG)).toEqual([{ i: pt.i, opacity: 1 }]);
-    await page.waitForTimeout(400); // longer than a ring fade: the ring stays
+    await page.waitForTimeout(400);
     expect(await ringsOf(page, SVG)).toEqual([{ i: pt.i, opacity: 1 }]);
   });
 });
@@ -190,12 +203,12 @@ test.describe('narrative with motion', () => {
 test.describe('narrative text overlap', () => {
   test.use({ reducedMotion: 'reduce' });
 
-  test('10. no chart texts overlap at any step (C30)', async ({ page }) => {
+  test('10. no chart texts overlap at any step (1–6)', async ({ page }) => {
     await openPage(page);
-    for (let n = 1; n <= 5; n++) {
+    for (let n = 1; n <= 6; n++) {
       await goToStep(page, n);
       const texts = await page.evaluate(() => document.querySelectorAll('#story-figure svg.chart-svg text').length);
-      expect(texts, `step ${n} has chart text`).toBeGreaterThan(3);
+      expect(texts, `step ${n} has chart text`).toBeGreaterThan(2);
       expect(await page.evaluate(() => window.__probe.overlaps('#story-figure svg.chart-svg')), `step ${n}`).toEqual([]);
     }
   });

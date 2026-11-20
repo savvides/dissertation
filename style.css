@@ -376,9 +376,7 @@ figure.chart figcaption {
 
 .chart-svg .t-cat,
 .chart-svg .t-value,
-.chart-svg .t-annot,
-.chart-svg .t-name,
-.chart-svg .t-r {
+.chart-svg .t-annot {
     paint-order: stroke;
     stroke: var(--bg);
     stroke-width: 4px;

@@ -752,6 +752,7 @@
       var stroke = function (k) { return k === 'all' ? (cfg.byCondition ? C.ghost : C.ink) : C[k]; };
       var width = function (k) { return ghost(k) ? 1.75 : lineW; };
 
+      exitFade(f.layer('trends').selectAll('g.trend-split'), m);
       var trends = f.layer('trends').selectAll('g.trend-g').data(keys, String).join(
         function (enter) {
           var g = enter.append('g').attr('class', 'trend-g');
@@ -844,10 +845,10 @@
       );
       var cxAll = x(17);
       var lineYAll = y(cor.all.intercept + cor.all.slope * 17);
-      var lblYAll = y(2.9);
-      inLbl.select('line.leader').attr('stroke', C.ghost).attr('x1', cxAll).attr('x2', cxAll).attr('y1', lblYAll + 19).attr('y2', lineYAll - 3);
+      var lblYAll = y(3.0);
+      inLbl.select('line.leader').attr('stroke', C.ghost).attr('x1', cxAll).attr('x2', cxAll).attr('y1', lblYAll + 23).attr('y2', lineYAll - 3);
       inLbl.select('text.t-name').attr('x', cxAll).attr('y', lblYAll).attr('text-anchor', 'middle').attr('fill', C.ghost).text('Overall');
-      inLbl.select('text.t-r').attr('x', cxAll).attr('y', lblYAll + 15).attr('text-anchor', 'middle').text(rText(cfg.axesKey, 'all'));
+      inLbl.select('text.t-r').attr('x', cxAll).attr('y', lblYAll + 19).attr('text-anchor', 'middle').text(rText(cfg.axesKey, 'all'));
       m.t(inLbl).attr('opacity', 1);
 
       // Guarantee floored x domains match axis-x cleanly even when cognitive_load is on X.
@@ -1032,9 +1033,10 @@
         var parts = key.split(':');
         return parts[1] === 'all' ? C.ghost : C[parts[1]];
       };
-      var trends = f.layer('trends').selectAll('g.trend-g').data(lineKeys, String).join(
+      exitFade(f.layer('trends').selectAll('g.trend-g'), m);
+      var trends = f.layer('trends').selectAll('g.trend-split').data(lineKeys, String).join(
         function (enter) {
-          var g = enter.append('g').attr('class', 'trend-g');
+          var g = enter.append('g').attr('class', 'trend-split');
           g.append('path').attr('class', 'trend-halo').attr('d', segSplit);
           g.append('path').attr('class', 'trend').attr('d', segSplit);
           if (m.on) g.attr('opacity', 0);
